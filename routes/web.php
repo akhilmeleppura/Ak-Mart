@@ -166,7 +166,6 @@ Route::group(['middleware' => 'auth:sanctum', 'verified'], function () {
   Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
   Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
   Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
-  Route::get('/app/user/list', [UserList::class, 'index'])->name('app-user-list');
 });
 
 
