@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     const reviewFilter = document.createElement('div');
     reviewFilter.classList.add('review_filter');
     var dt_review = new DataTable(dt_customer_review, {
-      ajax: assetsPath + 'json/app-ecommerce-reviews.json', // JSON file to add data
+      ajax: baseUrl + 'app/ecommerce/manage/reviews',
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -448,6 +448,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
           searchable: false,
           orderable: false,
           render: function (data, type, full, meta) {
+            let status = full['status'];
+            let nextStatus = status === 'Published' ? 'Pending' : 'Published';
+            let nextLabel = status === 'Published' ? 'Unpublish' : 'Publish';
+            let id = full['id'];
+
             return `
               <div class="text-xxl-center">
                 <div class="dropdown">
@@ -455,11 +460,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     <i class="icon-base bx bx-dots-vertical-rounded icon-md"></i>
                   </a>
                   <div class="dropdown-menu dropdown-menu-end">
-                    <a href="javascript:void(0);" class="dropdown-item">Download</a>
-                    <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                    <a href="javascript:void(0);" class="dropdown-item">Duplicate</a>
+                    <a href="javascript:void(0);" class="dropdown-item update-review-status" data-id="${id}" data-status="${nextStatus}">${nextLabel}</a>
                     <div class="dropdown-divider"></div>
-                    <a href="javascript:void(0);" class="dropdown-item delete-record text-danger">Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item delete-review text-danger" data-id="${id}">Delete</a>
                   </div>
                 </div>
               </div>
@@ -467,6 +470,84 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         }
       ],
+      drawCallback: function (settings) {
+        // Handle Delete Review
+        $('.delete-review').off('click').on('click', function () {
+          const id = $(this).data('id');
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/ecommerce/manage/reviews/${id}`,
+                type: 'DELETE',
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (result) {
+                  dt_review.ajax.reload();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: result.message,
+                    customClass: { confirmButton: 'btn btn-success' }
+                  });
+                },
+                error: function (error) {
+                  console.log(error);
+                  Swal.fire({
+                    title: 'Error!',
+                    text: 'Error deleting review',
+                    icon: 'error',
+                    customClass: { confirmButton: 'btn btn-primary' }
+                  });
+                }
+              });
+            }
+          });
+        });
+
+        // Handle Status Update
+        $('.update-review-status').off('click').on('click', function () {
+          const id = $(this).data('id');
+          const status = $(this).data('status');
+          $.ajax({
+            url: `${baseUrl}app/ecommerce/manage/reviews/${id}`,
+            type: 'PATCH',
+            data: { status: status },
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (result) {
+              dt_review.ajax.reload();
+              Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: result.message,
+                customClass: { confirmButton: 'btn btn-success' }
+              });
+            },
+            error: function (error) {
+              console.log(error);
+              Swal.fire({
+                title: 'Error!',
+                text: 'Error updating review status',
+                icon: 'error',
+                customClass: { confirmButton: 'btn btn-primary' }
+              });
+            }
+          });
+        });
+      },
       select: {
         style: 'multi',
         selector: 'td:nth-child(2)'
@@ -715,17 +796,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
   }
 
-  //? The 'delete-record' class is necessary for the functionality of the following code.
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('delete-record')) {
-      dt_review.row(e.target.closest('tr')).remove().draw();
-      const modalEl = document.querySelector('.dtr-bs-modal');
-      if (modalEl && modalEl.classList.contains('show')) {
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        modal?.hide();
-      }
-    }
-  });
 
   // Filter form control to default size
   // ? setTimeout used for reviews table initialization

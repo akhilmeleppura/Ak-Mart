@@ -1,0 +1,7 @@
+{
+    "Accounting": true,
+    "SampleModule": true,
+    "Permission": true,
+    "Billing": true,
+    "General": true
+}

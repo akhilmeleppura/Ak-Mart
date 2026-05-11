@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   // Users List datatable
   if (dataTablePermissions) {
     dt_permission = new DataTable(dataTablePermissions, {
-      ajax: assetsPath + 'json/permissions-list.json', // JSON file to add data
+      ajax: baseUrl + 'app/access-permission/list', // Real API endpoint
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             };
 
             assignedTo.forEach(role => {
-              output += roleBadgeObj[role] || '';
+              output += roleBadgeObj[role] || `<a href="${userList}"><span class="badge bg-label-secondary me-4">${role}</span></a>`;
             });
 
             return `<span class="text-nowrap">${output}</span>`;
@@ -85,19 +85,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
           title: 'Actions',
           orderable: false,
           render: function (data, type, full, meta) {
+            let id = full['id'];
             return `
               <div class="d-flex align-items-center">
                 <span class="text-nowrap">
-                  <button class="btn btn-icon me-1" data-bs-target="#editPermissionModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+                  <button class="btn btn-icon me-1 edit-permission" data-id="${id}" data-bs-target="#editPermissionModal" data-bs-toggle="modal">
                     <i class="icon-base bx bx-edit icon-md"></i>
                   </button>
-                  <a href="javascript:;" class="btn btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                    <i class="icon-base bx bx-dots-vertical-rounded icon-md"></i>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end m-0">
-                    <a href="javascript:;" class="dropdown-item">Edit</a>
-                    <a href="javascript:;" class="dropdown-item">Suspend</a>
-                  </div>
+                  <button class="btn btn-icon delete-permission" data-id="${id}">
+                    <i class="icon-base bx bx-trash icon-md"></i>
+                  </button>
                 </span>
               </div>
             `;
@@ -224,4 +221,59 @@ document.addEventListener('DOMContentLoaded', function (e) {
       });
     });
   }, 100);
+
+  // Delete Permission
+  $(document).on('click', '.delete-permission', function () {
+    var permission_id = $(this).data('id'),
+      dName = $(this).closest('tr').find('td:nth-child(2)').text();
+
+    // sweetalert for confirmation of delete
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      customClass: {
+        confirmButton: 'btn btn-primary me-3',
+        cancelButton: 'btn btn-label-secondary'
+      },
+      buttonsStyling: false
+    }).then(function (result) {
+      if (result.value) {
+        // delete the data
+        $.ajax({
+          type: 'DELETE',
+          url: `${baseUrl}app/access-permission/${permission_id}/delete`,
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function () {
+            dt_permission.ajax.reload();
+            // success alert
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The permission has been deleted.',
+              customClass: {
+                confirmButton: 'btn btn-success'
+              }
+            });
+          },
+          error: function (error) {
+            console.log(error);
+          }
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'The permission is not deleted!',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
+      }
+    });
+  });
 });

@@ -7,7 +7,8 @@
 // Edit permission form validation
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
-    FormValidation.formValidation(document.getElementById('editPermissionForm'), {
+    const editPermissionForm = document.getElementById('editPermissionForm');
+    const fv = FormValidation.formValidation(editPermissionForm, {
       fields: {
         editPermissionName: {
           validators: {
@@ -30,6 +31,55 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
         autoFocus: new FormValidation.plugins.AutoFocus()
       }
+    }).on('core.form.valid', function () {
+      var id = $('#editPermissionId').val();
+      // Send the data to the server
+      $.ajax({
+        data: $('#editPermissionForm').serialize(),
+        url: baseUrl + 'app/access-permission/' + id + '/update',
+        type: 'PUT',
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (status) {
+          if (window.LaravelDataTables) {
+            Object.values(window.LaravelDataTables).forEach(dt => dt.ajax.reload());
+          } else {
+            $('.datatables-permissions').DataTable().ajax.reload();
+          }
+
+          $('#editPermissionModal').modal('hide');
+
+          // sweetalert
+          Swal.fire({
+            icon: 'success',
+            title: 'Successfully Updated!',
+            text: 'Permission Updated Successfully',
+            customClass: {
+              confirmButton: 'btn btn-success'
+            }
+          });
+        },
+        error: function (err) {
+          Swal.fire({
+            title: 'Error!',
+            text: err.responseJSON.message,
+            icon: 'error',
+            customClass: {
+              confirmButton: 'btn btn-primary'
+            }
+          });
+        }
+      });
     });
   })();
+
+  // Edit Permission click handler to populate modal
+  $(document).on('click', '.edit-permission', function () {
+    var id = $(this).data('id');
+    $.get(baseUrl + 'app/access-permission/' + id + '/edit', function (data) {
+      $('#editPermissionId').val(data.id);
+      $('#editPermissionName').val(data.name);
+    });
+  });
 });

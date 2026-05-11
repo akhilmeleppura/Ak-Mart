@@ -133,6 +133,7 @@
           <th></th>
           <th>Id</th>
           <th>User</th>
+          <th>Role</th>
           <th>Email</th>
           <th>Verified</th>
           <th>Actions</th>
@@ -160,53 +161,12 @@
             aria-label="john.doe@example.com" name="email" />
         </div>
         <div class="mb-6">
-          <label class="form-label" for="add-user-contact">Contact</label>
-          <input type="text" id="add-user-contact" class="form-control phone-mask" placeholder="+1 (609) 988-44-11"
-            aria-label="john.doe@example.com" name="userContact" />
-        </div>
-        <div class="mb-6">
-          <label class="form-label" for="add-user-company">Company</label>
-          <input type="text" id="add-user-company" class="form-control" placeholder="Web Developer" aria-label="jdoe1"
-            name="company" />
-        </div>
-        <div class="mb-6">
-          <label class="form-label" for="country">Country</label>
-          <select id="country" class="select2 form-select">
-            <option value="">Select</option>
-            <option value="Australia">Australia</option>
-            <option value="Bangladesh">Bangladesh</option>
-            <option value="Belarus">Belarus</option>
-            <option value="Brazil">Brazil</option>
-            <option value="Canada">Canada</option>
-            <option value="China">China</option>
-            <option value="France">France</option>
-            <option value="Germany">Germany</option>
-            <option value="India">India</option>
-            <option value="Indonesia">Indonesia</option>
-            <option value="Israel">Israel</option>
-            <option value="Italy">Italy</option>
-            <option value="Japan">Japan</option>
-            <option value="Korea">Korea, Republic of</option>
-            <option value="Mexico">Mexico</option>
-            <option value="Philippines">Philippines</option>
-            <option value="Russia">Russian Federation</option>
-            <option value="South Africa">South Africa</option>
-            <option value="Thailand">Thailand</option>
-            <option value="Turkey">Turkey</option>
-            <option value="Ukraine">Ukraine</option>
-            <option value="United Arab Emirates">United Arab Emirates</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="United States">United States</option>
-          </select>
-        </div>
-        <div class="mb-6">
           <label class="form-label" for="user-role">User Role</label>
-          <select id="user-role" class="form-select">
-            <option value="subscriber">Subscriber</option>
-            <option value="editor">Editor</option>
-            <option value="maintainer">Maintainer</option>
-            <option value="author">Author</option>
-            <option value="admin">Admin</option>
+          <select id="user-role" name="role" class="form-select">
+            <option value="">Select Role</option>
+            @foreach($roles as $role)
+            <option value="{{ $role->name }}">{{ $role->name }}</option>
+            @endforeach
           </select>
         </div>
         <div class="mb-6">

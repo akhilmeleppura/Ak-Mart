@@ -1,0 +1,40 @@
+[
+  {
+    "module": "User Management",
+    "permissions": [
+      { "name": "user.view", "label": "View" },
+      { "name": "user.create", "label": "Create" },
+      { "name": "user.edit", "label": "Edit" },
+      { "name": "user.delete", "label": "Delete" }
+    ]
+  },
+  {
+    "module": "Order Management",
+    "permissions": [
+      { "name": "order.view", "label": "View" },
+      { "name": "order.update-status", "label": "Update Status" }
+    ]
+  },
+  {
+    "module": "Role and Permission Management",
+    "permissions": [
+      { "name": "role.view", "label": "View Roles" },
+      { "name": "role.create", "label": "Create Role" },
+      { "name": "role.edit", "label": "Edit Role" },
+      { "name": "role.delete", "label": "Delete Role" },
+      { "name": "permission.assign", "label": "Assign Permissions" },
+      { "name": "show.permission", "label": "Show Permissions" },
+      { "name": "edit.permission", "label": "Edit Permissions" }
+    ]
+  },
+  {
+    "module": "Journal Management",
+    "permissions": [
+      { "name": "accounting.journal.view", "label": "View Journal Entries" },
+      { "name": "accounting.journal.create", "label": "Create Journal Entry" },
+      { "name": "accounting.journal.edit", "label": "Edit Journal Entry" },
+      { "name": "accounting.journal.delete", "label": "Delete Journal Entry" },
+      { "name": "accounting.journal.approve", "label": "Approve Journal Entry" }
+    ]
+  }
+]

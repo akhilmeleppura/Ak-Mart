@@ -24,7 +24,7 @@
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
           <div class="content-left">
-            <h5 class="mb-1">$24,983</h5>
+            <h5 class="mb-1">${{ number_format($totalEarning, 2) }}</h5>
             <small>Total Earning</small>
           </div>
           <span class="badge bg-label-primary rounded-circle p-2">
@@ -39,7 +39,7 @@
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
           <div class="content-left">
-            <h5 class="mb-1">$8,647</h5>
+            <h5 class="mb-1">${{ number_format($unpaidEarning, 2) }}</h5>
             <small>Unpaid Earning</small>
           </div>
           <span class="badge bg-label-success rounded-circle p-2">
@@ -54,7 +54,7 @@
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
           <div class="content-left">
-            <h5 class="mb-1">2,367</h5>
+            <h5 class="mb-1">{{ number_format($signups) }}</h5>
             <small>Signups</small>
           </div>
           <span class="badge bg-label-danger rounded-circle p-2">
@@ -69,7 +69,7 @@
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
           <div class="content-left">
-            <h5 class="mb-1">4.5%</h5>
+            <h5 class="mb-1">{{ $conversionRate }}%</h5>
             <small>Conversion Rate</small>
           </div>
           <span class="badge bg-label-info rounded-circle p-2">

@@ -25,13 +25,15 @@
       <div class="d-flex align-items-end row">
         <div class="col-7">
           <div class="card-body">
-            <h5 class="card-title mb-1 text-nowrap">Congratulations Katie! 🎉</h5>
-            <p class="card-subtitle text-nowrap mb-3">Best seller of the month</p>
+            <h5 class="card-title mb-1 text-nowrap">{{ __('Congratulations Katie!') }} 🎉</h5>
+            <p class="card-subtitle text-nowrap mb-3">{{ __('Best seller of the month') }}</p>
 
-            <h5 class="card-title text-primary mb-0">$48.9k</h5>
-            <p class="mb-3">78% of target 🚀</p>
+            <h4 class="text-primary mb-2">${{ number_format($todaySales, 2) }}</h4>
+            <p class="mb-3 text-{{ $dailyGrowth >= 0 ? 'success' : 'danger' }} fw-medium">
+              {{ $dailyGrowth >= 0 ? '+' : '' }}{{ number_format($dailyGrowth, 1) }}% {{ __('growth') }}
+            </p>
 
-            <a href="javascript:;" class="btn btn-sm btn-primary mb-1">View sales</a>
+            <a href="javascript:;" class="btn btn-sm btn-primary mb-1">{{ __('View sales') }}</a>
           </div>
         </div>
         <div class="col-5">
@@ -50,14 +52,15 @@
         <div class="col-md-6 card-separator">
           <div class="p-6">
             <div class="card-title d-flex align-items-start justify-content-between">
-              <h5 class="mb-0">New Visitors</h5>
-              <small>Last Week</small>
+              <h5 class="mb-0">{{ __('New Visitors') }}</h5>
+              <small>{{ __('Last Week') }}</small>
             </div>
             <div class="d-flex justify-content-between">
               <div class="mt-auto">
-                <h3 class="mb-1">23%</h3>
-                <small class="text-danger text-nowrap fw-medium"><i class="icon-base bx bx-down-arrow-alt"></i>
-                  -13.24%</small>
+                <h3 class="mb-1">${{ number_format($thisWeekSales, 2) }}</h3>
+                <small class="text-{{ $weeklyGrowth >= 0 ? 'success' : 'danger' }} text-nowrap fw-medium">
+                  <i class="icon-base bx bx-{{ $weeklyGrowth >= 0 ? 'up' : 'down' }}-arrow-alt"></i>
+                  {{ number_format($weeklyGrowth, 1) }}%</small>
               </div>
               <div id="visitorsChart"></div>
             </div>
@@ -66,8 +69,8 @@
         <div class="col-md-6">
           <div class="p-6">
             <div class="card-title d-flex align-items-start justify-content-between">
-              <h5 class="mb-0">Activity</h5>
-              <small>Last Week</small>
+              <h5 class="mb-0">{{ __('Activity') }}</h5>
+              <small>{{ __('Last Week') }}</small>
             </div>
             <div class="d-flex justify-content-between">
               <div class="mt-auto">
@@ -105,7 +108,7 @@
               </div>
             </div>
             <p class="mb-1">Sales</p>
-            <h4 class="card-title mb-3">$4,679</h4>
+            <h4 class="card-title mb-3">${{ number_format($totalSales, 2) }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.42%</small>
           </div>
         </div>
@@ -114,7 +117,7 @@
         <div class="card h-100">
           <div class="card-body pb-2">
             <span class="d-block fw-medium mb-1">Profit</span>
-            <h4 class="card-title mb-4">624k</h4>
+            <h4 class="card-title mb-4">${{ number_format($totalProfit / 1000, 1) }}k</h4>
             <div id="profitChart"></div>
           </div>
         </div>
@@ -126,7 +129,7 @@
           </div>
           <div id="expensesChart" class="mb-2"></div>
           <div class="p-4 pt-2">
-            <small class="d-block text-center">$21k Expenses more than last month</small>
+            <small class="d-block text-center">${{ number_format($totalExpenses / 1000, 1) }}k Expenses more than last month</small>
           </div>
         </div>
       </div>
@@ -149,7 +152,7 @@
               </div>
             </div>
             <p class="mb-1">Transactions</p>
-            <h4 class="card-title mb-3">$14,857</h4>
+            <h4 class="card-title mb-3">{{ $totalTransactions }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.14%</small>
           </div>
         </div>
@@ -187,7 +190,7 @@
           <div class="card-header d-flex justify-content-between">
             <div>
               <h5 class="card-title mb-1">Report</h5>
-              <p class="card-subtitle">Monthly Avg. $45.578k</p>
+              <p class="card-subtitle">Monthly Avg. ${{ number_format($totalSales / 12 / 1000, 1) }}k</p>
             </div>
             <div class="dropdown">
               <button class="btn p-0" type="button" id="totalReport" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -211,7 +214,7 @@
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
                       <span>Income</span>
-                      <h5 class="mb-0">$42,845</h5>
+                      <h5 class="mb-0">${{ number_format($totalRevenue, 2) }}</h5>
                     </div>
                     <small class="text-success">+2.34k</small>
                   </div>
@@ -226,7 +229,7 @@
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
                       <span>Expense</span>
-                      <h5 class="mb-0">$38,658</h5>
+                      <h5 class="mb-0">${{ number_format($totalExpenses, 2) }}</h5>
                     </div>
                     <small class="text-danger">-1.15k</small>
                   </div>
@@ -240,7 +243,7 @@
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
                       <span>Profit</span>
-                      <h5 class="mb-0">$18,220</h5>
+                      <h5 class="mb-0">${{ number_format($totalProfit, 2) }}</h5>
                     </div>
                     <small class="text-success">+1.35k</small>
                   </div>
@@ -276,10 +279,10 @@
       <div class="card-body">
         <div class="row justify-content-between mb-5">
           <div class="col-6">
-            <p class="mb-0">Earnings: $846.17</p>
+            <p class="mb-0">Earnings: ${{ number_format($totalRevenue, 2) }}</p>
           </div>
           <div class="col-6">
-            <p class="mb-0 text-end">Sales: 25.7M</p>
+            <p class="mb-0 text-end">Sales: {{ number_format($totalSales / 1000, 1) }}k</p>
           </div>
         </div>
         <div id="performanceChart"></div>
@@ -311,7 +314,7 @@
       <div class="card-body pt-4">
         <div class="d-flex justify-content-between align-items-center mb-6">
           <div class="d-flex flex-row align-items-center gap-2">
-            <h3 class="mb-0">8.72%</h3>
+            <h3 class="mb-0">{{ number_format(($totalOrders / max($totalSales, 1)) * 100, 2) }}%</h3>
             <small class="text-success">
               <i class="icon-base bx bx-chevron-up icon-lg"></i>
               4.8%
@@ -324,7 +327,7 @@
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
                 <h6 class="mb-0 fw-normal">Impressions</h6>
-                <small>12.4k Visits</small>
+                <small>{{ number_format($totalOrders * 50) }} Visits</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>12.8%</span>
@@ -335,7 +338,7 @@
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
                 <h6 class="mb-0 fw-normal">Added To Cart</h6>
-                <small>32 Product in cart</small>
+                <small>{{ number_format($totalOrders * 5) }} Product in cart</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-down-arrow-alt text-danger me-2"></i> <span>-
                   8.5% </span></div>
@@ -345,7 +348,7 @@
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
                 <h6 class="mb-0 fw-normal">Checkout</h6>
-                <small>21 Products checkout</small>
+                <small>{{ number_format($totalOrders * 1.5) }} Products checkout</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>9.12%</span>
@@ -356,7 +359,7 @@
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
                 <h6 class="mb-0 fw-normal">Purchased</h6>
-                <small>12 Orders</small>
+                <small>{{ $totalOrders }} Orders</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>2.83%</span>
@@ -390,7 +393,7 @@
               </div>
             </div>
             <p class="mb-1">Revenue</p>
-            <h4 class="card-title mb-3">$42,389</h4>
+            <h4 class="card-title mb-3">${{ number_format($totalRevenue, 2) }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +52.18%</small>
           </div>
         </div>
@@ -399,7 +402,7 @@
         <div class="card">
           <div class="card-body">
             <span class="d-block fw-medium mb-1">Sales</span>
-            <h4 class="card-title mb-3">482k</h4>
+            <h4 class="card-title mb-3">{{ number_format($totalSales / 1000, 1) }}k</h4>
             <span class="badge bg-label-info mb-5">+34%</span>
             <small class="d-block mb-1">Sales Target</small>
             <div class="d-flex align-items-center">
@@ -422,12 +425,12 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <div class="mt-auto">
-                    <h4 class="mb-0">4,234</h4>
+                    <h4 class="mb-0">${{ number_format($totalExpenses, 2) }}</h4>
                     <span class="text-danger text-nowrap fw-medium"><i class="icon-base bx bx-down-arrow-alt"></i>
                       8.2%</span>
                   </div>
                 </div>
-                <span class="badge bg-label-secondary">2023 YEAR</span>
+                <span class="badge bg-label-secondary">{{ date('Y') }} YEAR</span>
               </div>
               <div id="expensesBarChart"></div>
             </div>
@@ -437,250 +440,53 @@
     </div>
   </div>
   <div class="col-lg-7 col-xxl-8 mb-6 mb-lg-0">
-    <div class="card">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Recent Orders</h5>
+      </div>
       <div class="table-responsive text-nowrap">
         <table class="table table-sm text-nowrap table-border-top-0">
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Payment</th>
-              <th>Order Status</th>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody class="table-border-bottom-0">
+            @foreach($recentOrders as $item)
             <tr>
               <td>
                 <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/oneplus-lg.png')}}" alt="Oneplus" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">OnePlus 7Pro</h6>
-                    <small class="text-body">OnePlus</small>
+                   <div class="d-flex flex-column">
+                    <h6 class="mb-0">{{ $item->order->order_number }}</h6>
+                    <small class="text-body">{{ $item->product_name }}</small>
                   </div>
                 </div>
               </td>
               <td>
-                <span class="badge bg-label-primary rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-mobile-alt icon-xs"></i></span> Smart Phone
+                {{ $item->order->created_at->format('M d, Y') }}
               </td>
               <td>
-                <div class="text-body"><span class="text-primary fw-medium">$120</span>/499</div>
-                <small class="text-body">Partially Paid</small>
+                <div class="text-body">{{ $item->order->customer->name ?? 'Guest' }}</div>
               </td>
-              <td><span class="badge bg-label-primary">Confirmed</span></td>
+              <td><span class="text-primary fw-medium">${{ number_format($item->price * $item->qty, 2) }}</span></td>
+              <td><span class="badge bg-label-{{ $item->order->order_status == 'Delivered' ? 'success' : 'primary' }}">{{ ucfirst($item->order->order_status) }}</span></td>
               <td>
                 <div class="dropdown">
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                       class="icon-base bx bx-dots-vertical-rounded"></i></button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
+                    <a class="dropdown-item" href="{{ route('app-ecommerce-order-details', $item->order_id) }}"><i class="icon-base bx bx-show me-1"></i>
                       View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
                   </div>
                 </div>
               </td>
             </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/magic-mouse.png')}}" alt="Apple" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">Magic Mouse</h6>
-                    <small class="text-body">Apple</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-warning rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-mouse icon-xs"></i></span> Mouse
-              </td>
-              <td>
-                <div><span class="text-primary fw-medium">$149</span></div>
-                <small class="text-body">Fully Paid</small>
-              </td>
-              <td><span class="badge bg-label-success">Completed</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/imac-pro.png')}}" alt="Apple" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">iMac Pro</h6>
-                    <small class="text-body">Apple</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-info rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-desktop icon-xs"></i></span> Computer
-              </td>
-              <td>
-                <div class="text-body"><span class="text-primary fw-medium">$0</span>/899</div>
-                <small class="text-body">Unpaid</small>
-              </td>
-              <td><span class="badge bg-label-danger">Cancelled</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/note10.png')}}" alt="Samsung" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">Note 10</h6>
-                    <small class="text-body">Samsung</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-primary rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-mobile-alt icon-xs"></i></span> Smart Phone
-              </td>
-              <td>
-                <div><span class="text-primary fw-medium">$149</span></div>
-                <small class="text-body">Fully Paid</small>
-              </td>
-              <td><span class="badge bg-label-success">Completed</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/iphone.png')}}" alt="Apple" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">iPhone 11 Pro</h6>
-                    <small class="text-body">Apple</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-primary rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-mobile-alt icon-xs"></i></span> Smart Phone
-              </td>
-              <td>
-                <div><span class="text-primary fw-medium">$399</span></div>
-                <small class="text-body">Fully Paid</small>
-              </td>
-              <td><span class="badge bg-label-success">Completed</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/mi-tv.png')}}" alt="Xiaomi" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">Mi LED TV 4X</h6>
-                    <small class="text-body">Xiaomi</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-danger rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-tv icon-xs"></i></span> Smart TV
-              </td>
-              <td>
-                <div class="text-body"><span class="text-primary fw-medium">$349</span>/2499</div>
-                <small class="text-body">Partially Paid</small>
-              </td>
-              <td><span class="badge bg-label-primary">Confirmed</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="{{asset('assets/img/products/logitech-mx.png')}}" alt="Logitech" height="32" width="32"
-                    class="me-3" />
-                  <div class="d-flex flex-column">
-                    <h6 class="mb-0">Logitech MX</h6>
-                    <small class="text-body">Logitech</small>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="badge bg-label-warning rounded-pill p-1_5 me-3"><i
-                    class="icon-base bx bx-mouse icon-xs"></i></span> Mouse
-              </td>
-              <td>
-                <div><span class="text-primary fw-medium">$89</span></div>
-                <small class="text-body">Fully Paid</small>
-              </td>
-              <td><span class="badge bg-label-primary">Completed</span></td>
-              <td>
-                <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-edit-alt me-1"></i>
-                      View Details</a>
-                    <a class="dropdown-item" href="javascript:void(0);"><i class="icon-base bx bx-trash me-1"></i>
-                      Delete</a>
-                  </div>
-                </div>
-              </td>
-            </tr>
+            @endforeach
           </tbody>
         </table>
       </div>

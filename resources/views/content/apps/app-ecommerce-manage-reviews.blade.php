@@ -29,11 +29,11 @@
     <div class="card h-100">
       <div class="card-body row widget-separator g-0">
         <div class="col-sm-5 border-shift border-end pe-sm-6">
-          <h3 class="text-primary d-flex align-items-center gap-2 mb-2">4.89<i
+          <h3 class="text-primary d-flex align-items-center gap-2 mb-2">{{ $avgRating }}<i
               class="icon-base bx bxs-star icon-30px"></i></h3>
-          <p class="h6 mb-2">Total 187 reviews</p>
+          <p class="h6 mb-2">Total {{ $totalReviews }} reviews</p>
           <p class="pe-2 mb-2">All reviews are from genuine customers</p>
-          <span class="badge bg-label-primary mb-4 mb-sm-0">+5 This week</span>
+          <span class="badge bg-label-primary mb-4 mb-sm-0">+{{ $thisWeek }} This week</span>
           <hr class="d-sm-none" />
         </div>
 
@@ -41,42 +41,37 @@
           <div class="d-flex align-items-center gap-2">
             <small>5 Star</small>
             <div class="progress w-100 bg-label-primary" style="height:8px;">
-              <div class="progress-bar bg-primary" role="progressbar" style="width: 85%" aria-valuenow="61.50"
-                aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $totalReviews > 0 ? round($starCounts[5]/$totalReviews*100) : 0 }}%" aria-valuenow="{{ $starCounts[5] }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <small class="w-px-20 text-end">124</small>
+            <small class="w-px-20 text-end">{{ $starCounts[5] }}</small>
           </div>
           <div class="d-flex align-items-center gap-2">
             <small>4 Star</small>
             <div class="progress w-100 bg-label-primary" style="height:8px;">
-              <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="24"
-                aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $totalReviews > 0 ? round($starCounts[4]/$totalReviews*100) : 0 }}%" aria-valuenow="{{ $starCounts[4] }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <small class="w-px-20 text-end">40</small>
+            <small class="w-px-20 text-end">{{ $starCounts[4] }}</small>
           </div>
           <div class="d-flex align-items-center gap-2">
             <small>3 Star</small>
             <div class="progress w-100 bg-label-primary" style="height:8px;">
-              <div class="progress-bar bg-primary" role="progressbar" style="width: 35%" aria-valuenow="12"
-                aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $totalReviews > 0 ? round($starCounts[3]/$totalReviews*100) : 0 }}%" aria-valuenow="{{ $starCounts[3] }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <small class="w-px-20 text-end">12</small>
+            <small class="w-px-20 text-end">{{ $starCounts[3] }}</small>
           </div>
           <div class="d-flex align-items-center gap-2">
             <small>2 Star</small>
             <div class="progress w-100 bg-label-primary" style="height:8px;">
-              <div class="progress-bar bg-primary" role="progressbar" style="width: 18%" aria-valuenow="7"
-                aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $totalReviews > 0 ? round($starCounts[2]/$totalReviews*100) : 0 }}%" aria-valuenow="{{ $starCounts[2] }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <small class="w-px-20 text-end">7</small>
+            <small class="w-px-20 text-end">{{ $starCounts[2] }}</small>
           </div>
           <div class="d-flex align-items-center gap-2">
             <small>1 Star</small>
             <div class="progress w-100 bg-label-primary" style="height:8px;">
-              <div class="progress-bar bg-primary" role="progressbar" style="width: 10%" aria-valuenow="2"
-                aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $totalReviews > 0 ? round($starCounts[1]/$totalReviews*100) : 0 }}%" aria-valuenow="{{ $starCounts[1] }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <small class="w-px-20 text-end">2</small>
+            <small class="w-px-20 text-end">{{ $starCounts[1] }}</small>
           </div>
         </div>
       </div>
@@ -88,12 +83,12 @@
         <div class="col-sm-5">
           <div class="mb-12">
             <h5 class="mb-2 text-nowrap">Reviews statistics</h5>
-            <p class="mb-0"><span class="me-2">12 New reviews</span> <span class="badge bg-label-success">+8.4%</span>
+            <p class="mb-0"><span class="me-2">{{ $newThisMonth }} New reviews</span> <span class="badge bg-label-success">+{{ $positivePercent }}%</span>
             </p>
           </div>
 
           <div>
-            <h6 class="mb-2 fw-normal"><span class="text-success me-1">87%</span>Positive reviews</h6>
+            <h6 class="mb-2 fw-normal"><span class="text-success me-1">{{ $positivePercent }}%</span>Positive reviews</h6>
             <small>Weekly Report</small>
           </div>
         </div>

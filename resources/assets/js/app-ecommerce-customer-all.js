@@ -5,6 +5,8 @@
 'use strict';
 
 // Datatable (js)
+let dt_customer;
+
 document.addEventListener('DOMContentLoaded', function (e) {
   let borderColor, bodyBg, headingColor;
 
@@ -26,8 +28,18 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   // customers datatable
   if (dt_customer_table) {
-    var dt_customer = new DataTable(dt_customer_table, {
-      ajax: assetsPath + 'json/ecommerce-customer-all.json', // JSON file to add data
+    dt_customer = new DataTable(dt_customer_table, {
+      ajax: {
+        url: baseUrl + 'app/ecommerce/customer/all',
+        data: function (d) {
+          const dateRange = $('#dateRange').val();
+          if (dateRange && dateRange.includes(' to ')) {
+            const dates = dateRange.split(' to ');
+            d.start_date = dates[0];
+            d.end_date = dates[1];
+          }
+        }
+      },
       columns: [
         // columns according to JSON
         { data: '' },
@@ -36,7 +48,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'customer_id' },
         { data: 'country' },
         { data: 'order' },
-        { data: 'total_spent' }
+        { data: 'total_spent' },
+        { data: 'id' }
       ],
       columnDefs: [
         {
@@ -94,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <div class="avatar avatar-sm me-3">${output}</div>
                 </div>
                 <div class="d-flex flex-column">
-                  <a href="${customerView}" class="text-heading"><span class="fw-medium">${name}</span></a>
+                  <a href="${customerView}/${full['id']}" class="text-heading"><span class="fw-medium">${name}</span></a>
                   <small>${email}</small>
                 </div>
               </div>`;
@@ -145,8 +158,100 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
             return '<span class="fw-medium text-heading">' + spent + '</span>';
           }
+        },
+        {
+          // Actions
+          targets: -1,
+          title: 'Actions',
+          searchable: false,
+          orderable: false,
+          render: function (data, type, full, meta) {
+            let id = full['id'];
+            return `
+              <div class="d-flex align-items-sm-center justify-content-sm-center">
+                <a href="${customerView}/${id}" class="btn btn-icon"><i class="icon-base bx bx-show icon-md text-primary"></i></a>
+                <button class="btn btn-icon edit-record" data-id="${id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEcommerceCustomerAdd"><i class="icon-base bx bx-edit icon-md"></i></button>
+                <button class="btn btn-icon delete-record" data-id="${id}"><i class="icon-base bx bx-trash icon-md text-danger"></i></button>
+              </div>
+            `;
+          }
         }
       ],
+      drawCallback: function (settings) {
+        // Handle Edit Record
+        $('.edit-record').off('click').on('click', function () {
+          const id = $(this).data('id');
+          const rowData = dt_customer.row($(this).closest('tr')).data();
+          
+          // Populate Form
+          $('#offcanvasEcommerceCustomerAddLabel').html('Edit Customer');
+          $('#customerId').val(rowData.id);
+          $('#ecommerce-customer-add-name').val(rowData.customer);
+          $('#ecommerce-customer-add-email').val(rowData.email);
+          $('#ecommerce-customer-add-contact').val(rowData.phone);
+          $('#ecommerce-customer-add-address').val(rowData.address_line_1);
+          $('#ecommerce-customer-add-address-2').val(rowData.address_line_2);
+          $('#ecommerce-customer-add-town').val(rowData.town);
+          $('#ecommerce-customer-add-state').val(rowData.state);
+          $('#ecommerce-customer-add-post-code').val(rowData.post_code);
+          $('#ecommerce-customer-add-country').val(rowData.country).trigger('change');
+          
+          // Trigger validation to clear any errors
+          if (typeof fv !== 'undefined') fv.resetForm();
+          
+          // Change form submit button text
+          $('#eCommerceCustomerAddForm').find('button[type="submit"]').html('Update');
+        });
+
+        // Handle Delete Record
+        $('.delete-record').off('click').on('click', function () {
+          const id = $(this).data('id');
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/ecommerce/customer/${id}`,
+                type: 'DELETE',
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (result) {
+                  dt_customer.ajax.reload();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: result.message,
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                },
+                error: function (error) {
+                  console.log(error);
+                  Swal.fire({
+                    title: 'Error!',
+                    text: 'Error deleting customer',
+                    icon: 'error',
+                    customClass: {
+                      confirmButton: 'btn btn-primary'
+                    }
+                  });
+                }
+              });
+            }
+          });
+        });
+      },
       select: {
         style: 'multi',
         selector: 'td:nth-child(2)'
@@ -387,6 +492,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   attr: {
                     'data-bs-toggle': 'offcanvas',
                     'data-bs-target': '#offcanvasEcommerceCustomerAdd'
+                  },
+                  action: function (e, dt, node, config) {
+                    // Reset Form for New Customer
+                    $('#offcanvasEcommerceCustomerAddLabel').html('Add Customer');
+                    $('#customerId').val('');
+                    $('#eCommerceCustomerAddForm')[0].reset();
+                    $('#eCommerceCustomerAddForm').find('button[type="submit"]').html('Add');
+                    if (typeof fv !== 'undefined') fv.resetForm();
+                    
+                    // Open Offcanvas
+                    const offCanvasElement = document.querySelector('#offcanvasEcommerceCustomerAdd');
+                    const offCanvasInstance = bootstrap.Offcanvas.getInstance(offCanvasElement) || new bootstrap.Offcanvas(offCanvasElement);
+                    offCanvasInstance.show();
                   }
                 }
               ]
@@ -475,6 +593,22 @@ document.addEventListener('DOMContentLoaded', function (e) {
       });
     });
   }, 100);
+
+  // Initialize Flatpickr
+  const dateRangeInput = document.querySelector('#dateRange');
+  if (dateRangeInput) {
+    flatpickr(dateRangeInput, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      onChange: function (selectedDates, dateStr, instance) {
+        if (selectedDates.length === 2) {
+          if (typeof dt_customer !== 'undefined') {
+            dt_customer.ajax.reload();
+          }
+        }
+      }
+    });
+  }
 });
 
 // Validation & Phone mask
@@ -534,5 +668,52 @@ document.addEventListener('DOMContentLoaded', function (e) {
       // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
       autoFocus: new FormValidation.plugins.AutoFocus()
     }
+  }).on('core.form.valid', function() {
+    const id = $('#customerId').val();
+    const url = id ? `${baseUrl}app/ecommerce/customer/${id}` : `${baseUrl}app/ecommerce/customer`;
+    const method = id ? 'PUT' : 'POST';
+
+    $.ajax({
+      url: url,
+      type: method,
+      data: $('#eCommerceCustomerAddForm').serialize(),
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(result) {
+        // Reset form and offcanvas
+        const offCanvasElement = document.querySelector('#offcanvasEcommerceCustomerAdd');
+        const offCanvasInstance = bootstrap.Offcanvas.getInstance(offCanvasElement);
+        offCanvasInstance.hide();
+        $('#eCommerceCustomerAddForm')[0].reset();
+        $('#customerId').val('');
+        
+        // Reload DataTable
+        if (typeof dt_customer !== 'undefined') {
+          dt_customer.ajax.reload();
+        }
+        
+        // Success message
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: result.message,
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
+      },
+      error: function(error) {
+        console.log(error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error saving customer',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary'
+          }
+        });
+      }
+    });
   });
 })();

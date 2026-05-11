@@ -1,0 +1,22 @@
+{
+    "menu": [
+        {
+            "label": "Chart of Accounts",
+            "icon": "bx bx-store-alt",
+            "url": "/accounting/chart-of-accounts",
+            "identifier": "chart_of_accounts"
+        },
+        {
+            "label": "Sub Category",
+            "icon": "bx bx-credit-card",
+            "url": "/accounting/subcategory",
+            "identifier": "sub_category"
+        },
+        {
+            "label": "Prefix Journal",
+            "icon": "bx bx-credit-card",
+            "url": "/accounting/prefix",
+            "identifier": "prefix_journal"
+        }
+    ]
+}

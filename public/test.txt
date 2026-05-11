@@ -1,0 +1,1 @@
+\Modules\TestModuleTwo\app\Http\Controllers\MenuController

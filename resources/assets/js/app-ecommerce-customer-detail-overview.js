@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     tableTitle.classList.add('card-title', 'mb-0');
     tableTitle.innerHTML = 'Orders placed';
     var dt_order = new DataTable(dt_customer_order, {
-      ajax: assetsPath + 'json/ecommerce-customer-order.json', // JSON file to add data
+      ajax: baseUrl + 'app/ecommerce/customer/details/overview/' + window.location.pathname.split('/').filter(Boolean).pop(),
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -48,9 +48,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
           targets: 1,
           responsivePriority: 4,
           render: function (data, type, full, meta) {
-            const id = full['order'];
+            const orderNumber = full['order'];
+            const orderId = full['id'];
 
-            return "<a href='" + order_details + "'><span>#" + id + '</span></a>';
+            return "<a href='" + order_details + "/" + orderId + "'><span>#" + orderNumber + '</span></a>';
           }
         },
         {

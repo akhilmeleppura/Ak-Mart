@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     tableTitle.classList.add('card-title', 'mb-0', 'text-md-start', 'text-center');
     tableTitle.innerHTML = 'Referred users';
     var dt_user = new DataTable(dt_user_table, {
-      ajax: assetsPath + 'json/ecommerce-referral.json', // JSON file to add data
+      ajax: baseUrl + 'app/ecommerce/referrals',
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'referred_id' },
         { data: 'status' },
         { data: 'value' },
-        { data: 'earning' }
+        { data: 'earnings' }
       ],
       columnDefs: [
         {
@@ -115,14 +115,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           targets: 4,
           render: function (data, type, full, meta) {
             let status = full['status'];
-
-            return (
-              '<span class="badge ' +
-              statusObj[status].class +
-              '" text-capitalized>' +
-              statusObj[status].title +
-              '</span>'
-            );
+            const statusMap = {
+              'Active':   'bg-label-success',
+              'Inactive': 'bg-label-warning',
+              'Pending':  'bg-label-danger'
+            };
+            const cls = statusMap[status] || 'bg-label-secondary';
+            return `<span class="badge ${cls}">${status}</span>`;
           }
         },
         {

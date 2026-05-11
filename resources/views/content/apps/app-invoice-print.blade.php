@@ -23,14 +23,10 @@
         <p class="mb-0">+1 (123) 456 7891, +44 (876) 543 2198</p>
       </div>
       <div>
-        <h5 class="mb-6">INVOICE #86423</h5>
+        <h5 class="mb-6">INVOICE #{{ ltrim($order->order_number, 'ORD-') }}</h5>
         <div class="mb-1">
           <span>Date Issues:</span>
-          <span>April 25, 2021</span>
-        </div>
-        <div>
-          <span>Date Due:</span>
-          <span>May 25, 2021</span>
+          <span>{{ $order->created_at->format('M d, Y') }}</span>
         </div>
       </div>
     </div>
@@ -40,38 +36,14 @@
     <div class="row d-flex justify-content-between mb-6">
       <div class="col-sm-6 w-50">
         <h6>Invoice To:</h6>
-        <p class="mb-1">Thomas shelby</p>
-        <p class="mb-1">Shelby Company Limited</p>
-        <p class="mb-1">Small Heath, B10 0HF, UK</p>
-        <p class="mb-1">718-986-6062</p>
-        <p class="mb-0">peakyFBlinders@gmail.com</p>
+        <p class="mb-1">{{ $order->customer->name ?? 'Guest Customer' }}</p>
+        <p class="mb-1">{{ $order->customer->email ?? '' }}</p>
+        <p class="mb-1">{!! nl2br(e($order->shipping_address)) !!}</p>
       </div>
-      <div class="col-sm-6 w-50">
+      <div class="col-sm-6 w-50 text-end">
         <h6>Bill To:</h6>
-        <table>
-          <tbody>
-            <tr>
-              <td class="pe-4">Total Due:</td>
-              <td>$12,110.55</td>
-            </tr>
-            <tr>
-              <td class="pe-4">Bank name:</td>
-              <td>American Bank</td>
-            </tr>
-            <tr>
-              <td class="pe-4">Country:</td>
-              <td>United States</td>
-            </tr>
-            <tr>
-              <td class="pe-4">IBAN:</td>
-              <td>ETD95476213874685</td>
-            </tr>
-            <tr>
-              <td class="pe-4">SWIFT code:</td>
-              <td>BR91905</td>
-            </tr>
-          </tbody>
-        </table>
+        <p class="mb-1">{!! nl2br(e($order->billing_address)) !!}</p>
+        <p class="mb-0">Payment Method: {{ ucfirst($order->payment_method) }}</p>
       </div>
     </div>
 
@@ -87,34 +59,15 @@
           </tr>
         </thead>
         <tbody>
+          @foreach($order->items as $item)
           <tr>
-            <td>Vuexy Admin Template</td>
-            <td>HTML Admin Template</td>
-            <td>$32</td>
-            <td>1</td>
-            <td>$32.00</td>
+            <td>{{ $item->product_name }}</td>
+            <td>{{ $item->product?->category?->name ?? 'Product' }}</td>
+            <td>${{ number_format($item->price, 2) }}</td>
+            <td>{{ $item->qty }}</td>
+            <td>${{ number_format($item->price * $item->qty, 2) }}</td>
           </tr>
-          <tr>
-            <td>Frest Admin Template</td>
-            <td>Angular Admin Template</td>
-            <td>$22</td>
-            <td>1</td>
-            <td>$22.00</td>
-          </tr>
-          <tr>
-            <td>Apex Admin Template</td>
-            <td>HTML Admin Template</td>
-            <td>$17</td>
-            <td>2</td>
-            <td>$34.00</td>
-          </tr>
-          <tr>
-            <td>Robust Admin Template</td>
-            <td>React Admin Template</td>
-            <td>$66</td>
-            <td>1</td>
-            <td>$66.00</td>
-          </tr>
+          @endforeach
         </tbody>
       </table>
     </div>
@@ -124,8 +77,8 @@
           <tr>
             <td class="align-top px-6 py-6">
               <p class="mb-1">
-                <span class="me-2 fw-medium">Salesperson:</span>
-                <span>Alfie Solomons</span>
+                <span class="me-2 fw-medium">Order Status:</span>
+                <span>{{ ucfirst($order->order_status) }}</span>
               </p>
               <span>Thanks for your business</span>
             </td>
@@ -136,10 +89,10 @@
               <p class="mb-0 pt-2">Total:</p>
             </td>
             <td class="text-end px-0 py-6 w-px-100">
-              <p class="fw-medium mb-2">$154.25</p>
-              <p class="fw-medium mb-2">$00.00</p>
-              <p class="fw-medium mb-2 border-bottom pb-2">$50.00</p>
-              <p class="fw-medium mb-0 pt-2">$204.25</p>
+              <p class="fw-medium mb-2">${{ number_format($order->total_amount, 2) }}</p>
+              <p class="fw-medium mb-2">$0.00</p>
+              <p class="fw-medium mb-2 border-bottom pb-2">$0.00</p>
+              <p class="fw-medium mb-0 pt-2">${{ number_format($order->total_amount, 2) }}</p>
             </td>
           </tr>
         </tbody>

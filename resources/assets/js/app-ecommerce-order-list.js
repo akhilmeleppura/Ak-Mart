@@ -33,7 +33,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   if (dt_order_table) {
     const dt_products = new DataTable(dt_order_table, {
-      ajax: assetsPath + 'json/ecommerce-customer-order.json', // JSON file to add data
+      ajax: {
+        url: baseUrl + 'app/ecommerce/order/list',
+        data: function (d) {
+          const dateRange = $('#dateRange').val();
+          if (dateRange && dateRange.includes(' to ')) {
+            const dates = dateRange.split(' to ');
+            d.start_date = dates[0];
+            d.end_date = dates[1];
+          }
+        }
+      },
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -79,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             const order_id = full['order'];
             // Creates full output for row
             const row_output =
-              '<a href=" ' + baseUrl + 'app/ecommerce/order/details"><span>#' + order_id + '</span></a>';
+              '<a href=" ' + baseUrl + 'app/ecommerce/order/details/' + full['id'] + '"><span>#' + order_id + '</span></a>';
             return row_output;
           }
         },
@@ -192,13 +202,57 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <i class="icon-base bx bx-dots-vertical-rounded icon-md"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="${baseUrl}app/ecommerce/order/details" class="dropdown-item">View</a>
-                  <a href="javascript:void(0);" class="dropdown-item delete-record">Delete</a>
+                  <a href="${baseUrl}app/ecommerce/order/details/${full['id']}" class="dropdown-item">View</a>
+                  <div class="dropdown-divider"></div>
+                  <h6 class="dropdown-header">Change Status</h6>
+                  <a href="javascript:void(0);" class="dropdown-item change-status" data-id="${full['id']}" data-status="pending">Pending</a>
+                  <a href="javascript:void(0);" class="dropdown-item change-status" data-id="${full['id']}" data-status="dispatched">Dispatched</a>
+                  <a href="javascript:void(0);" class="dropdown-item change-status" data-id="${full['id']}" data-status="out_for_delivery">Out for Delivery</a>
+                  <a href="javascript:void(0);" class="dropdown-item change-status" data-id="${full['id']}" data-status="delivered">Delivered</a>
+                  <div class="dropdown-divider"></div>
+                  <a href="javascript:void(0);" class="dropdown-item delete-record text-danger">Delete</a>
                 </div>
               </div>`;
           }
         }
       ],
+      drawCallback: function (settings) {
+        // Handle Change Status
+        $('.change-status').off('click').on('click', function () {
+          const id = $(this).data('id');
+          const status = $(this).data('status');
+          $.ajax({
+            url: `${baseUrl}app/ecommerce/order/${id}/status`,
+            type: 'PATCH',
+            data: { status: status },
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (result) {
+              dt_products.ajax.reload();
+              Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: result.message,
+                customClass: {
+                  confirmButton: 'btn btn-success'
+                }
+              });
+            },
+            error: function (error) {
+              console.log(error);
+              Swal.fire({
+                title: 'Error!',
+                text: 'Error updating status',
+                icon: 'error',
+                customClass: {
+                  confirmButton: 'btn btn-primary'
+                }
+              });
+            }
+          });
+        });
+      },
       select: {
         style: 'multi',
         selector: 'td:nth-child(2)'
@@ -414,12 +468,59 @@ document.addEventListener('DOMContentLoaded', function (e) {
     //? The 'delete-record' class is necessary for the functionality of the following code.
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('delete-record')) {
-        dt_products.row(e.target.closest('tr')).remove().draw();
-        const modalEl = document.querySelector('.dtr-bs-modal');
-        if (modalEl && modalEl.classList.contains('show')) {
-          const modal = bootstrap.Modal.getInstance(modalEl);
-          modal?.hide();
-        }
+        const row = e.target.closest('tr');
+        const data = dt_products.row(row).data();
+        const id = data.id;
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          customClass: {
+            confirmButton: 'btn btn-primary me-3',
+            cancelButton: 'btn btn-label-secondary'
+          },
+          buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+            $.ajax({
+              url: `${baseUrl}app/ecommerce/order/${id}`,
+              type: 'DELETE',
+              headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              success: function (result) {
+                dt_products.row(row).remove().draw();
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Deleted!',
+                  text: result.message,
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                });
+                const modalEl = document.querySelector('.dtr-bs-modal');
+                if (modalEl && modalEl.classList.contains('show')) {
+                  const modal = bootstrap.Modal.getInstance(modalEl);
+                  modal?.hide();
+                }
+              },
+              error: function (error) {
+                console.log(error);
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Error deleting order',
+                  icon: 'error',
+                  customClass: {
+                    confirmButton: 'btn btn-primary'
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
   }
@@ -457,5 +558,23 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
       });
     });
+
+  // Initialize Flatpickr
+  const dateRangeInput = document.querySelector('#dateRange');
+  if (dateRangeInput) {
+    const fp = flatpickr(dateRangeInput, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      onChange: function (selectedDates, dateStr, instance) {
+        if (selectedDates.length === 2) {
+          if (typeof dt_products !== 'undefined') {
+            dt_products.ajax.reload();
+          } else if ($('.datatables-order').DataTable()) {
+             $('.datatables-order').DataTable().ajax.reload();
+          }
+        }
+      }
+    });
+  }
   }, 100);
 });

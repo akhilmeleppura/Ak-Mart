@@ -41,7 +41,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   if (dt_product_table) {
     var dt_products = new DataTable(dt_product_table, {
-      ajax: assetsPath + 'json/ecommerce-product-list.json',
+      ajax: {
+        url: baseUrl + 'app/ecommerce/product/list',
+        data: function (d) {
+          const dateRange = $('#dateRange').val();
+          if (dateRange && dateRange.includes(' to ')) {
+            const dates = dateRange.split(' to ');
+            d.start_date = dates[0];
+            d.end_date = dates[1];
+          }
+        }
+      },
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -52,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'sku' },
         { data: 'price' },
         { data: 'quantity' },
+        { data: 'branch_name' },
         { data: 'status' },
         { data: 'id' }
       ],
@@ -125,39 +136,30 @@ document.addEventListener('DOMContentLoaded', function (e) {
           targets: 3,
           responsivePriority: 5,
           render: function (data, type, full, meta) {
-            let category = categoryObj[full['category']].title;
+            let category = full['category'];
 
             if (type === 'display') {
               let categoryBadgeObj = {
-                Household: `
-                  <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-4">
-                    <i class="icon-base bx bx-briefcase icon-18px"></i>
-                  </span>`,
-                Office: `
-                  <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-info me-4">
-                    <i class="icon-base bx bx-home-smile icon-18px"></i>
-                </span>`,
-                Electronics: `
-                <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-danger me-4">
-                  <i class="icon-base bx bx-headphone icon-18px"></i>
-                </span>`,
-                Shoes: `
-                <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-success me-4">
-                  <i class="icon-base bx bx-walk icon-18px"></i>
-                </span>`,
-                Accessories: `
-                <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-secondary me-4">
-                  <i class="icon-base bx bxs-watch icon-18px"></i>
-                </span>`,
-                Game: `
-                <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-primary me-4">
-                  <i class="icon-base bx bx-laptop icon-18px"></i>
-                  </span>`
+                Household: 'bx-briefcase',
+                Office: 'bx-home-smile',
+                Electronics: 'bx-headphone',
+                Shoes: 'bx-walk',
+                Accessories: 'bxs-watch',
+                Game: 'bx-laptop',
+                Computer: 'bx-laptop',
+                Mobile: 'bx-mobile-alt',
+                Fashion: 'bx-closet'
               };
+              
+              let icon = categoryBadgeObj[category] || 'bx-cube';
+              let state = ['warning', 'info', 'danger', 'success', 'secondary', 'primary'][Math.floor(Math.random() * 6)];
 
               return `
                 <span class="text-truncate d-flex align-items-center text-heading">
-                  ${categoryBadgeObj[category] || ''}${category}
+                  <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-${state} me-4">
+                    <i class="icon-base bx ${icon} icon-18px"></i>
+                  </span>
+                  ${category}
                 </span>`;
             } else {
               return category;
@@ -229,8 +231,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
+          // Branch
+          targets: 8,
+          render: function (data, type, full, meta) {
+            const branch = full['branch_name'];
+            return '<span class="text-nowrap">' + branch + '</span>';
+          }
+        },
+        {
           // Status
-          targets: -2,
+          targets: 9,
           render: function (data, type, full, meta) {
             const status = full['status'];
 
@@ -244,26 +254,72 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          targets: -1,
+          targets: 10,
           title: 'Actions',
           searchable: false,
           orderable: false,
+          responsivePriority: 1,
           render: function (data, type, full, meta) {
+            let id = full['id'];
             return `
               <div class="d-inline-block text-nowrap">
-                <button class="btn btn-icon"><i class="icon-base bx bx-edit icon-md"></i></button>
-                <button class="btn btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                  <i class="icon-base bx bx-dots-vertical-rounded icon-md"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item">View</a>
-                  <a href="javascript:void(0);" class="dropdown-item">Suspend</a>
-                </div>
+                <a href="${baseUrl}app/ecommerce/product/edit/${id}" class="btn btn-icon"><i class="icon-base bx bx-edit icon-md"></i></a>
+                <button class="btn btn-icon delete-record" data-id="${id}"><i class="icon-base bx bx-trash icon-md text-danger"></i></button>
               </div>
             `;
           }
         }
       ],
+      drawCallback: function (settings) {
+        // Handle Delete Record
+        $('.delete-record').off('click').on('click', function () {
+          const id = $(this).data('id');
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/ecommerce/product/${id}`,
+                type: 'DELETE',
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (result) {
+                  dt_products.ajax.reload();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: result.message,
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                },
+                error: function (error) {
+                  console.log(error);
+                  Swal.fire({
+                    title: 'Error!',
+                    text: 'Error deleting product',
+                    icon: 'error',
+                    customClass: {
+                      confirmButton: 'btn btn-primary'
+                    }
+                  });
+                }
+              });
+            }
+          });
+        });
+      },
       select: {
         style: 'multi',
         selector: 'td:nth-child(2)'
@@ -611,8 +667,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .sort()
             .each(function (d) {
               const option = document.createElement('option');
-              option.value = categoryObj[d].title;
-              option.textContent = categoryObj[d].title;
+              option.value = d;
+              option.textContent = d;
               select.appendChild(option);
             });
         });
@@ -678,4 +734,20 @@ document.addEventListener('DOMContentLoaded', function (e) {
       });
     });
   }, 100);
+
+  // Initialize Flatpickr
+  const dateRangeInput = document.querySelector('#dateRange');
+  if (dateRangeInput) {
+    flatpickr(dateRangeInput, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      onChange: function (selectedDates, dateStr, instance) {
+        if (selectedDates.length === 2) {
+          if (typeof dt_products !== 'undefined') {
+            dt_products.ajax.reload();
+          }
+        }
+      }
+    });
+  }
 });

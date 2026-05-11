@@ -15,6 +15,14 @@
 @endsection
 
 @section('content')
+@if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <i class="icon-base bx bx-check-circle me-1"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+<form method="POST" action="{{ route('app-ecommerce-settings-details-save') }}">
+@csrf
 <div class="row g-6">
   <!-- Navigation -->
   <div class="col-12 col-lg-4">
@@ -75,22 +83,32 @@
             <div class="row mb-6 g-6">
               <div class="col-12 col-md-6">
                 <label class="form-label mb-1" for="ecommerce-settings-details-name">Store Name</label>
-                <input type="text" class="form-control" id="ecommerce-settings-details-name" placeholder="John Doe"
-                  name="settingsDet" aria-label="settings Details" />
+                <input type="text" class="form-control" id="ecommerce-settings-details-name" placeholder="My Store"
+                  name="store_name" value="{{ $settings['store_name'] ?? '' }}" aria-label="Store Name" />
               </div>
 
               <div class="col-12 col-md-6"><label class="form-label mb-1"
                   for="ecommerce-settings-details-phone">Phone</label> <input type="tel" class="form-control phone-mask"
-                  id="ecommerce-settings-details-phone" placeholder="+(123) 456-7890" name="phone" aria-label="phone" />
+                  id="ecommerce-settings-details-phone" placeholder="+(123) 456-7890" name="store_phone" value="{{ $settings['store_phone'] ?? '' }}" aria-label="phone" />
               </div>
 
               <div class="col-12 col-md-6"><label class="form-label mb-1" for="ecommerce-settings-details-email">Store
                   contact email</label> <input type="email" class="form-control" id="ecommerce-settings-details-email"
-                  placeholder="johndoe@gmail.com" name="email" aria-label="email" /></div>
+                  placeholder="store@example.com" name="store_email" value="{{ $settings['store_email'] ?? '' }}" aria-label="email" /></div>
 
               <div class="col-12 col-md-6"><label class="form-label mb-1" for="ecommerce-settings-sender-email">Sender
                   email</label> <input type="email" class="form-control" id="ecommerce-settings-sender-email"
-                  placeholder="johndoe@gmail.com" name="sender_email" aria-label="sender email" /></div>
+                  placeholder="noreply@example.com" name="sender_email" value="{{ $settings['sender_email'] ?? '' }}" aria-label="sender email" /></div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label mb-1" for="default_branch">Default Branch</label>
+                <select id="default_branch" name="default_branch" class="select2 form-select">
+                  <option value="">Select Branch</option>
+                  @foreach($branches as $branch)
+                  <option value="{{ $branch->id }}" {{ (isset($settings['default_branch']) && $settings['default_branch'] == $branch->id) ? 'selected' : '' }}>{{ $branch->name }}</option>
+                  @endforeach
+                </select>
+              </div>
             </div>
 
             <div class="alert d-flex align-items-center alert-warning mb-0 h5 flex-wrap" role="alert">
@@ -110,7 +128,7 @@
             <div class="row g-6">
               <div class="col-12 col-md-6">
                 <label class="form-label mb-1" for="business-name">Legal business name</label>
-                <input type="text" id="business-name" class="form-control" placeholder="Business name" />
+                <input type="text" id="business-name" name="business_name" class="form-control" placeholder="Business name" value="{{ $settings['business_name'] ?? '' }}" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label mb-1" for="country_region">Country/region</label>
@@ -144,7 +162,7 @@
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label mb-1" for="bill_address">Address</label>
-                <input type="text" id="bill_address" class="form-control" placeholder="Address" />
+                <input type="text" id="bill_address" name="address" class="form-control" placeholder="Address" value="{{ $settings['address'] ?? '' }}" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label mb-1" for="apa_suite">Apartment, suite, etc.</label>
@@ -152,16 +170,16 @@
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="bill_city">City</label>
-                <input type="text" id="bill_city" class="form-control" placeholder="City" />
+                <input type="text" id="bill_city" name="city" class="form-control" placeholder="City" value="{{ $settings['city'] ?? '' }}" />
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="bill_state">State</label>
-                <input type="text" id="bill_state" class="form-control" placeholder="State" />
+                <input type="text" id="bill_state" name="state" class="form-control" placeholder="State" value="{{ $settings['state'] ?? '' }}" />
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="bill_pincode">PIN Code</label>
-                <input type="number" id="bill_pincode" class="form-control" placeholder="PIN Code" min="0"
-                  max="999999" />
+                <input type="number" id="bill_pincode" name="pincode" class="form-control" placeholder="PIN Code" min="0"
+                  max="999999" value="{{ $settings['pincode'] ?? '' }}" />
               </div>
             </div>
           </div>
@@ -260,26 +278,28 @@
                 <label class="form-label mb-1" for="ecommerce-settings-details-prefix">Prefix</label>
                 <div class="input-group input-group-merge">
                   <span class="input-group-text text-body-secondary">#</span>
-                  <input type="number" class="form-control" id="ecommerce-settings-details-prefix" name="prefix"
-                    aria-label="Prefix" min="0" />
+                  <input type="text" class="form-control" id="ecommerce-settings-details-prefix" name="order_prefix"
+                    aria-label="Prefix" value="{{ $settings['order_prefix'] ?? '' }}" />
                 </div>
                 <p class="mb-0 pt-2">Your order ID will appear as #1001, #1002, #1003 ...</p>
               </div>
               <div class="col-12 col-md-6"><label class="form-label mb-1"
                   for="ecommerce-settings-sender-suffix">Suffix</label> <input type="text" class="form-control"
-                  id="ecommerce-settings-sender-suffix" name="suffix" aria-label="Suffix" /></div>
+                  id="ecommerce-settings-sender-suffix" name="order_suffix" aria-label="Suffix" value="{{ $settings['order_suffix'] ?? '' }}" /></div>
             </div>
           </div>
         </div>
 
         <div class="d-flex justify-content-end gap-4">
           <button type="reset" class="btn btn-label-secondary">Discard</button>
-          <a class="btn btn-primary" href="{{ url('/app/ecommerce/settings/payments') }}">Save Changes</a>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </div>
     </div>
   </div>
   <!-- /Options-->
 </div>
+
+</form>
 
 @endsection

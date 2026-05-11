@@ -203,6 +203,11 @@
               "slug": "app-ecommerce-referrals"
             },
             {
+              "url": "app/ecommerce/coupons",
+              "name": "Coupons",
+              "slug": "app-ecommerce-coupon-list"
+            },
+            {
               "name": "Settings",
               "slug": "app-ecommerce-settings",
               "submenu": [

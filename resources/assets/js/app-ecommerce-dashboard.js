@@ -260,10 +260,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
     profitBarChartConfig = {
       series: [
         {
-          data: [73, 56, 56, 100]
+          data: window.dashboardChartData?.profit || [73, 56, 56, 100]
         },
         {
-          data: [61, 42, 74, 72]
+          data: window.dashboardChartData?.expenses || [61, 42, 74, 72]
         }
       ],
       chart: {
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         show: false
       },
       xaxis: {
-        categories: ['Jan', 'Apr', 'Jul', 'Oct'],
+        categories: window.dashboardChartData?.categories || ['Jan', 'Apr', 'Jul', 'Oct'],
         axisBorder: {
           show: false
         },
@@ -501,11 +501,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
       series: [
         {
           name: 'Income',
-          data: [26, 29, 31, 40, 29, 24]
+          data: window.dashboardChartData?.performance || [26, 29, 31, 40, 29, 24]
         },
         {
           name: 'Earning',
-          data: [30, 26, 24, 26, 24, 40]
+          data: window.dashboardChartData?.profit || [30, 26, 24, 26, 24, 40]
         }
       ],
       chart: {
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        categories: window.dashboardChartData?.categories || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         labels: {
           show: true,
           style: {

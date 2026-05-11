@@ -9,12 +9,20 @@
 const commentEditor = document.querySelector('.comment-editor');
 
 if (commentEditor) {
-  new Quill(commentEditor, {
+  var quill = new Quill(commentEditor, {
     modules: {
       toolbar: '.comment-toolbar'
     },
     placeholder: 'Write a Comment...',
     theme: 'snow'
+  });
+
+  // Sync quill to hidden input
+  quill.on('text-change', function() {
+    var hiddenDescription = document.getElementById('hiddenDescription');
+    if(hiddenDescription) {
+        hiddenDescription.value = quill.root.innerHTML;
+    }
   });
 }
 
@@ -39,7 +47,22 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   if (dt_category_list_table) {
     var dt_category = new DataTable(dt_category_list_table, {
-      ajax: assetsPath + 'json/ecommerce-category-list.json', // JSON file to add data
+      ajax: {
+        url: baseUrl + 'app/ecommerce/product/category',
+        data: function (d) {
+          const dateRange = $('#dateRange').val();
+          if (dateRange && dateRange.includes(' to ')) {
+            const dates = dateRange.split(' to ');
+            d.start_date = dates[0];
+            d.end_date = dates[1];
+          }
+          // Get Active Tab for filtering
+          const activeTab = $('.category-filter.active').data('filter');
+          if (activeTab) {
+            d.category_filter = activeTab;
+          }
+        }
+      },
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -103,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 </div>
                 <div class="d-flex flex-column justify-content-center">
                   <span class="text-heading text-wrap fw-medium">${name}</span>
+                  <span class="text-truncate mb-0 d-none d-sm-block text-muted"><small>Parent: ${full['parent_name']}</small></span>
                   <span class="text-truncate mb-0 d-none d-sm-block"><small>${categoryDetail}</small></span>
                 </div>
               </div>`;
@@ -134,21 +158,96 @@ document.addEventListener('DOMContentLoaded', function (e) {
           searchable: false,
           orderable: false,
           render: function (data, type, full, meta) {
+            let id = full['id'];
             return `
               <div class="d-flex align-items-sm-center justify-content-sm-center">
-                <button class="btn btn-icon"><i class="icon-base bx bx-edit icon-md"></i></button>
-                <button class="btn btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                  <i class="icon-base bx bx-dots-vertical-rounded icon-md"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item">View</a>
-                  <a href="javascript:void(0);" class="dropdown-item">Suspend</a>
-                </div>
+                <button class="btn btn-icon edit-record" data-id="${id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEcommerceCategoryList"><i class="icon-base bx bx-edit icon-md"></i></button>
+                <button class="btn btn-icon delete-record" data-id="${id}"><i class="icon-base bx bx-trash icon-md text-danger"></i></button>
               </div>
             `;
           }
         }
       ],
+      drawCallback: function (settings) {
+        // Tab Filtering Logic
+        $('.category-filter').off('click').on('click', function () {
+          $('.category-filter').removeClass('active');
+          $(this).addClass('active');
+          dt_category.ajax.reload();
+        });
+
+        // Handle Edit Record
+        $('.edit-record').off('click').on('click', function () {
+          const id = $(this).data('id');
+          const rowData = dt_category.row($(this).closest('tr')).data();
+          
+          // Populate Form
+          $('#offcanvasEcommerceCategoryListLabel').html('Edit Category');
+          $('.add-new.btn-primary').html('Save Changes');
+          $('#categoryId').val(rowData.id);
+          $('#ecommerce-category-title').val(rowData.categories);
+          $('#ecommerce-category-slug').val(rowData.slug);
+          $('#ecommerce-category-parent-category').val(rowData.parent_id).trigger('change');
+          if (quill) quill.root.innerHTML = rowData.category_detail;
+          
+          // Change form action and method
+          const form = $('#eCommerceCategoryListForm');
+          form.attr('action', `${baseUrl}app/ecommerce/product/category/${rowData.id}`);
+          $('#formMethod').val('PUT');
+          
+          // Update button text
+          form.find('button[type="submit"]').html('Update');
+        });
+
+        // Handle Delete Record
+        $('.delete-record').off('click').on('click', function () {
+          const id = $(this).data('id');
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/ecommerce/product/category/${id}`,
+                type: 'DELETE',
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (result) {
+                  dt_category.ajax.reload();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: result.message,
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                },
+                error: function (error) {
+                  console.log(error);
+                  Swal.fire({
+                    title: 'Error!',
+                    text: 'Error deleting category',
+                    icon: 'error',
+                    customClass: {
+                      confirmButton: 'btn btn-primary'
+                    }
+                  });
+                }
+              });
+            }
+          });
+        });
+      },
       select: {
         style: 'multi',
         selector: 'td:nth-child(2)'
@@ -175,11 +274,65 @@ document.addEventListener('DOMContentLoaded', function (e) {
             },
             buttons: [
               {
+                extend: 'collection',
+                className: 'btn btn-label-secondary dropdown-toggle me-3',
+                text: '<span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export icon-xs"></i> <span class="d-none d-sm-inline-block">Export</span></span>',
+                buttons: [
+                  {
+                    extend: 'print',
+                    text: `<i class="icon-base bx bx-printer me-2"></i>Print`,
+                    className: 'dropdown-item',
+                    exportOptions: { columns: [2, 3, 4] }
+                  },
+                  {
+                    extend: 'csv',
+                    text: `<i class="icon-base bx bx-file me-2"></i>Csv`,
+                    className: 'dropdown-item',
+                    exportOptions: { columns: [2, 3, 4] }
+                  },
+                  {
+                    extend: 'excel',
+                    text: `<i class="icon-base bx bxs-file-export me-2"></i>Excel`,
+                    className: 'dropdown-item',
+                    exportOptions: { columns: [2, 3, 4] }
+                  },
+                  {
+                    extend: 'pdf',
+                    text: `<i class="icon-base bx bxs-file-pdf me-2"></i>Pdf`,
+                    className: 'dropdown-item',
+                    exportOptions: { columns: [2, 3, 4] }
+                  },
+                  {
+                    extend: 'copy',
+                    text: `<i class="icon-base bx bx-copy me-2"></i>Copy`,
+                    className: 'dropdown-item',
+                    exportOptions: { columns: [2, 3, 4] }
+                  }
+                ]
+              },
+              {
                 text: `<i class="icon-base bx bx-plus icon-sm me-0 me-sm-2"></i><span class="d-none d-sm-inline-block">Add Category</span>`,
                 className: 'add-new btn btn-primary',
                 attr: {
                   'data-bs-toggle': 'offcanvas',
                   'data-bs-target': '#offcanvasEcommerceCategoryList'
+                },
+                action: function (e, dt, node, config) {
+                  // Reset Form for New Category
+                  $('#offcanvasEcommerceCategoryListLabel').html('Add Category');
+                  const form = $('#eCommerceCategoryListForm');
+                  form.attr('action', `${baseUrl}app/ecommerce/product/category`);
+                  $('#formMethod').val('POST');
+                  $('#categoryId').val('');
+                  form[0].reset();
+                  $('#ecommerce-category-parent-category').val('').trigger('change');
+                  if (quill) quill.root.innerHTML = '';
+                  form.find('button[type="submit"]').html('Add');
+                  
+                  // Open Offcanvas
+                  const offCanvasElement = document.querySelector('#offcanvasEcommerceCategoryList');
+                  const offCanvasInstance = bootstrap.Offcanvas.getInstance(offCanvasElement) || new bootstrap.Offcanvas(offCanvasElement);
+                  offCanvasInstance.show();
                 }
               }
             ]
@@ -264,6 +417,22 @@ document.addEventListener('DOMContentLoaded', function (e) {
       });
     });
   }, 100);
+
+  // Initialize Flatpickr
+  const dateRangeInput = document.querySelector('#dateRange');
+  if (dateRangeInput) {
+    flatpickr(dateRangeInput, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      onChange: function (selectedDates, dateStr, instance) {
+        if (selectedDates.length === 2) {
+          if (typeof dt_category !== 'undefined') {
+            dt_category.ajax.reload();
+          }
+        }
+      }
+    });
+  }
 });
 
 //For form validation
@@ -300,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
       }),
       submitButton: new FormValidation.plugins.SubmitButton(),
       // Submit the form when all fields are valid
-      // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+      defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
       autoFocus: new FormValidation.plugins.AutoFocus()
     }
   });

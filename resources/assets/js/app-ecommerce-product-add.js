@@ -48,12 +48,37 @@
   const dropzoneBasic = document.querySelector('#dropzone-basic');
   if (dropzoneBasic) {
     const myDropzone = new Dropzone(dropzoneBasic, {
+      url: baseUrl + 'app/ecommerce/media/upload',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
       previewTemplate: previewTemplate,
       parallelUploads: 1,
       maxFilesize: 5,
       acceptedFiles: '.jpg,.jpeg,.png,.gif',
       addRemoveLinks: true,
-      maxFiles: 1
+      maxFiles: 1,
+      init: function () {
+        this.on('success', function (file, response) {
+          if (response.success) {
+            document.querySelector('#productImage').value = response.filename;
+          }
+        });
+        this.on('removedfile', function (file) {
+          const filename = document.querySelector('#productImage').value;
+          if (filename) {
+            $.ajax({
+              url: baseUrl + 'app/ecommerce/media/delete',
+              type: 'DELETE',
+              data: { filename: filename },
+              headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+              }
+            });
+            document.querySelector('#productImage').value = '';
+          }
+        });
+      }
     });
   }
 
@@ -135,4 +160,87 @@ $(function () {
       }
     });
   }
+
+  // Variants logic
+  const variantsContainer = $('#variants-container');
+  const addVariantBtn = $('#add-variant');
+  let variantIndex = $('.variant-row').length;
+
+  if (addVariantBtn.length) {
+    addVariantBtn.on('click', function() {
+      const html = `
+        <div class="variant-row row mb-4 border-bottom pb-4">
+          <div class="col-md-3">
+            <label class="form-label">Attribute</label>
+            <input type="text" name="variants[${variantIndex}][name]" class="form-control" placeholder="Size">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Value</label>
+            <input type="text" name="variants[${variantIndex}][value]" class="form-control" placeholder="XL">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Price</label>
+            <input type="number" name="variants[${variantIndex}][price]" class="form-control" placeholder="Price">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Qty</label>
+            <input type="number" name="variants[${variantIndex}][qty]" class="form-control" placeholder="Qty">
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-label-danger remove-variant">Remove</button>
+          </div>
+        </div>
+      `;
+      variantsContainer.append(html);
+      variantIndex++;
+    });
+  }
+
+  variantsContainer.on('click', '.remove-variant', function() {
+    $(this).closest('.variant-row').remove();
+  });
+
+  // AI Generator Logic
+  $('#btn-generate-ai').on('click', function() {
+    const title = $('#ecommerce-product-name').val();
+    const btn = $(this);
+    
+    if (!title) {
+      alert('Please enter a product title first.');
+      return;
+    }
+
+    const originalText = btn.html();
+    btn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...');
+    btn.prop('disabled', true);
+
+    $.ajax({
+      url: baseUrl + 'app/ecommerce/ai/generate',
+      type: 'POST',
+      data: {
+        title: title,
+        _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      success: function(response) {
+        if (response.success) {
+          // Auto-fill fields
+          $('textarea[name="description"]').val(response.data.description);
+          $('#meta-title').val(response.data.meta_title);
+          $('textarea[name="meta_description"]').val(response.data.meta_description);
+          
+          // Show a simple toast or alert
+          alert('Content generated successfully!');
+        } else {
+          alert('Error: ' + response.message);
+        }
+      },
+      error: function() {
+        alert('An error occurred while generating content. Please check your API configuration.');
+      },
+      complete: function() {
+        btn.html(originalText);
+        btn.prop('disabled', false);
+      }
+    });
+  });
 });

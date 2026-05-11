@@ -1,0 +1,33 @@
+{
+  "roles": [
+    {
+      "name": "Super Admin",
+      "permissions": ["all"]
+    },
+    {
+      "name": "Branch Manager",
+      "permissions": [
+        "view_dashboard",
+        "manage_products",
+        "manage_orders",
+        "view_reports"
+      ]
+    },
+    {
+      "name": "Sales Agent",
+      "permissions": [
+        "view_dashboard",
+        "manage_orders"
+      ]
+    }
+  ],
+  "permissions": [
+    "view_dashboard",
+    "manage_products",
+    "manage_orders",
+    "view_reports",
+    "manage_branches",
+    "manage_users",
+    "manage_roles"
+  ]
+}

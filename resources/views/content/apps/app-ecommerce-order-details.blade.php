@@ -28,12 +28,13 @@
 <div
   class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
   <div class="d-flex flex-column justify-content-center">
-    <div class="mb-1"><span class="h5">Order #32543 </span><span class="badge bg-label-success me-1 ms-2">Paid</span>
-      <span class="badge bg-label-info">Ready to Pickup</span>
+    <div class="mb-1"><span class="h5">Order #{{ ltrim($order->order_number, 'ORD-') }} </span><span class="badge bg-label-success me-1 ms-2">{{ ucfirst(str_replace('_', ' ', $order->payment_status)) }}</span>
+      <span class="badge bg-label-info">{{ ucfirst(str_replace('_', ' ', $order->order_status)) }}</span>
     </div>
-    <p class="mb-0">Aug 17, <span id="orderYear"></span>, 5:48 (ET)</p>
+    <p class="mb-0">{{ $order->created_at->format('M d, Y, H:i (e)') }}</p>
   </div>
   <div class="d-flex align-content-center flex-wrap gap-2">
+    <a href="{{ route('app-invoice-print', $order->id) }}" target="_blank" class="btn btn-label-primary">Print Invoice</a>
     <button class="btn btn-label-danger delete-order">Delete Order</button>
   </div>
 </div>
@@ -60,19 +61,19 @@
           <div class="order-calculations">
             <div class="d-flex justify-content-start mb-2">
               <span class="w-px-100 text-heading">Subtotal:</span>
-              <h6 class="mb-0">$2093</h6>
+              <h6 class="mb-0">${{ number_format($order->total_amount, 2) }}</h6>
             </div>
             <div class="d-flex justify-content-start mb-2">
               <span class="w-px-100 text-heading">Discount:</span>
-              <h6 class="mb-0">$2</h6>
+              <h6 class="mb-0">$0.00</h6>
             </div>
             <div class="d-flex justify-content-start mb-2">
               <span class="w-px-100 text-heading">Tax:</span>
-              <h6 class="mb-0">$28</h6>
+              <h6 class="mb-0">$0.00</h6>
             </div>
             <div class="d-flex justify-content-start">
               <h6 class="w-px-100 mb-0">Total:</h6>
-              <h6 class="mb-0">$2113</h6>
+              <h6 class="mb-0">${{ number_format($order->total_amount, 2) }}</h6>
             </div>
           </div>
         </div>
@@ -155,49 +156,43 @@
       <div class="card-body">
         <div class="d-flex justify-content-start align-items-center mb-6">
           <div class="avatar me-3">
-            <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
+            <img src="{{ $order->customer->profile_photo_url ?? asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
           </div>
           <div class="d-flex flex-column">
             <a href="{{ url('app/user/view/account') }}" class="text-body text-nowrap">
-              <h6 class="mb-0">Shamus Tuttle</h6>
+              <h6 class="mb-0">{{ $order->customer->name ?? 'Guest Customer' }}</h6>
             </a>
-            <span>Customer ID: #58909</span>
+            <span>Customer ID: #{{ $order->user_id ?? 'N/A' }}</span>
           </div>
         </div>
         <div class="d-flex justify-content-start align-items-center mb-6">
           <span class="avatar rounded-circle bg-label-success me-3 d-flex align-items-center justify-content-center"><i
               class="icon-base bx bx-cart icon-lg"></i></span>
-          <h6 class="text-nowrap mb-0">12 Orders</h6>
+          <h6 class="text-nowrap mb-0">{{ $order->customer?->orders()->count() ?? 0 }} Orders</h6>
         </div>
         <div class="d-flex justify-content-between">
           <h6 class="mb-1">Contact info</h6>
-          <h6 class="mb-1"><a href=" javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editUser">Edit</a></h6>
         </div>
-        <p class=" mb-1">Email: Shamus889@yahoo.com</p>
-        <p class=" mb-0">Mobile: +1 (609) 972-22-22</p>
+        <p class=" mb-1">Email: {{ $order->customer->email ?? 'N/A' }}</p>
+        <p class=" mb-0">Mobile: {{ $order->customer->phone ?? 'N/A' }}</p>
       </div>
     </div>
 
     <div class="card mb-6">
       <div class="card-header d-flex justify-content-between">
         <h5 class="card-title m-0">Shipping address</h5>
-        <h6 class="m-0"><a href=" javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addNewAddress">Edit</a>
-        </h6>
       </div>
       <div class="card-body">
-        <p class="mb-0">45 Roker Terrace <br />Latheronwheel <br />KW5 8NW,London <br />UK</p>
+        <p class="mb-0">{!! nl2br(e($order->shipping_address ?? 'No shipping address provided.')) !!}</p>
       </div>
     </div>
     <div class="card mb-6">
       <div class="card-header d-flex justify-content-between pb-2">
         <h5 class="card-title m-0">Billing address</h5>
-        <h6 class="m-0"><a href=" javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addNewAddress">Edit</a>
-        </h6>
       </div>
       <div class="card-body">
-        <p class="mb-6">45 Roker Terrace <br />Latheronwheel <br />KW5 8NW,London <br />UK</p>
-        <h5 class="mb-1">Mastercard</h5>
-        <p class="mb-0">Card Number: ******4291</p>
+        <p class="mb-6">{!! nl2br(e($order->billing_address ?? 'No billing address provided.')) !!}</p>
+        <h5 class="mb-1">{{ ucfirst($order->payment_method ?? 'Cash') }}</h5>
       </div>
     </div>
   </div>

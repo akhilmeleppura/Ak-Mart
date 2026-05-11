@@ -22,8 +22,36 @@
 <!-- END: Page JS-->
 
 <!-- app JS -->
-@vite(['resources/js/app.js'])
+@vite(['resources/js/app.js', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.js'])
 <!-- END: app JS-->
+
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    @if (session('success'))
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: "{{ session('success') }}",
+      timer: 3000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end'
+    });
+    @endif
+
+    @if (session('error'))
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: "{{ session('error') }}",
+      timer: 3000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end'
+    });
+    @endif
+  });
+</script>
 
 @stack('modals')
 @livewireScripts

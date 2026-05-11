@@ -17,7 +17,6 @@ class UserManagement extends Controller
    */
   public function UserManagement(): View
   {
-    // dd('UserManagement');
     $users = User::all();
     $userCount = $users->count();
     $verified = User::whereNotNull('email_verified_at')->get()->count();
@@ -25,11 +24,14 @@ class UserManagement extends Controller
     $usersUnique = $users->unique(['email']);
     $userDuplicates = $users->diff($usersUnique)->count();
 
+    $roles = \Spatie\Permission\Models\Role::all();
+
     return view('content.laravel-example.user-management', [
       'totalUser' => $userCount,
       'verified' => $verified,
       'notVerified' => $notVerified,
       'userDuplicates' => $userDuplicates,
+      'roles' => $roles
     ]);
   }
 
@@ -43,21 +45,21 @@ class UserManagement extends Controller
     $columns = [
       1 => 'id',
       2 => 'name',
-      3 => 'email',
-      4 => 'email_verified_at',
+      3 => 'role',
+      4 => 'email',
+      5 => 'email_verified_at',
     ];
 
-    $totalData = User::count(); // Total records without filtering
-      $totalFiltered = $totalData;
+    $totalData = User::count();
+    $totalFiltered = $totalData;
 
-      $limit = $request->input('length');
-      $start = $request->input('start');
-      $order = $columns[$request->input('order.0.column')] ?? 'id';
-      $dir = $request->input('order.0.dir') ?? 'desc';
+    $limit = $request->input('length');
+    $start = $request->input('start');
+    $order = $columns[$request->input('order.0.column')] ?? 'id';
+    $dir = $request->input('order.0.dir') ?? 'desc';
 
-      $query = User::query();
+    $query = User::with('roles');
 
-      // Search handling
     if (!empty($request->input('search.value'))) {
       $search = $request->input('search.value');
 
@@ -83,12 +85,17 @@ class UserManagement extends Controller
         'id' => $user->id,
         'fake_id' => ++$ids,
         'name' => $user->name,
+        'full_name' => $user->name,
         'email' => $user->email,
         'email_verified_at' => $user->email_verified_at,
+        'role' => $user->roles->pluck('name')->first() ?? 'No Role',
+        'avatar' => $user->profile_photo_url,
+        'current_plan' => 'Enterprise', // Placeholder for UI
+        'billing' => 'Auto Debit',      // Placeholder for UI
+        'status' => $user->email_verified_at ? 2 : 1, // 2=Active, 1=Pending
       ];
     }
 
-    // ✅ Always return full DataTables structure, even if no results
     return response()->json([
       'draw' => intval($request->input('draw')),
       'recordsTotal' => intval($totalData),
@@ -119,27 +126,33 @@ class UserManagement extends Controller
 
     if ($userID) {
       // update the value
-      $users = User::updateOrCreate(
+      $user = User::updateOrCreate(
         ['id' => $userID],
         ['name' => $request->name, 'email' => $request->email]
       );
 
-      // user updated
+      if ($request->has('role')) {
+        $user->syncRoles($request->role);
+      }
+
       return response()->json('Updated');
     } else {
       // create new one if email is unique
       $userEmail = User::where('email', $request->email)->first();
 
       if (empty($userEmail)) {
-        $users = User::updateOrCreate(
-          ['id' => $userID],
-          ['name' => $request->name, 'email' => $request->email, 'password' => bcrypt(Str::random(10))]
-        );
+        $user = User::create([
+          'name' => $request->name,
+          'email' => $request->email,
+          'password' => bcrypt(Str::random(10))
+        ]);
 
-        // user created
+        if ($request->has('role')) {
+          $user->assignRole($request->role);
+        }
+
         return response()->json('Created');
       } else {
-        // user already exist
         return response()->json(['message' => "already exits"], 422);
       }
     }
@@ -164,8 +177,13 @@ class UserManagement extends Controller
    */
   public function edit($id): JsonResponse
   {
-    $user = User::findOrFail($id);
-    return response()->json($user);
+    $user = User::with('roles')->findOrFail($id);
+    return response()->json([
+      'id' => $user->id,
+      'name' => $user->name,
+      'email' => $user->email,
+      'role' => $user->roles->pluck('name')->first(),
+    ]);
   }
 
   /**
@@ -185,6 +203,7 @@ class UserManagement extends Controller
    */
   public function destroy($id)
   {
-    $users = User::where('id', $id)->delete();
+    User::where('id', $id)->delete();
+    return response()->json('Deleted');
   }
 }

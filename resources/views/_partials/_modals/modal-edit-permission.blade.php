@@ -20,6 +20,7 @@
             <label class="form-label" for="editPermissionName">Permission Name</label>
             <input type="text" id="editPermissionName" name="editPermissionName" class="form-control"
               placeholder="Permission Name" tabindex="-1" />
+            <input type="hidden" id="editPermissionId" name="id" />
           </div>
           <div class="col-sm-3 mb-4">
             <label class="form-label invisible d-none d-sm-inline-block">Button</label>

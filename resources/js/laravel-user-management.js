@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'id' },
         { data: 'id' },
         { data: 'name' },
+        { data: 'role' },
         { data: 'email' },
         { data: 'email_verified_at' },
         { data: 'action' }
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
             // Extract initials from the name
             const initials = (name.match(/\b\w/g) || []).shift() + (name.match(/\b\w/g) || []).pop();
-            const initialsUpper = initials.toUpperCase();
+            const initialsUpper = (initials || 'UN').toUpperCase();
 
             // Create avatar badge using template literals
             const avatar = `<span class="avatar-initial rounded-circle bg-label-${state}">${initialsUpper}</span>`;
@@ -125,8 +126,23 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // User email
+          // User Role
           targets: 3,
+          render: function (data, type, full, meta) {
+            const role = full['role'];
+            const roleBadgeObj = {
+              'Super Admin': '<span class="badge bg-label-danger">Super Admin</span>',
+              Admin: '<span class="badge bg-label-primary">Admin</span>',
+              Manager: '<span class="badge bg-label-warning">Manager</span>',
+              'Branch Manager': '<span class="badge bg-label-info">Branch Manager</span>',
+              'No Role': '<span class="badge bg-label-secondary">No Role</span>'
+            };
+            return roleBadgeObj[role] || '<span class="badge bg-label-secondary">' + role + '</span>';
+          }
+        },
+        {
+          // User email
+          targets: 4,
           render: function (data, type, full, meta) {
             const email = full['email'];
 
@@ -135,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         },
         {
           // email verify
-          targets: 4,
+          targets: 5,
           className: 'text-center',
           render: function (data, type, full, meta) {
             const verified = full['email_verified_at'];
@@ -574,6 +590,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             document.getElementById('user_id').value = data.id;
             document.getElementById('add-user-fullname').value = data.name;
             document.getElementById('add-user-email').value = data.email;
+            document.getElementById('user-role').value = data.role || '';
           });
       }
     });

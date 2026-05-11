@@ -13,7 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(LocaleMiddleware::class);
+        $middleware->alias([
+            'branch.access' => \App\Http\Middleware\EnsureBranchAccess::class,
+            'tenant.subscription' => \App\Http\Middleware\EnsureActiveSubscription::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        // Run dunning processing every day at 8:00 AM
+        $schedule->command('dunning:process')->dailyAt('08:00')->withoutOverlapping();
+    })
+    ->create();

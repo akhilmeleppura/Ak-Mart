@@ -3,20 +3,30 @@
 @section('title', 'eCommerce Customer All - Apps')
 
 @section('vendor-style')
-@vite(['resources/assets/vendor/fonts/flag-icons.scss',
-'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
-'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
-'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss',
-'resources/assets/vendor/libs/@form-validation/form-validation.scss',
-'resources/assets/vendor/libs/select2/select2.scss'])
+@vite([
+  'resources/assets/vendor/fonts/flag-icons.scss',
+  'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
+  'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
+  'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss',
+  'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss',
+  'resources/assets/vendor/libs/@form-validation/form-validation.scss',
+  'resources/assets/vendor/libs/select2/select2.scss',
+  'resources/assets/vendor/libs/flatpickr/flatpickr.scss'
+])
 @endsection
 
 @section('vendor-script')
-@vite(['resources/assets/vendor/libs/moment/moment.js',
-'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
-'resources/assets/vendor/libs/select2/select2.js', 'resources/assets/vendor/libs/@form-validation/popular.js',
-'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
-'resources/assets/vendor/libs/@form-validation/auto-focus.js', 'resources/assets/vendor/libs/cleave-zen/cleave-zen.js'])
+@vite([
+  'resources/assets/vendor/libs/moment/moment.js',
+  'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
+  'resources/assets/vendor/libs/sweetalert2/sweetalert2.js',
+  'resources/assets/vendor/libs/select2/select2.js',
+  'resources/assets/vendor/libs/@form-validation/popular.js',
+  'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
+  'resources/assets/vendor/libs/@form-validation/auto-focus.js',
+  'resources/assets/vendor/libs/cleave-zen/cleave-zen.js',
+  'resources/assets/vendor/libs/flatpickr/flatpickr.js'
+])
 @endsection
 
 @section('page-script')
@@ -25,7 +35,15 @@
 
 @section('content')
 <!-- customers List Table -->
-<div class="card">
+<div class="card mb-6">
+  <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0">Customers</h5>
+    <div class="d-flex align-items-center gap-3">
+        <div class="w-px-250">
+            <input type="text" class="form-control date-picker" placeholder="Filter by Date Range" id="dateRange" />
+        </div>
+    </div>
+  </div>
   <div class="card-datatable table-responsive">
     <table class="datatables-customers table border-top">
       <thead>
@@ -50,6 +68,7 @@
     </div>
     <div class="offcanvas-body border-top mx-0 flex-grow-0">
       <form class="ecommerce-customer-add pt-0" id="eCommerceCustomerAddForm" onsubmit="return false">
+        <input type="hidden" name="id" id="customerId">
         <div class="ecommerce-customer-add-basic mb-4">
           <h6 class="mb-6">Basic Information</h6>
           <div class="mb-6 form-control-validation">

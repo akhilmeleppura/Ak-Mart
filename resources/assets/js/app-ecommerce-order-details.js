@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     tableEdit.classList.add('m-0');
     tableEdit.innerHTML = '<a href=" javascript:void(0)">Edit</a>';
     var dt_products = new DataTable(dt_details_table, {
-      ajax: assetsPath + 'json/ecommerce-order-details.json', // JSON file to add data
+      ajax: baseUrl + 'app/ecommerce/order/details/' + window.location.pathname.split('/').filter(Boolean).pop(), // dynamic ID
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             if (image) {
               // For Product image
               output = `
-                <img src="${assetsPath}img/products/${image}" alt="product-${name}" class="rounded-2">
+                <img src="${assetsPath}img/ecommerce-images/${image}" alt="product-${name}" class="rounded-2" width="38" height="38">
               `;
             } else {
               // For Product badge

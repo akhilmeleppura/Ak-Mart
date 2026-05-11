@@ -1,0 +1,16 @@
+{
+    "menu": [
+        {
+            "label": "sample-page-1",
+            "icon": "bx bx-store-alt",
+            "url": "/samplemodule/sample-page-1",
+            "identifier": "chart_of_accounts"
+        },
+        {
+            "label": "sample-page-2",
+            "icon": "bx bx-credit-card",
+            "url": "/samplemodule/sample-page-2",
+            "identifier": "sub_category"
+        }
+    ]
+}
