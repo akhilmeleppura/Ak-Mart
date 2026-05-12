@@ -1,102 +1,187 @@
-# Sneat E-Commerce Admin Template
+# AK Mart Developer Dashboard
 
-A modern e-commerce administration panel built with Laravel 12, PHP 8.2, and the Sneat Admin Template. The project includes role-based access control using Spatie Laravel Permission and a scalable architecture for managing products, categories, orders, and users.
+A complete multi-branch eCommerce administration platform built with **Laravel 12**, **Jetstream**, **Livewire 3**, **Spatie Permissions**, and **Laravel Modules**.
 
----
-
-## 🚀 Features
-
-* 🎨 Sneat Laravel Admin Template integration
-* 🔐 Authentication and authorization
-* 👥 Role & Permission management with Spatie Laravel Permission
-* 🛍️ Product management
-* 🗂️ Category and brand management
-* 📦 Order management
-* 👤 Customer management
-* 📊 Dashboard analytics
-* 📁 Media uploads
-* 🌐 Responsive admin interface
-* 🧪 Automated testing support
+AK Mart is designed for businesses that need centralized control over multiple branches, products, inventory, orders, user roles, and analytics from a modern dashboard.
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Key Features
 
-| Technology                | Version |
-| ------------------------- | ------- |
-| PHP                       | 8.2+    |
-| Laravel                   | 12.x    |
-| MySQL                     | 8.0+    |
-| Node.js                   | 18+     |
-| Vite                      | Latest  |
-| Sneat Admin Template      | Latest  |
-| Spatie Laravel Permission | Latest  |
+### 🏢 Multi-Branch Management
+
+* Unlimited branches/stores
+* Branch-specific inventory
+* Branch managers and staff
+* Branch performance analytics
+
+### 🛍️ Product Management
+
+* Categories and subcategories
+* Product variants (size, color, etc.)
+* SKU generation
+* Pricing and compare-at pricing
+* Stock tracking
+* SEO metadata
+
+### 📦 Inventory Management
+
+* Real-time stock updates
+* Low stock alerts
+* Branch-wise stock counts
+
+### 🛒 Order Management
+
+* Order lifecycle tracking
+* Payment status tracking
+* Order items and totals
+* Delivered, Pending, Cancelled statuses
+
+### 👥 User & Role Management
+
+* Super Admin
+* Branch Manager
+* Staff roles
+* Permission-based access control
+
+### 📊 Analytics Dashboard
+
+* Sales reports
+* Branch performance
+* Product performance
+* Revenue charts
+
+### 🔐 Authentication & Security
+
+* Laravel Jetstream authentication
+* Sanctum API authentication
+* Email verification
+* CSRF protection
+
+### ⚙️ Modular Architecture
+
+* Built using `nwidart/laravel-modules`
+* Easy to extend and maintain
+
+### 🎨 Premium Admin UI
+
+* Sneat Admin Theme integration
+* Responsive design
+* Dark/light mode support
 
 ---
 
-## 📂 Project Structure
+# 🏗️ Tech Stack
+
+| Technology                  | Version   |
+| --------------------------- | --------- |
+| PHP                         | 8.2+      |
+| Laravel                     | 12.x      |
+| Livewire                    | 3.x       |
+| Jetstream                   | 5.x       |
+| Sanctum                     | 4.x       |
+| Spatie Permission           | 6.x       |
+| Laravel Modules             | Latest    |
+| Vite                        | Latest    |
+| Tailwind CSS                | Latest    |
+| Sneat Admin Template        | 3.x       |
+| MySQL / PostgreSQL / SQLite | Supported |
+
+---
+
+# 📁 Project Structure
 
 ```text
-app/
-├── Http/
-│   ├── Controllers/
-│   ├── Middleware/
-│   └── Requests/
-├── Models/
-├── Services/
-├── Repositories/
-└── Traits/
-
-database/
-├── migrations/
-├── seeders/
-└── factories/
-
-resources/
-├── views/
-├── js/
-└── css/
-
-routes/
-├── web.php
-├── api.php
-└── admin.php
+AK-Mart/
+├── app/
+│   ├── Helpers/
+│   ├── Http/
+│   ├── Models/
+│   └── Services/
+├── Modules/
+│   ├── Branch/
+│   ├── Product/
+│   ├── Order/
+│   ├── Inventory/
+│   ├── User/
+│   └── Reports/
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── resources/
+│   ├── views/
+│   ├── js/
+│   └── css/
+├── routes/
+├── public/
+└── tests/
 ```
 
 ---
 
-## ⚙️ Installation
+# 📦 Composer Packages
 
-### 1. Clone the Repository
+The application uses the following primary dependencies:
+
+* `laravel/framework ^12.0`
+* `laravel/jetstream ^5.3`
+* `livewire/livewire ^3.0`
+* `laravel/sanctum ^4.0`
+* `nwidart/laravel-modules`
+* `spatie/laravel-permission ^6.25`
+* `themeselection/sneat-html-laravel-jetstream ^3.0`
+
+---
+
+# ⚡ Installation
+
+## 1. Clone Repository
 
 ```bash
-git clone https://github.com/akhilmeleppura/sneat-ecom-template.git
-cd sneat-ecom-template
+git clone git@github.com:akhilmeleppura/Ak-Mart.git
+cd Ak-Mart
 ```
 
-### 2. Install Dependencies
+## 2. Install Dependencies
 
 ```bash
 composer install
 npm install
 ```
 
-### 3. Configure Environment
+## 3. Environment Setup
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-Update `.env` with your database credentials.
+## 4. Configure Database
 
-### 4. Run Migrations and Seeders
+Edit `.env`:
 
-```bash
-php artisan migrate --seed
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ak_mart
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
-### 5. Build Assets
+## 5. Run Migrations
+
+```bash
+php artisan migrate
+```
+
+## 6. Seed Demo Data
+
+```bash
+php artisan db:seed --class=DemoSeeder
+```
+
+## 7. Build Frontend Assets
 
 ```bash
 npm run build
@@ -108,13 +193,19 @@ For development:
 npm run dev
 ```
 
-### 6. Start the Application
+## 8. Start Development Server
+
+```bash
+composer run dev
+```
+
+Or manually:
 
 ```bash
 php artisan serve
 ```
 
-Open:
+Application URL:
 
 ```text
 http://127.0.0.1:8000
@@ -122,169 +213,326 @@ http://127.0.0.1:8000
 
 ---
 
-## 🔑 Default Admin Credentials
+# 🔑 Demo Credentials
 
-> Update these credentials after installation.
+The demo seeder creates the following users.
 
-| Email    | [admin@example.com](mailto:admin@example.com) |
-| -------- | --------------------------------------------- |
-| Password | password                                      |
+## Super Admin
 
----
+* Email: `admin@admin.com`
+* Password: `admin123`
 
-## 🔐 Roles and Permissions
+## Branch Manager
 
-This project uses Spatie Laravel Permission.
+* Email: `manager@branch.com`
+* Password: `manager123`
 
-### Default Roles
-
-* Super Admin
-* Admin
-* Manager
-* Staff
-
-### Example Permission Commands
-
-```bash
-php artisan permission:cache-reset
-```
+> These accounts are generated by the demo seeder.
 
 ---
 
-## 📦 Core Modules
+# 🏢 Seeded Branches
 
-### Dashboard
+1. Global HQ (New York)
+2. London Flagship
+3. Dubai Mall Branch
 
-* Sales summary
-* Recent orders
-* Revenue analytics
+---
 
-### Product Management
+# 🗂️ Seeded Categories
 
-* CRUD operations
-* SKU management
-* Image uploads
+* Electronics
+* Fashion
+* Home Decor
+* Accessories
 
-### Category Management
+---
 
-* Nested categories
-* Slugs
+# 📦 Seeded Data Summary
 
-### Order Management
+The demo seeder creates:
 
-* Status updates
-* Invoice support
-
-### User Management
-
+* 3 branches
+* 2 demo users
 * Roles and permissions
+* 4 categories
+* 36 products (3 products × 4 categories × 3 branches)
+* Product variants (size and color)
+* 30 demo orders
+* Order items
 
 ---
 
-## 🧪 Running Tests
+# 🔐 Roles
+
+| Role           | Access                     |
+| -------------- | -------------------------- |
+| Super Admin    | Full system access         |
+| Branch Manager | Manage assigned branch     |
+| Staff          | Limited operational access |
+
+---
+
+# 🛡️ Permissions Examples
+
+* manage branches
+* manage products
+* manage categories
+* manage inventory
+* manage orders
+* manage users
+* view analytics
+* manage settings
+
+---
+
+# 📊 Dashboard Widgets
+
+* Total Revenue
+* Orders Today
+* Monthly Sales
+* Top Selling Products
+* Low Stock Products
+* Branch Performance
+* Recent Orders
+
+---
+
+# 🧩 Modules Overview
+
+## Branch Module
+
+Handles branch creation, assignment, and reporting.
+
+## Product Module
+
+Manages products, categories, and variants.
+
+## Inventory Module
+
+Tracks stock quantities and alerts.
+
+## Order Module
+
+Handles order and order item management.
+
+## User Module
+
+User administration and role assignment.
+
+## Reports Module
+
+Sales and business analytics.
+
+---
+
+# 🗄️ Important Models
+
+* User
+* Branch
+* Category
+* Product
+* ProductVariant
+* Order
+* OrderItem
+* Role
+* Permission
+
+---
+
+# 🔄 Relationships
+
+* Branch has many Users
+* Branch has many Products
+* Branch has many Orders
+* Category has many Products
+* Product has many Variants
+* Order has many Items
+* User belongs to Branch
+
+---
+
+# 🧪 Testing
+
+Run automated tests:
 
 ```bash
 php artisan test
 ```
 
----
-
-## 📝 Coding Standards
-
-* PSR-12
-* Laravel conventions
-* Service and repository pattern where appropriate
-* Conventional Commits
-
----
-
-## 🌿 Git Workflow
-
-### Create a Feature Branch
+Run PHPUnit directly:
 
 ```bash
-git checkout -b feature/product-management
-```
-
-### Commit Changes
-
-```bash
-git add .
-git commit -m "feat: add product management module"
-```
-
-### Push Branch
-
-```bash
-git push -u origin feature/product-management
+vendor/bin/phpunit
 ```
 
 ---
 
-## 🏷️ Versioning
+# 🎨 Code Quality
 
-This project follows Semantic Versioning.
-
-### Create a Release Tag
+Format code with Laravel Pint:
 
 ```bash
-git tag -a v1.0.0 -m "Initial release"
-git push origin v1.0.0
+./vendor/bin/pint
 ```
 
 ---
 
-## 📄 License
+# 📜 Useful Artisan Commands
+
+## Create Module
+
+```bash
+php artisan module:make Product
+```
+
+## List Modules
+
+```bash
+php artisan module:list
+```
+
+## Cache Optimization
+
+```bash
+php artisan optimize
+```
+
+## Clear Cache
+
+```bash
+php artisan optimize:clear
+```
+
+## Queue Worker
+
+```bash
+php artisan queue:work
+```
+
+---
+
+# 🔌 API Authentication
+
+Laravel Sanctum is enabled for API token authentication.
+
+Example protected endpoint:
+
+```php
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+```
+
+---
+
+# 🖼️ Admin Theme
+
+This project uses the **Sneat Laravel Jetstream Admin Template** from ThemeSelection.
+
+Features include:
+
+* Responsive layout
+* Sidebar navigation
+* Charts and widgets
+* Form components
+* Authentication pages
+
+---
+
+# 🚀 Deployment
+
+## Production Setup
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan queue:restart
+```
+
+### Recommended Stack
+
+* Ubuntu 24.04 LTS
+* Nginx
+* PHP-FPM 8.2+
+* MySQL 8+
+* Redis (optional)
+* Supervisor
+
+---
+
+# ☁️ Deployment Platforms
+
+* Laravel Forge
+* Ploi
+* DigitalOcean
+* AWS EC2
+* Shared Hosting with PHP 8.2+
+
+---
+
+# 📈 Future Roadmap
+
+* Customer storefront
+* Coupons and discounts
+* Shipping integration
+* Payment gateways (Stripe, Razorpay, PayPal)
+* POS system
+* Mobile application API
+* Multi-language support
+* Multi-currency support
+
+---
+
+# 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to your branch
+5. Open a pull request
+
+---
+
+# 📝 License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Developer
 
 **Akhil Meleppura**
 
 * GitHub: [https://github.com/akhilmeleppura](https://github.com/akhilmeleppura)
+* Repository: [https://github.com/akhilmeleppura/Ak-Mart](https://github.com/akhilmeleppura/Ak-Mart)
 
 ---
 
-## 🤝 Contributing
+# ⭐ Support
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
+If you find this project useful:
 
----
-
-## 📌 Roadmap
-
-* Multi-vendor marketplace support
-* REST API
-* Payment gateway integration
-* Notification system
-* Multi-language support
+* Star the repository
+* Report issues
+* Contribute improvements
+* Share with others
 
 ---
 
-## ⭐ Support
+# 📬 Contact
 
-If you find this project useful, please star the repository on GitHub.
-
----
-
-## 📷 Screenshots
-
-Add screenshots of:
-
-* Dashboard
-* Product management
-* Role and permission management
-* Orders
+For custom development, bug fixes, and enterprise solutions, contact the project maintainer through GitHub.
 
 ---
 
-## 🔗 Repository
+# 🏆 AK Mart
 
-[https://github.com/akhilmeleppura/sneat-ecom-template](https://github.com/akhilmeleppura/sneat-ecom-template)
+**Complete Laravel 12 Multi-Branch eCommerce Dashboard Solution**.
+
+Built for scalability, maintainability, and real-world business operations.
