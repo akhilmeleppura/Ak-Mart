@@ -26,8 +26,8 @@
                         <tbody>
                             @forelse($requests as $req)
                                 <tr>
-                                    <td><span class="fw-bold text-primary">{{ $req->order->order_number }}</span></td>
-                                    <td>{{ $req->order->user->name ?? 'Guest' }}</td>
+                                    <td><span class="fw-bold text-primary">{{ $req->order?->order_number ?? 'N/A' }}</span></td>
+                                    <td>{{ $req->order?->user?->name ?? 'Guest' }}</td>
                                     <td>
                                         <div class="fw-semibold">{{ $req->reason }}</div>
                                         <small class="text-muted">{{ Str::limit($req->details, 40) }}</small>
@@ -69,9 +69,9 @@
                                                         <label class="form-label">Refund Amount</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text">$</span>
-                                                            <input type="number" step="0.01" name="refund_amount" class="form-control" value="{{ $req->refund_amount ?? $req->order->total_amount }}">
+                                                            <input type="number" step="0.01" name="refund_amount" class="form-control" value="{{ $req->refund_amount ?? $req->order?->total_amount ?? 0 }}">
                                                         </div>
-                                                        <small class="text-muted">Original Order Total: ${{ number_format($req->order->total_amount, 2) }}</small>
+                                                        <small class="text-muted">Original Order Total: ${{ number_format($req->order?->total_amount ?? 0, 2) }}</small>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

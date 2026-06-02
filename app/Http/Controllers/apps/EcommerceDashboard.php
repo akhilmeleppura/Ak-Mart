@@ -13,7 +13,8 @@ class EcommerceDashboard extends Controller
       $totalOrders = \App\Models\Order::count();
       
       // Recent orders (last 7)
-      $recentOrders = \App\Models\OrderItem::with(['order', 'product.category'])
+      $recentOrders = \App\Models\OrderItem::whereHas('order')
+          ->with(['order', 'product.category'])
           ->latest()
           ->take(7)
           ->get();

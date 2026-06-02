@@ -6,7 +6,7 @@ use Modules\Accounting\App\Http\Controllers\SubCategoryController;
 use Modules\Accounting\App\Http\Controllers\PrefixController;
 use Modules\Accounting\App\Http\Controllers\Journal\JournalEntriesController;
 use Modules\Accounting\App\Http\Controllers\Ledger\LedgerController;
-use Modules\Accounting\Http\Controllers\TrialBalance\TrialBalanceController;
+use Modules\Accounting\App\Http\Controllers\TrialBalance\TrialBalanceController;
 use Modules\Accounting\App\Http\Controllers\CustomerLedger\CustomerLedgerController;
 
 

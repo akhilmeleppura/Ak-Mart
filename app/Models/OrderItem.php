@@ -8,7 +8,7 @@ class OrderItem extends Model
 {
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = ['order_id', 'product_id', 'price', 'qty', 'total'];
 
     public function order()
     {

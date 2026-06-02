@@ -28,6 +28,7 @@
     "view_reports",
     "manage_branches",
     "manage_users",
-    "manage_roles"
+    "manage_roles",
+    "access_ai_assistant"
   ]
 }

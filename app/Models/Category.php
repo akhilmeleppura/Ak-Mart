@@ -9,7 +9,7 @@ class Category extends Model
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use \App\Traits\BelongsToBranch;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'parent_id', 'branch_id'];
 
     public function products()
     {

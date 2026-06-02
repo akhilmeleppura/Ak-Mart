@@ -9,7 +9,7 @@ class Product extends Model
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use \App\Traits\BelongsToBranch;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'description', 'price', 'stock', 'category_id', 'branch_id'];
 
     public function category()
     {

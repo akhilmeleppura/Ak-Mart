@@ -12,7 +12,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::with('permissions', 'users')->get();
+        $roles = Role::with('permissions')->get();
         $permissions = Permission::all();
         $users = User::all();
         return view('content.apps.app-access-roles', compact('roles', 'permissions', 'users'));

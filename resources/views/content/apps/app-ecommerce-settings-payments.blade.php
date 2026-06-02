@@ -58,7 +58,8 @@ $configData = Helper::appClasses();
   </div>
   <!-- /Navigation -->
   <!-- Options -->
-  <div class="col-12 col-lg-8 pt-6 pt-lg-0">
+  <form method="POST" action="{{ route('app-ecommerce-settings-payments-save') }}">
+    @csrf
     <div class="tab-content p-0">
       <!-- Payments Tab -->
       <div class="tab-pane fade show active" id="payments" role="tabpanel">
@@ -137,11 +138,11 @@ $configData = Helper::appClasses();
           </div>
         </div>
 
-        <div class="d-flex justify-content-end gap-4">
-          <button type="reset" class="btn btn-label-secondary">Discard</button>
-          <a class="btn btn-primary" href="checkout">Save Changes</a>
-        </div>
-      </div>
+            <div class="d-flex justify-content-end gap-4">
+                <button type="reset" class="btn btn-label-secondary">Discard</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
     </div>
   </div>
   <!-- /Options-->

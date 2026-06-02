@@ -462,19 +462,19 @@
               <td>
                 <div class="d-flex align-items-center">
                    <div class="d-flex flex-column">
-                    <h6 class="mb-0">{{ $item->order->order_number }}</h6>
+                    <h6 class="mb-0">{{ $item->order?->order_number ?? 'N/A' }}</h6>
                     <small class="text-body">{{ $item->product_name }}</small>
                   </div>
                 </div>
               </td>
               <td>
-                {{ $item->order->created_at->format('M d, Y') }}
+                {{ $item->order?->created_at?->format('M d, Y') ?? 'N/A' }}
               </td>
               <td>
-                <div class="text-body">{{ $item->order->customer->name ?? 'Guest' }}</div>
+                <div class="text-body">{{ $item->order?->customer?->name ?? 'Guest' }}</div>
               </td>
               <td><span class="text-primary fw-medium">${{ number_format($item->price * $item->qty, 2) }}</span></td>
-              <td><span class="badge bg-label-{{ $item->order->order_status == 'Delivered' ? 'success' : 'primary' }}">{{ ucfirst($item->order->order_status) }}</span></td>
+              <td><span class="badge bg-label-{{ ($item->order?->order_status ?? '') == 'Delivered' ? 'success' : 'primary' }}">{{ $item->order?->order_status ? ucfirst($item->order->order_status) : 'N/A' }}</span></td>
               <td>
                 <div class="dropdown">
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
@@ -548,4 +548,318 @@
   </div>
   <!--/ Total Balance -->
 </div>
+</div>
+
+@can('access_ai_assistant')
+<!-- Floating AI Assistant Button (FAB) -->
+<button class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center position-fixed shadow-lg" id="aiCopilotBtn" style="bottom: 24px; right: 24px; width: 60px; height: 60px; z-index: 1050; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: linear-gradient(135deg, #696cff, #875ef5); border: none; box-shadow: 0 8px 24px rgba(105, 108, 255, 0.4) !important;">
+  <i class="icon-base bx bx-bot icon-32px text-white animate-pulse"></i>
+</button>
+
+<!-- AI Assistant Copilot Panel -->
+<div class="card position-fixed shadow-2xl d-none flex-column overflow-hidden" id="aiCopilotPanel" style="bottom: 96px; right: 24px; width: 400px; height: 580px; z-index: 1050; border-radius: 16px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); border: 1px solid rgba(105, 108, 255, 0.2); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);">
+  
+  <!-- Panel Header -->
+  <div class="card-header d-flex align-items-center justify-content-between p-4 text-white" style="background: linear-gradient(135deg, #696cff, #875ef5); border-top-left-radius: 15px; border-top-right-radius: 15px;">
+    <div class="d-flex align-items-center gap-3">
+      <div class="avatar avatar-md bg-white rounded-circle p-1 d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+        <i class="icon-base bx bx-bot text-primary icon-24px"></i>
+      </div>
+      <div>
+        <h6 class="m-0 text-white fw-bold">Ak-Mart Copilot</h6>
+        <div class="d-flex align-items-center gap-1">
+          <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px; animation: pulse 1.5s infinite;"></span>
+          <small class="text-white opacity-80" style="font-size: 0.75rem;">Active • Gemini AI</small>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white" id="closeAiCopilot"></button>
+  </div>
+
+  <!-- Panel Body / Message Feed -->
+  <div class="card-body p-4 flex-grow-1 overflow-y-auto d-flex flex-column gap-3" id="aiCopilotChatBody" style="background: rgba(248, 249, 250, 0.5);">
+    <!-- Welcome message seeded in JS -->
+  </div>
+
+  <!-- Quick Prompts Row -->
+  <div class="px-4 py-2 border-top d-flex gap-2 overflow-x-auto text-nowrap scrollbar-hidden" id="quickPrompts" style="background: rgba(248, 249, 250, 0.7); max-height: 48px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+    <button class="btn btn-xs btn-outline-primary quick-prompt-btn" data-prompt="✓ Show sales insights">✓ Insights</button>
+    <button class="btn btn-xs btn-outline-warning quick-prompt-btn" data-prompt="⚠ Low stock warnings">⚠ Warnings</button>
+    <button class="btn btn-xs btn-outline-info quick-prompt-btn" data-prompt="📈 Branch performance analysis">📈 Growth</button>
+    <button class="btn btn-xs btn-outline-secondary quick-prompt-btn" data-prompt="💡 Recommend a marketing promotion idea">💡 Marketing</button>
+  </div>
+
+  <!-- Panel Footer / Input Area -->
+  <div class="card-footer p-3 border-top bg-white d-flex align-items-center gap-2">
+    <textarea class="form-control border-0 p-2 scrollbar-hidden" id="aiCopilotInput" rows="1" placeholder="Ask your copilot anything..." style="resize: none; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;"></textarea>
+    <button class="btn btn-icon btn-primary d-flex align-items-center justify-content-center rounded-circle" id="aiCopilotSend" style="width: 40px; height: 40px; background: #696cff; border: none; transition: transform 0.2s;">
+      <i class="icon-base bx bx-send text-white"></i>
+    </button>
+  </div>
+</div>
+
+<style>
+  #quickPrompts::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  .quick-prompt-btn {
+    border-radius: 20px !important;
+    font-size: 0.75rem !important;
+    padding: 4px 12px !important;
+  }
+  .chat-bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: slideUp 0.3s ease-out;
+  }
+  .chat-bubble-user {
+    align-self: flex-end;
+    background: #696cff;
+    color: white;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 4px 12px rgba(105, 108, 255, 0.2);
+  }
+  .chat-bubble-ai {
+    align-self: flex-start;
+    background: white;
+    color: #435971;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(105, 108, 255, 0.1);
+  }
+  .chat-bubble-ai p {
+    margin-bottom: 8px;
+  }
+  .chat-bubble-ai p:last-child {
+    margin-bottom: 0;
+  }
+  .dark-style #aiCopilotPanel {
+    background: rgba(43, 44, 64, 0.98) !important;
+    border-color: rgba(105, 108, 255, 0.3) !important;
+  }
+  .dark-style #aiCopilotChatBody {
+    background: rgba(35, 36, 51, 0.5) !important;
+  }
+  .dark-style .chat-bubble-ai {
+    background: #2b2c40 !important;
+    color: #e4e6fc !important;
+    border-color: rgba(105, 108, 255, 0.2) !important;
+  }
+  .dark-style #aiCopilotInput {
+    background: #232433 !important;
+    color: #e4e6fc !important;
+  }
+  .dark-style .card-footer {
+    background: #2b2c40 !important;
+    border-color: rgba(255,255,255,0.05) !important;
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(105, 108, 255, 0.5); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(105, 108, 255, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(105, 108, 255, 0); }
+  }
+  .animate-pulse {
+    animation: iconPulse 2s infinite ease-in-out;
+  }
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .typing-dots span {
+    width: 8px;
+    height: 8px;
+    background-color: #696cff;
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite both;
+  }
+  .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const panel = document.getElementById('aiCopilotPanel');
+  const btn = document.getElementById('aiCopilotBtn');
+  const closeBtn = document.getElementById('closeAiCopilot');
+  const chatBody = document.getElementById('aiCopilotChatBody');
+  const input = document.getElementById('aiCopilotInput');
+  const sendBtn = document.getElementById('aiCopilotSend');
+  const quickPromptBtns = document.querySelectorAll('.quick-prompt-btn');
+
+  let isPanelOpen = false;
+  
+  // Local state for chat conversation history
+  let conversationHistory = [
+    {
+      role: 'model',
+      content: "Hello! I am **Ak-Mart AI**, your advanced eCommerce Business Copilot. How can I help you manage, analyze, and optimize your business today?"
+    }
+  ];
+
+  // Helper to format text with Markdown bold and bullet point icons beautifully
+  function formatReplyText(text) {
+    let formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/✓/g, '<span class="text-success fw-bold">✓</span>')
+      .replace(/⚠/g, '<span class="text-warning fw-bold">⚠</span>')
+      .replace(/📈/g, '<span class="text-info fw-bold">📈</span>')
+      .replace(/💡/g, '<span class="text-primary fw-bold">💡</span>');
+      
+    // Replace bullet points or list items
+    formatted = formatted.split('\n').map(line => {
+      if (line.trim().startsWith('- ')) {
+        return `<li>${line.trim().substring(2)}</li>`;
+      }
+      return `<p class="mb-2">${line}</p>`;
+    }).join('');
+
+    return formatted;
+  }
+
+  function renderMessages() {
+    chatBody.innerHTML = '';
+    conversationHistory.forEach(msg => {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble chat-bubble-${msg.role === 'user' ? 'user' : 'ai'}`;
+      if (msg.role === 'model') {
+        bubble.innerHTML = formatReplyText(msg.content);
+      } else {
+        bubble.innerText = msg.content;
+      }
+      chatBody.appendChild(bubble);
+    });
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // Toggle Panel
+  btn.addEventListener('click', function () {
+    isPanelOpen = !isPanelOpen;
+    if (isPanelOpen) {
+      panel.classList.remove('d-none');
+      panel.classList.add('d-flex');
+      renderMessages();
+      input.focus();
+    } else {
+      panel.classList.add('d-none');
+      panel.classList.remove('d-flex');
+    }
+  });
+
+  closeBtn.addEventListener('click', function () {
+    isPanelOpen = false;
+    panel.classList.add('d-none');
+    panel.classList.remove('d-flex');
+  });
+
+  // Sending a message
+  function sendMessage(text) {
+    if (!text.trim()) return;
+
+    // Add user message to local state
+    conversationHistory.push({ role: 'user', content: text });
+    renderMessages();
+    input.value = '';
+
+    // Show Typing Indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-bubble chat-bubble-ai d-flex align-items-center gap-1 typing-indicator-bubble';
+    typingIndicator.innerHTML = `
+      <div class="typing-dots d-flex gap-1 py-1">
+        <span></span><span></span><span></span>
+      </div>
+    `;
+    chatBody.appendChild(typingIndicator);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // Disable input and send button during execution
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    // Send payload to backend copilot API
+    fetch('{{ route("app-ai-copilot-chat") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      body: JSON.stringify({
+        messages: conversationHistory
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Remove typing indicator
+      const indicators = document.querySelectorAll('.typing-indicator-bubble');
+      indicators.forEach(i => i.remove());
+
+      if (data.success) {
+        // Add AI reply to history
+        conversationHistory.push({ role: 'model', content: data.reply });
+      } else {
+        conversationHistory.push({
+          role: 'model',
+          content: "⚠ **Error:** " + (data.message || "Failed to communicate with AI Copilot. Please check your Gemini API key.")
+        });
+      }
+      renderMessages();
+    })
+    .catch(err => {
+      const indicators = document.querySelectorAll('.typing-indicator-bubble');
+      indicators.forEach(i => i.remove());
+      
+      conversationHistory.push({
+        role: 'model',
+        content: "⚠ **Connection Failure:** Could not connect to the Copilot service. Please try again."
+      });
+      renderMessages();
+    })
+    .finally(() => {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    });
+  }
+
+  sendBtn.addEventListener('click', function () {
+    sendMessage(input.value);
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input.value);
+    }
+  });
+
+  // Handle Quick Prompts click
+  quickPromptBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      const prompt = this.getAttribute('data-prompt');
+      sendMessage(prompt);
+    });
+  });
+
+  // Render initial welcome message
+  renderMessages();
+});
+</script>
+@endcan
 @endsection
