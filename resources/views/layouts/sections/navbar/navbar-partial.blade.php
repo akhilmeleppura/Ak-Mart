@@ -105,7 +105,7 @@ use Illuminate\Support\Facades\Route;
     <li class="nav-item dropdown me-2 me-xl-0">
       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
         <i class="icon-base bx bx-store icon-md"></i>
-        <span class="d-none d-md-inline-block ms-1">{{ App\Models\Branch\Branch::find(session('branch_id'))?->name ?? 'Select Branch' }}</span>
+        <span class="d-none d-md-inline-block ms-1">{{ App\Models\Branch\Branch::find(session('branch_id'))?->name ?? __('Select Branch') }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
         @foreach(App\Models\Branch\Branch::all() as $branch)
@@ -125,24 +125,24 @@ use Illuminate\Support\Facades\Route;
       <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);"
         data-bs-toggle="dropdown">
         <i class="icon-base bx bx-sun icon-md theme-icon-active"></i>
-        <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
+        <span class="d-none ms-2" id="nav-theme-text">{{ __('Toggle theme') }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-theme-text">
         <li>
           <button type="button" class="dropdown-item align-items-center active" data-bs-theme-value="light"
             aria-pressed="false">
-            <span><i class="icon-base bx bx-sun icon-md me-3" data-icon="sun"></i>Light</span>
+            <span><i class="icon-base bx bx-sun icon-md me-3" data-icon="sun"></i>{{ __('Light') }}</span>
           </button>
         </li>
         <li>
           <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="dark" aria-pressed="true">
-            <span><i class="icon-base bx bx-moon icon-md me-3" data-icon="moon"></i>Dark</span>
+            <span><i class="icon-base bx bx-moon icon-md me-3" data-icon="moon"></i>{{ __('Dark') }}</span>
           </button>
         </li>
         <li>
           <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="system"
             aria-pressed="false">
-            <span><i class="icon-base bx bx-desktop icon-md me-3" data-icon="desktop"></i>System</span>
+            <span><i class="icon-base bx bx-desktop icon-md me-3" data-icon="desktop"></i>{{ __('System') }}</span>
           </button>
         </li>
       </ul>
@@ -159,8 +159,8 @@ use Illuminate\Support\Facades\Route;
       <div class="dropdown-menu dropdown-menu-end p-0">
         <div class="dropdown-menu-header border-bottom">
           <div class="dropdown-header d-flex align-items-center py-3">
-            <h6 class="mb-0 me-auto">Shortcuts</h6>
-            <a href="javascript:void(0)" class="dropdown-shortcuts-add py-2" title="Add / Customize shortcuts"><i class="icon-base bx bx-plus-circle text-heading"></i></a>
+            <h6 class="mb-0 me-auto">{{ __('Shortcuts') }}</h6>
+            <a href="javascript:void(0)" class="dropdown-shortcuts-add py-2" title="{{ __('Add / Customize shortcuts') }}"><i class="icon-base bx bx-plus-circle text-heading"></i></a>
           </div>
         </div>
         <div class="dropdown-shortcuts-list scrollable-container" id="navbar-shortcuts-container">
@@ -170,15 +170,15 @@ use Illuminate\Support\Facades\Route;
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-calendar icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-calendar') }}" class="stretched-link">Calendar</a>
-              <small>Appointments</small>
+              <a href="{{ route('app-calendar') }}" class="stretched-link">{{ __('Calendar') }}</a>
+              <small>{{ __('Appointments') }}</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-food-menu icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-invoice-list') }}" class="stretched-link">Invoice App</a>
-              <small>Manage Accounts</small>
+              <a href="{{ route('app-invoice-list') }}" class="stretched-link">{{ __('Invoice App') }}</a>
+              <small>{{ __('Manage Accounts') }}</small>
             </div>
           </div>
           <div class="row row-bordered overflow-visible g-0">
@@ -186,15 +186,15 @@ use Illuminate\Support\Facades\Route;
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-import icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-product-importer') }}" class="stretched-link">Product Importer</a>
-              <small>Universal Scraper</small>
+              <a href="{{ route('app-product-importer') }}" class="stretched-link">{{ __('Product Importer') }}</a>
+              <small>{{ __('Universal Scraper') }}</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-cart-alt icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-vendor-pos') }}" class="stretched-link">POS Terminal</a>
-              <small>Point of Sale</small>
+              <a href="{{ route('app-vendor-pos') }}" class="stretched-link">{{ __('POS Terminal') }}</a>
+              <small>{{ __('Point of Sale') }}</small>
             </div>
           </div>
           <div class="row row-bordered overflow-visible g-0">
@@ -202,15 +202,15 @@ use Illuminate\Support\Facades\Route;
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-box icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-ecommerce-product-list') }}" class="stretched-link">Products</a>
-              <small>Manage Catalog</small>
+              <a href="{{ route('app-ecommerce-product-list') }}" class="stretched-link">{{ __('Products') }}</a>
+              <small>{{ __('Manage Catalog') }}</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-pie-chart-alt-2 icon-26px text-heading"></i>
               </span>
-              <a href="{{ route('app-ecommerce-dashboard') }}" class="stretched-link">Dashboard</a>
-              <small>Store Dashboard</small>
+              <a href="{{ route('app-ecommerce-dashboard') }}" class="stretched-link">{{ __('Dashboard') }}</a>
+              <small>{{ __('Store Dashboard') }}</small>
             </div>
           </div>
           <div class="row row-bordered overflow-visible g-0">
@@ -218,15 +218,15 @@ use Illuminate\Support\Facades\Route;
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-bot icon-26px text-heading"></i>
               </span>
-              <a href="{{ Route::has('app-ecommerce-settings-ai') ? route('app-ecommerce-settings-ai') : url('settings/ai') }}" class="stretched-link">AI Settings</a>
-              <small>AI & Copilot Tools</small>
+              <a href="{{ Route::has('app-ecommerce-settings-ai') ? route('app-ecommerce-settings-ai') : url('settings/ai') }}" class="stretched-link">{{ __('AI Settings') }}</a>
+              <small>{{ __('AI & Copilot Tools') }}</small>
             </div>
             <div class="dropdown-shortcuts-item col">
               <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                 <i class="icon-base bx bx-bar-chart-alt-2 icon-26px text-heading"></i>
               </span>
-              <a href="{{ Route::has('app-reports') ? route('app-reports') : url('reports') }}" class="stretched-link">Reports</a>
-              <small>Analytics & Profit</small>
+              <a href="{{ Route::has('app-reports') ? route('app-reports') : url('reports') }}" class="stretched-link">{{ __('Reports') }}</a>
+              <small>{{ __('Analytics & Profit') }}</small>
             </div>
           </div>
         </div>
@@ -248,12 +248,12 @@ use Illuminate\Support\Facades\Route;
       <ul class="dropdown-menu dropdown-menu-end p-0">
         <li class="dropdown-menu-header border-bottom">
           <div class="dropdown-header d-flex align-items-center py-3">
-            <h6 class="mb-0 me-auto">Notification</h6>
+            <h6 class="mb-0 me-auto">{{ __('Notifications') }}</h6>
             <div class="d-flex align-items-center h6 mb-0">
-              <span class="badge bg-label-primary me-2">{{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }} New</span>
+              <span class="badge bg-label-primary me-2">{{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }} {{ __('New') }}</span>
               <form action="{{ route('app-notifications-mark-all') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-link p-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
+                <button type="submit" class="btn btn-link p-2" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Mark all as read') }}">
                   <i class="icon-base bx bx-envelope-open text-heading"></i>
                 </button>
               </form>
@@ -272,7 +272,7 @@ use Illuminate\Support\Facades\Route;
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h6 class="small mb-0">{{ $notification->data['title'] ?? 'New Alert' }}</h6>
+                    <h6 class="small mb-0">{{ $notification->data['title'] ?? __('New Alert') }}</h6>
                     <small class="mb-1 d-block text-body">{{ $notification->data['message'] ?? '' }}</small>
                     <small class="text-body-secondary">{{ $notification->created_at->diffForHumans() }}</small>
                   </div>
@@ -285,17 +285,17 @@ use Illuminate\Support\Facades\Route;
                 </div>
               </li>
               @empty
-              <li class="list-group-item text-center py-4 text-muted small">No new notifications</li>
+              <li class="list-group-item text-center py-4 text-muted small">{{ __('No new notifications') }}</li>
               @endforelse
             @else
-              <li class="list-group-item text-center py-4 text-muted small">Please login to see notifications</li>
+              <li class="list-group-item text-center py-4 text-muted small">{{ __('Please login to see notifications') }}</li>
             @endif
           </ul>
         </li>
         <li class="border-top">
           <div class="d-grid p-4">
             <a class="btn btn-primary btn-sm d-flex" href="{{ route('app-notifications') }}">
-              <small class="align-middle">View all notifications</small>
+              <small class="align-middle">{{ __('View all notifications') }}</small>
             </a>
           </div>
         </li>
@@ -329,7 +329,7 @@ use Illuminate\Support\Facades\Route;
                   John Doe
                   @endif
                 </h6>
-                <small class="text-body-secondary">Admin</small>
+                <small class="text-body-secondary">{{ __('Admin') }}</small>
               </div>
             </div>
           </a>
@@ -340,13 +340,13 @@ use Illuminate\Support\Facades\Route;
         <li>
           <a class="dropdown-item"
             href="{{ Route::has('profile.show') ? route('profile.show') : route('pages-profile-user') }}">
-            <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
+            <i class="icon-base bx bx-user icon-md me-3"></i><span>{{ __('My Profile') }}</span>
           </a>
         </li>
         @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
         <li>
           <a class="dropdown-item" href="{{ route('api-tokens.index') }}">
-            <i class="icon-base bx bx-key icon-md me-3"></i><span>API Tokens</span>
+            <i class="icon-base bx bx-key icon-md me-3"></i><span>{{ __('API Tokens') }}</span>
           </a>
         </li>
         @endif
@@ -354,7 +354,7 @@ use Illuminate\Support\Facades\Route;
           <a class="dropdown-item" href="{{ route('app-user-view-billing') }}">
             <span class="d-flex align-items-center align-middle">
               <i class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i>
-              <span class="flex-grow-1 align-middle">Billing Plan</span>
+              <span class="flex-grow-1 align-middle">{{ __('Billing Plan') }}</span>
               <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
             </span>
           </a>

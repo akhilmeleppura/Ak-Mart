@@ -41,14 +41,14 @@
 @section('content')
 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
     <div>
-        <h4 class="fw-bold mb-0"><i class="bx bx-terminal text-primary me-2"></i> POS Quick Sale Terminal</h4>
-        <small class="text-muted">Barcode scanner ready • Real-time inventory sync • Instant receipt generation</small>
+        <h4 class="fw-bold mb-0"><i class="bx bx-terminal text-primary me-2"></i> {{ __('POS Quick Sale Terminal') }}</h4>
+        <small class="text-muted">{{ __('Barcode scanner ready • Real-time inventory sync • Instant receipt generation') }}</small>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <button class="btn btn-outline-warning btn-sm" onclick="resumeHeldSale()" id="btn-held-sales">
-            <i class="bx bx-pause-circle me-1"></i> Held Sales (<span id="held-count">0</span>)
+            <i class="bx bx-pause-circle me-1"></i> {{ __('Held Sales') }} (<span id="held-count">0</span>)
         </button>
-        <span class="badge bg-label-primary px-3 py-2 fs-6"><i class="bx bx-store me-1"></i> {{ auth()->user()->branch->name ?? 'AK-Mart Store' }}</span>
+        <span class="badge bg-label-primary px-3 py-2 fs-6"><i class="bx bx-store me-1"></i> {{ auth()->user()->branch->name ?? __('AK-Mart Store') }}</span>
     </div>
 </div>
 
@@ -59,12 +59,12 @@
             <div class="card-header border-bottom bg-surface py-3">
                 <div class="input-group input-group-lg mb-2">
                     <span class="input-group-text bg-white border-end-0"><i class="bx bx-barcode-reader text-primary fs-3"></i></span>
-                    <input type="text" id="barcode-search" class="form-control border-start-0 ps-0" placeholder="Scan Barcode / SKU / Product Name... (Press Enter)" autofocus>
+                    <input type="text" id="barcode-search" class="form-control border-start-0 ps-0" placeholder="{{ __('Scan Barcode / SKU / Product Name... (Press Enter)') }}" autofocus>
                 </div>
 
                 {{-- Category Filter Pills --}}
                 <div class="d-flex gap-1 overflow-auto py-1" id="category-filter">
-                    <button class="btn btn-xs btn-outline-primary category-pill active" onclick="filterCategory('')">All Products</button>
+                    <button class="btn btn-xs btn-outline-primary category-pill active" onclick="filterCategory('')">{{ __('All Products') }}</button>
                     @foreach($categories as $cat)
                         <button class="btn btn-xs btn-outline-primary category-pill" onclick="filterCategory('{{ $cat->id }}')">{{ $cat->name }}</button>
                     @endforeach
@@ -77,7 +77,7 @@
                         <div class="card border pos-product-card h-100" onclick="addToCart({{ $p->id }}, '{{ addslashes($p->name) }}', {{ $p->price }}, {{ $p->qty }})">
                             <div class="position-relative">
                                 <img src="{{ asset($p->image ?: 'assets/img/ecommerce-images/product-1.png') }}" class="card-img-top" height="100" style="object-fit: cover;" onerror="this.src='{{ asset('assets/img/ecommerce-images/product-1.png') }}'">
-                                <span class="position-absolute top-0 end-0 badge bg-dark opacity-75 m-1 small">{{ $p->category?->name ?? 'General' }}</span>
+                                <span class="position-absolute top-0 end-0 badge bg-dark opacity-75 m-1 small">{{ $p->category?->name ?? __('General') }}</span>
                             </div>
                             <div class="card-body p-2 d-flex flex-column justify-content-between">
                                 <h6 class="mb-1 text-truncate fw-bold text-heading small" title="{{ $p->name }}">{{ $p->name }}</h6>
@@ -85,10 +85,10 @@
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-primary fw-bold">${{ number_format($p->price, 2) }}</span>
                                         <small class="badge {{ $p->qty > 5 ? 'bg-label-success' : ($p->qty > 0 ? 'bg-label-warning' : 'bg-label-danger') }}">
-                                            Stock: {{ $p->qty }}
+                                            {{ __('Stock') }}: {{ $p->qty }}
                                         </small>
                                     </div>
-                                    <small class="text-muted d-block small">SKU: {{ $p->sku ?: 'N/A' }}</small>
+                                    <small class="text-muted d-block small">{{ __('SKU') }}: {{ $p->sku ?: 'N/A' }}</small>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                     @empty
                     <div class="col-12 text-center py-5 text-muted">
                         <i class="bx bx-package fs-1 opacity-50 mb-2 d-block"></i>
-                        No active products found in inventory.
+                        {{ __('No active products found in inventory.') }}
                     </div>
                     @endforelse
                 </div>
@@ -110,11 +110,11 @@
             {{-- Customer Selector --}}
             <div class="card-header border-bottom bg-light py-2">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label small fw-bold mb-0"><i class="bx bx-user text-primary me-1"></i> Customer</label>
-                    <a href="javascript:void(0);" class="small text-primary" onclick="clearCart()"><i class="bx bx-trash me-1"></i> Clear Cart</a>
+                    <label class="form-label small fw-bold mb-0"><i class="bx bx-user text-primary me-1"></i> {{ __('Customer') }}</label>
+                    <a href="javascript:void(0);" class="small text-primary" onclick="clearCart()"><i class="bx bx-trash me-1"></i> {{ __('Clear Cart') }}</a>
                 </div>
                 <select id="pos-customer-select" class="form-select form-select-sm">
-                    <option value="">Walk-in Customer (General)</option>
+                    <option value="">{{ __('Walk-in Customer (General)') }}</option>
                     @foreach($customers as $c)
                         <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->email }})</option>
                     @endforeach
@@ -133,32 +133,32 @@
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text">Disc $</span>
+                            <span class="input-group-text">{{ __('Disc $') }}</span>
                             <input type="number" id="cart-discount" class="form-control" value="0" min="0" oninput="renderCart()">
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text">Tax %</span>
+                            <span class="input-group-text">{{ __('Tax %') }}</span>
                             <input type="number" id="cart-tax-rate" class="form-control" value="5" min="0" oninput="renderCart()">
                         </div>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-between mb-1 text-muted small">
-                    <span>Subtotal</span>
+                    <span>{{ __('Subtotal') }}</span>
                     <span id="subtotal" class="fw-semibold">$0.00</span>
                 </div>
                 <div class="d-flex justify-content-between mb-1 text-muted small">
-                    <span>Discount</span>
+                    <span>{{ __('Discount') }}</span>
                     <span id="discount-amount" class="text-danger">-$0.00</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2 text-muted small">
-                    <span>Tax Amount</span>
+                    <span>{{ __('Tax Amount') }}</span>
                     <span id="tax-amount" class="fw-semibold">$0.00</span>
                 </div>
                 <div class="d-flex justify-content-between mb-3 border-top pt-2">
-                    <h5 class="fw-bold mb-0">Total Payable</h5>
+                    <h5 class="fw-bold mb-0">{{ __('Total Payable') }}</h5>
                     <h4 id="total" class="fw-bold text-primary mb-0">$0.00</h4>
                 </div>
 
@@ -166,24 +166,24 @@
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <button class="btn btn-outline-warning w-100 btn-sm" onclick="holdCurrentSale()">
-                            <i class="bx bx-pause me-1"></i> Hold Sale
+                            <i class="bx bx-pause me-1"></i> {{ __('Hold Sale') }}
                         </button>
                     </div>
                     <div class="col-6">
                         <button class="btn btn-outline-info w-100 btn-sm" onclick="checkout('upi')">
-                            <i class="bx bx-qr me-1"></i> UPI / QR
+                            <i class="bx bx-qr me-1"></i> {{ __('UPI / QR') }}
                         </button>
                     </div>
                 </div>
                 <div class="row g-2">
                     <div class="col-6">
                         <button class="btn btn-success w-100 py-2 fw-bold" onclick="checkout('cash')">
-                            <i class="bx bx-money me-1"></i> Cash Checkout
+                            <i class="bx bx-money me-1"></i> {{ __('Cash Checkout') }}
                         </button>
                     </div>
                     <div class="col-6">
                         <button class="btn btn-primary w-100 py-2 fw-bold" onclick="checkout('card')">
-                            <i class="bx bx-credit-card me-1"></i> Card Checkout
+                            <i class="bx bx-credit-card me-1"></i> {{ __('Card Checkout') }}
                         </button>
                     </div>
                 </div>
@@ -197,15 +197,15 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header border-bottom pb-2">
-                <h5 class="modal-title fw-bold" id="receiptModalLabel">Sales Receipt</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title fw-bold" id="receiptModalLabel">{{ __('Sales Receipt') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
             </div>
             <div class="modal-body py-3" id="receiptContent">
                 <!-- Dynamic Receipt Content -->
             </div>
             <div class="modal-footer border-top pt-2">
-                <button type="button" class="btn btn-label-secondary btn-sm" data-bs-dismiss="modal">Done</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="bx bx-printer me-1"></i> Print Receipt</button>
+                <button type="button" class="btn btn-label-secondary btn-sm" data-bs-dismiss="modal">{{ __('Done') }}</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="bx bx-printer me-1"></i> {{ __('Print Receipt') }}</button>
             </div>
         </div>
     </div>

@@ -445,6 +445,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/app/ecommerce/settings/ai/save', [AISettingsController::class, 'store']);
     Route::post('/api/ai/copilot-chat', [\App\Http\Controllers\apps\AIProductToolsController::class, 'copilotChat'])->name('app-ai-copilot-chat');
     Route::post('/api/ai/generate-content', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent'])->name('app-ai-generate-content');
+    Route::post('/app/ecommerce/ai/generate', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent']);
     Route::post('/api/ai/quality-score', [\App\Http\Controllers\apps\AIProductToolsController::class, 'calculateQualityScore'])->name('app-ai-quality-score');
     Route::post('/api/ai/extract-attributes', [\App\Http\Controllers\apps\AIProductToolsController::class, 'extractAttributes'])->name('app-ai-extract-attributes');
     Route::post('/api/ai/suggest-category', [\App\Http\Controllers\apps\AIProductToolsController::class, 'suggestCategory'])->name('app-ai-suggest-category');

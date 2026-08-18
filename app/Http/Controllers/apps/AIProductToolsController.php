@@ -21,6 +21,7 @@ class AIProductToolsController extends Controller
         $category = $request->input('category', '');
         $brand = $request->input('brand', '');
         $type = $request->input('type', 'all'); // description, seo, bullet_points, tags, all
+        $locale = $request->input('locale') ?: app()->getLocale() ?: 'en';
 
         if (empty($title)) {
             return response()->json(['success' => false, 'message' => 'Product title is required.'], 422);
@@ -29,37 +30,158 @@ class AIProductToolsController extends Controller
         $apiKey = StoreSetting::get('gemini_api_key') ?: env('GEMINI_API_KEY');
         $aiMode = StoreSetting::get('ai_mode', 'gemini');
 
-        // Deterministic Fallback & Fast Assistant Engine
-        $generated = [
-            'description'       => "Experience exceptional performance and refined design with the all-new {$title}. Built with precision engineering, premium materials, and cutting-edge features to elevate your everyday experience.",
-            'short_description' => "Premium {$title} featuring high-grade durability, sleek modern aesthetics, and superior performance.",
-            'bullet_points'     => [
-                "✓ Premium build quality engineered for long-lasting durability",
-                "✓ Designed for seamless usability and maximum efficiency",
-                "✓ Full manufacturer warranty with 24/7 dedicated support",
-                "✓ Fast shipping & hassle-free 30-day return policy",
-            ],
-            'meta_title'        => "{$title} — Buy Online at Best Price | AK-Mart",
-            'meta_description'  => "Shop {$title} online with exclusive discounts, guaranteed authentic quality, and fast home delivery from AK-Mart.",
-            'tags'              => array_values(array_filter([
-                Str::slug($title),
-                $brand ? Str::slug($brand) : null,
-                $category ? Str::slug($category) : null,
-                'bestseller',
-                'ecommerce',
-                'new-arrival'
-            ])),
-            'alt_text'          => "{$title} product showcase image - AK-Mart Store",
-        ];
+        // Deterministic Multilingual Fallback Engine
+        if ($locale === 'ml') {
+            $generated = [
+                'description'       => "പുതിയ {$title} മികച്ച ഗുണമേന്മയോടും അത്യാധുനിക സവിശേഷതകളോടും കൂടി നിങ്ങളുടെ ദൈനംദിന ആവശ്യങ്ങൾ നിറവേറ്റുന്നു. ദീർഘകാല ഈടുനിൽപ്പും പ്രീമിയം ഡിസൈനും ഇതിന്റെ പ്രത്യേകതയാണ്.",
+                'short_description' => "പ്രീമിയം ഗുണനിലവാരമുള്ള {$title}, മികച്ച പ്രകടനവും ഈടുനിൽപ്പും നൽകുന്നു.",
+                'bullet_points'     => [
+                    "✓ ഉയർന്ന നിലവാരമുള്ളതും ദീർഘകാലം ഈടുനിൽക്കുന്നതുമായ നിർമ്മാണം",
+                    "✓ എളുപ്പമുള്ള ഉപയോഗവും ഉയർന്ന കാര്യക്ഷമതയും",
+                    "✓ കമ്പനി വാറന്റിയും 24/7 സപ്പോർട്ടും",
+                    "✓ വേഗത്തിലുള്ള ഡെലിവറിയും 30 ദിവസത്തെ റിട്ടേൺ പോളിസിയും",
+                ],
+                'meta_title'        => "{$title} — മികച്ച വിലയിൽ ഓൺലൈനായി വാങ്ങൂ | AK-Mart",
+                'meta_description'  => "{$title} മികച്ച ഓഫറുകളോടും ഫാസ്റ്റ് ഡെലിവറിയോടും കൂടി AK-Mart-ൽ നിന്ന് ഓൺലൈനായി വാങ്ങൂ.",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "{$title} ഉൽപ്പന്ന ചിത്രം - AK-Mart",
+            ];
+        } elseif ($locale === 'hi') {
+            $generated = [
+                'description'       => "नया {$title} अपनी उत्कृष्ट गुणवत्ता और आधुनिक डिज़ाइन के साथ आपके अनुभव को बेहतर बनाता है। यह लंबे समय तक चलने वाला और विश्वसनीय है।",
+                'short_description' => "प्रीमियम {$title} उच्च गुणवत्ता और आधुनिक डिज़ाइन के साथ।",
+                'bullet_points'     => [
+                    "✓ लंबे समय तक चलने वाली टिकाऊ प्रीमियम बनावट",
+                    "✓ आसान उपयोग और अधिकतम दक्षता",
+                    "✓ निर्माता वारंटी और 24/7 ग्राहक सहायता",
+                    "✓ तेज़ डिलीवरी और 30 दिनों की आसान वापसी नीति",
+                ],
+                'meta_title'        => "{$title} — सर्वोत्तम मूल्य पर ऑनलाइन खरीदें | AK-Mart",
+                'meta_description'  => "{$title} विशेष छूट और तेज़ होम डिलीवरी के साथ AK-Mart पर ऑनलाइन खरीदें।",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "{$title} उत्पाद चित्र - AK-Mart",
+            ];
+        } elseif ($locale === 'ar') {
+            $generated = [
+                'description'       => "تم تصميم {$title} الجديد بدقة عالية وجودة فائقة ليوفر لك تجربة استثنائية وأداءً يدوم طويلاً.",
+                'short_description' => "{$title} الفاخر بتصميم عصري وأداء متميز ومتانة تدوم طويلاً.",
+                'bullet_points'     => [
+                    "✓ جودة تصنيع ممتازة مصممة للاستخدام الطويل",
+                    "✓ سهولة في الاستخدام وكفاءة فائقة",
+                    "✓ ضمان شامل من الشركة المصنعة مع دعم على مدار الساعة",
+                    "✓ شحن سريع وسياسة إرجاع سهلة خلال 30 يوماً",
+                ],
+                'meta_title'        => "{$title} — اشترِ الآن بأفضل سعر أونلاين | AK-Mart",
+                'meta_description'  => "تسوق {$title} عبر الإنترنت مع خصومات حصرية وجودة مضمونة وتوصيل سريع من AK-Mart.",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "صورة منتج {$title} - متجر AK-Mart",
+            ];
+        } elseif ($locale === 'fr') {
+            $generated = [
+                'description'       => "Découvrez des performances exceptionnelles et un design raffiné avec le tout nouveau {$title}. Conçu avec précision pour sublimer votre quotidien.",
+                'short_description' => "{$title} haut de gamme alliant durabilité, esthétique moderne et performances supérieures.",
+                'bullet_points'     => [
+                    "✓ Qualité de fabrication supérieure pour une durabilité maximale",
+                    "✓ Conçu pour une utilisation intuitive et une grande efficacité",
+                    "✓ Garantie complète du fabricant avec assistance dédiée 24/7",
+                    "✓ Livraison rapide et politique de retour sous 30 jours",
+                ],
+                'meta_title'        => "{$title} — Acheter en ligne au meilleur prix | AK-Mart",
+                'meta_description'  => "Achetez {$title} en ligne avec des réductions exclusives et une livraison rapide chez AK-Mart.",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "Photo du produit {$title} - AK-Mart",
+            ];
+        } elseif ($locale === 'de') {
+            $generated = [
+                'description'       => "Erleben Sie herausragende Leistung und edles Design mit dem neuen {$title}. Präzise gefertigt für höchste Ansprüche im Alltag.",
+                'short_description' => "Hochwertiges {$title} mit modernem Design, langer Lebensdauer und überlegener Leistung.",
+                'bullet_points'     => [
+                    "✓ Erstklassige Verarbeitungsqualität für lange Haltbarkeit",
+                    "✓ Entwickelt für nahtlose Bedienung und maximale Effizienz",
+                    "✓ Volle Herstellergarantie mit 24/7-Kundendienst",
+                    "✓ Schneller Versand und 30 Tage Rückgaberecht",
+                ],
+                'meta_title'        => "{$title} — Online zum besten Preis kaufen | AK-Mart",
+                'meta_description'  => "Kaufen Sie {$title} online mit exklusiven Rabatten und schneller Lieferung bei AK-Mart.",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "Produktbild {$title} - AK-Mart",
+            ];
+        } else {
+            $generated = [
+                'description'       => "Experience exceptional performance and refined design with the all-new {$title}. Built with precision engineering, premium materials, and cutting-edge features to elevate your everyday experience.",
+                'short_description' => "Premium {$title} featuring high-grade durability, sleek modern aesthetics, and superior performance.",
+                'bullet_points'     => [
+                    "✓ Premium build quality engineered for long-lasting durability",
+                    "✓ Designed for seamless usability and maximum efficiency",
+                    "✓ Full manufacturer warranty with 24/7 dedicated support",
+                    "✓ Fast shipping & hassle-free 30-day return policy",
+                ],
+                'meta_title'        => "{$title} — Buy Online at Best Price | AK-Mart",
+                'meta_description'  => "Shop {$title} online with exclusive discounts, guaranteed authentic quality, and fast home delivery from AK-Mart.",
+                'tags'              => array_values(array_filter([
+                    Str::slug($title),
+                    $brand ? Str::slug($brand) : null,
+                    $category ? Str::slug($category) : null,
+                    'bestseller',
+                    'ecommerce',
+                    'new-arrival'
+                ])),
+                'alt_text'          => "{$title} product showcase image - AK-Mart Store",
+            ];
+        }
 
         // Live Gemini API call if key is present
         if ($apiKey && $aiMode !== 'manual') {
             try {
-                $prompt = "You are a professional e-commerce copywriter. Generate structured product content for:\n"
+                $langPrompt = match($locale) {
+                    'ml' => 'Write all text in Malayalam language (മലയാളത്തിൽ എഴുതുക).',
+                    'hi' => 'Write all text in Hindi language (हिन्दी में लिखें).',
+                    'ar' => 'Write all text in Arabic language (اكتب باللغة العربية).',
+                    'fr' => 'Write all text in French language (Rédigez en français).',
+                    'de' => 'Write all text in German language (Schreiben Sie auf Deutsch).',
+                    default => 'Write in English.',
+                };
+
+                $prompt = "You are a professional e-commerce copywriter. {$langPrompt} Generate structured product content for:\n"
                     . "Title: {$title}\nCategory: {$category}\nBrand: {$brand}\n\n"
                     . "Return ONLY valid JSON with the exact keys: description, short_description, bullet_points (array of strings), meta_title, meta_description, tags (array of strings), alt_text.";
 
-                $res = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", [
+                $res = Http::timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", [
                     'contents' => [
                         ['role' => 'user', 'parts' => [['text' => $prompt]]]
                     ],

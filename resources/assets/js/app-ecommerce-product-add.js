@@ -206,19 +206,23 @@ $(function () {
     const btn = $(this);
     
     if (!title) {
-      alert('Please enter a product title first.');
+      alert(window.__('Please enter a product title first.') || 'Please enter a product title first.');
       return;
     }
 
     const originalText = btn.html();
-    btn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...');
+    const generatingText = window.__('Generating...') || 'Generating...';
+    btn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> ' + generatingText);
     btn.prop('disabled', true);
+
+    const currentLocale = (window.AK_I18N && window.AK_I18N.locale) ? window.AK_I18N.locale : 'en';
 
     $.ajax({
       url: baseUrl + 'app/ecommerce/ai/generate',
       type: 'POST',
       data: {
         title: title,
+        locale: currentLocale,
         _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
       success: function(response) {
@@ -229,13 +233,13 @@ $(function () {
           $('textarea[name="meta_description"]').val(response.data.meta_description);
           
           // Show a simple toast or alert
-          alert('Content generated successfully!');
+          alert(window.__('Content generated successfully!') || 'Content generated successfully!');
         } else {
           alert('Error: ' + response.message);
         }
       },
       error: function() {
-        alert('An error occurred while generating content. Please check your API configuration.');
+        alert(window.__('An error occurred while generating content. Please check your API configuration.') || 'An error occurred while generating content. Please check your API configuration.');
       },
       complete: function() {
         btn.html(originalText);

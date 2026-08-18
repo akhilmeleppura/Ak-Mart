@@ -5,11 +5,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h4 class="fw-bold mb-1"><i class="bx bx-import text-primary me-2"></i> Universal E-Commerce Product Importer</h4>
-        <p class="text-muted small mb-0">Extract structured catalog data from Amazon, Flipkart, Meesho, Shopify, WooCommerce, or batch upload CSV/JSON</p>
+        <h4 class="fw-bold mb-1"><i class="bx bx-import text-primary me-2"></i> {{ __('Universal E-Commerce Product Importer') }}</h4>
+        <p class="text-muted small mb-0">{{ __('Extract structured catalog data from Amazon, Flipkart, Meesho, Shopify, WooCommerce, or batch upload CSV/JSON') }}</p>
     </div>
     <a href="{{ route('app-ecommerce-product-list') }}" class="btn btn-label-secondary">
-        <i class="bx bx-arrow-back me-1"></i> Product List
+        <i class="bx bx-arrow-back me-1"></i> {{ __('Product List') }}
     </a>
 </div>
 
@@ -17,7 +17,7 @@
 @if(session('warning'))
     <div class="alert alert-warning alert-dismissible mb-4" role="alert">
         <i class="bx bx-error-circle me-1"></i> {{ session('warning') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('Close') }}"></button>
     </div>
 @endif
 
@@ -26,12 +26,12 @@
     <div class="col-lg-6">
         <div class="card h-100 border shadow-sm">
             <div class="card-header border-bottom bg-label-primary d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0 text-primary"><i class="bx bx-link me-1"></i> Extract from Any E-Commerce URL</h5>
-                <span class="badge bg-primary">Universal Engine</span>
+                <h5 class="card-title mb-0 text-primary"><i class="bx bx-link me-1"></i> {{ __('Extract from Any E-Commerce URL') }}</h5>
+                <span class="badge bg-primary">{{ __('Universal Engine') }}</span>
             </div>
             <div class="card-body py-4">
                 <p class="small text-muted mb-2">
-                    Enter any product link. Our multi-platform router automatically detects the store type and extracts title, selling price, list price (MRP), high-res images, brand, specifications, variants, and bullet points.
+                    {{ __('Enter any product link. Our multi-platform router automatically detects the store type and extracts title, selling price, list price (MRP), high-res images, brand, specifications, variants, and bullet points.') }}
                 </p>
                 <div class="d-flex flex-wrap gap-1 mb-3">
                     <span class="badge bg-label-warning"><i class="bx bxl-amazon me-1"></i> Amazon</span>
@@ -43,12 +43,12 @@
                 <form action="{{ route('app-product-import-url') }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Target Product URL</label>
+                        <label class="form-label fw-semibold">{{ __('Target Product URL') }}</label>
                         <div class="input-group">
                             <input type="url" name="product_url" class="form-control" placeholder="https://amazon.in/dp/... or https://flipkart.com/... or https://store.myshopify.com/..." required>
-                            <button type="submit" class="btn btn-primary"><i class="bx bx-search-alt me-1"></i> Extract Product</button>
+                            <button type="submit" class="btn btn-primary"><i class="bx bx-search-alt me-1"></i> {{ __('Extract Product') }}</button>
                         </div>
-                        <small class="text-muted"><i class="bx bx-shield-check me-1 text-success"></i> SSRF protected with automatic platform detection & canonicalization</small>
+                        <small class="text-muted"><i class="bx bx-shield-check me-1 text-success"></i> {{ __('SSRF protected with automatic platform detection & canonicalization') }}</small>
                     </div>
                 </form>
             </div>
@@ -59,17 +59,17 @@
     <div class="col-lg-6">
         <div class="card h-100 border shadow-sm">
             <div class="card-header border-bottom bg-label-success">
-                <h5 class="card-title mb-0 text-success"><i class="bx bx-file me-1"></i> Batch CSV / JSON File Import</h5>
+                <h5 class="card-title mb-0 text-success"><i class="bx bx-file me-1"></i> {{ __('Batch CSV / JSON File Import') }}</h5>
             </div>
             <div class="card-body py-4">
-                <p class="small text-muted mb-3">Upload catalog sheets in CSV, Excel or JSON format. All products will be staged for verification before publishing to the live catalog.</p>
+                <p class="small text-muted mb-3">{{ __('Upload catalog sheets in CSV, Excel or JSON format. All products will be staged for verification before publishing to the live catalog.') }}</p>
                 <form action="{{ route('app-product-import-file') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Choose File (CSV, JSON)</label>
+                        <label class="form-label fw-semibold">{{ __('Choose File (CSV, JSON)') }}</label>
                         <div class="input-group">
                             <input type="file" name="import_file" class="form-control" accept=".csv,.json,.txt" required>
-                            <button type="submit" class="btn btn-success"><i class="bx bx-upload me-1"></i> Upload</button>
+                            <button type="submit" class="btn btn-success"><i class="bx bx-upload me-1"></i> {{ __('Upload') }}</button>
                         </div>
                     </div>
                 </form>
@@ -82,22 +82,22 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
-            <h5 class="card-title mb-0">Import Staging & Verification Queue ({{ $drafts->count() }})</h5>
-            <small class="text-muted">Review, edit, and publish imported draft products to the live store.</small>
+            <h5 class="card-title mb-0">{{ __('Import Staging & Verification Queue') }} ({{ $drafts->count() }})</h5>
+            <small class="text-muted">{{ __('Review, edit, and publish imported draft products to the live store.') }}</small>
         </div>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Platform</th>
-                    <th>Extracted Product</th>
-                    <th>Price / MRP</th>
-                    <th>Identifier / SKU</th>
-                    <th>Extraction Quality</th>
-                    <th>Staging Status</th>
-                    <th>Imported At</th>
-                    <th class="text-end">Actions</th>
+                    <th>{{ __('Platform') }}</th>
+                    <th>{{ __('Extracted Product') }}</th>
+                    <th>{{ __('Price / MRP') }}</th>
+                    <th>{{ __('Identifier / SKU') }}</th>
+                    <th>{{ __('Extraction Quality') }}</th>
+                    <th>{{ __('Staging Status') }}</th>
+                    <th>{{ __('Imported At') }}</th>
+                    <th class="text-end">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,7 +124,7 @@
                                     @endif
                                 </span>
                             @else
-                                <span class="badge bg-label-success"><i class="bx bx-file me-1"></i> File Upload</span>
+                                <span class="badge bg-label-success"><i class="bx bx-file me-1"></i> {{ __('File Upload') }}</span>
                             @endif
                         </td>
                         <td>
@@ -155,24 +155,24 @@
                         </td>
                         <td>
                             @if($d->status === 'published')
-                                <span class="badge bg-success">Published</span>
+                                <span class="badge bg-success">{{ __('Published') }}</span>
                             @else
-                                <span class="badge bg-warning">Draft (Review Needed)</span>
+                                <span class="badge bg-warning">{{ __('Draft (Review Needed)') }}</span>
                             @endif
                         </td>
                         <td><small>{{ $d->created_at->diffForHumans() }}</small></td>
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-1">
                                 <a href="{{ route('app-product-import-review', $d->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="bx bx-edit-alt me-1"></i> Review & Publish
+                                    <i class="bx bx-edit-alt me-1"></i> {{ __('Review & Publish') }}
                                 </a>
-                                <form action="{{ route('app-product-import-destroy', $d->id) }}" method="POST" onsubmit="return confirm('Discard this imported draft?');">
+                                <form action="{{ route('app-product-import-destroy', $d->id) }}" method="POST" onsubmit="return confirm('{{ __('Discard this imported draft?') }}');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
                                         <i class="bx bx-trash"></i>
                                     </button>
-                                </form>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -180,7 +180,7 @@
                     <tr>
                         <td colspan="8" class="text-center py-5 text-muted">
                             <i class="bx bx-inbox fs-1 d-block mb-2"></i>
-                            No imported products in staging queue. Enter any e-commerce URL or upload a file above.
+                            {{ __('No imported products in staging queue. Enter any e-commerce URL or upload a file above.') }}
                         </td>
                     </tr>
                 @endforelse

@@ -105,7 +105,7 @@
       <div class="col-md-3 product_category"></div>
       <div class="col-md-3 product_stock"></div>
       <div class="col-md-3">
-        <input type="text" class="form-control date-picker" placeholder="Filter by Date Range" id="dateRange" />
+        <input type="text" class="form-control date-picker" placeholder="{{ __('Filter by Date Range') }}" id="dateRange" />
       </div>
     </div>
   </div>

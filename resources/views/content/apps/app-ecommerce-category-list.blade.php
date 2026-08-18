@@ -43,10 +43,10 @@
 @section('content')
 <div class="card mb-6">
   <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-    <h5 class="card-title mb-0">Categories</h5>
+    <h5 class="card-title mb-0">{{ __('Categories') }}</h5>
     <div class="d-flex align-items-center gap-3">
         <div class="w-px-250">
-            <input type="text" class="form-control date-picker" placeholder="Filter by Date Range" id="dateRange" />
+            <input type="text" class="form-control date-picker" placeholder="{{ __('Filter by Date Range') }}" id="dateRange" />
         </div>
     </div>
   </div>
@@ -59,13 +59,13 @@
       <div class="nav-align-top">
         <ul class="nav nav-tabs nav-fill" role="tablist">
           <li class="nav-item">
-            <button type="button" class="nav-link active category-filter" data-filter="all" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-all" aria-controls="navs-justified-all" aria-selected="true"><i class="icon-base bx bx-list-ul me-2"></i> All Categories</button>
+            <button type="button" class="nav-link active category-filter" data-filter="all" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-all" aria-controls="navs-justified-all" aria-selected="true"><i class="icon-base bx bx-list-ul me-2"></i> {{ __('All Categories') }}</button>
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link category-filter" data-filter="parent" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-parent" aria-controls="navs-justified-parent" aria-selected="false"><i class="icon-base bx bx-folder me-2"></i> Main Categories</button>
+            <button type="button" class="nav-link category-filter" data-filter="parent" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-parent" aria-controls="navs-justified-parent" aria-selected="false"><i class="icon-base bx bx-folder me-2"></i> {{ __('Main Categories') }}</button>
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link category-filter" data-filter="sub" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-sub" aria-controls="navs-justified-sub" aria-selected="false"><i class="icon-base bx bx-git-branch me-2"></i> Sub-Categories</button>
+            <button type="button" class="nav-link category-filter" data-filter="sub" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-sub" aria-controls="navs-justified-sub" aria-selected="false"><i class="icon-base bx bx-git-branch me-2"></i> {{ __('Sub-Categories') }}</button>
           </li>
         </ul>
       </div>
@@ -80,10 +80,10 @@
           <tr>
             <th></th>
             <th></th>
-            <th>Categories</th>
-            <th class="text-nowrap text-sm-end">Total Products &nbsp;</th>
-            <th class="text-nowrap text-sm-end">Total Earning</th>
-            <th class="text-lg-center">Actions</th>
+            <th>{{ __('Categories') }}</th>
+            <th class="text-nowrap text-sm-end">{{ __('Total Products') }} &nbsp;</th>
+            <th class="text-nowrap text-sm-end">{{ __('Total Earning') }}</th>
+            <th class="text-lg-center">{{ __('Actions') }}</th>
           </tr>
         </thead>
       </table>
@@ -94,8 +94,8 @@
     aria-labelledby="offcanvasEcommerceCategoryListLabel">
     <!-- Offcanvas Header -->
     <div class="offcanvas-header py-6">
-      <h5 id="offcanvasEcommerceCategoryListLabel" class="offcanvas-title">Add Category</h5>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      <h5 id="offcanvasEcommerceCategoryListLabel" class="offcanvas-title">{{ __('Add Category') }}</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="{{ __('Close') }}"></button>
     </div>
     <!-- Offcanvas Body -->
     <div class="offcanvas-body border-top">
@@ -105,27 +105,27 @@
         <input type="hidden" name="id" id="categoryId">
         <!-- Title -->
         <div class="mb-6 form-control-validation">
-          <label class="form-label" for="ecommerce-category-title">Title</label>
-          <input type="text" class="form-control" id="ecommerce-category-title" placeholder="Enter category title"
+          <label class="form-label" for="ecommerce-category-title">{{ __('Title') }}</label>
+          <input type="text" class="form-control" id="ecommerce-category-title" placeholder="{{ __('Enter category title') }}"
             name="categoryTitle" aria-label="category title" />
         </div>
         <!-- Slug -->
         <div class="mb-6 form-control-validation">
-          <label class="form-label" for="ecommerce-category-slug">Slug</label>
-          <input type="text" id="ecommerce-category-slug" class="form-control" placeholder="Enter slug"
+          <label class="form-label" for="ecommerce-category-slug">{{ __('Slug') }}</label>
+          <input type="text" id="ecommerce-category-slug" class="form-control" placeholder="{{ __('Enter slug') }}"
             aria-label="slug" name="slug" />
         </div>
         <!-- Image -->
         <div class="mb-6">
-          <label class="form-label" for="ecommerce-category-image">Attachment</label>
+          <label class="form-label" for="ecommerce-category-image">{{ __('Attachment') }}</label>
           <input class="form-control" type="file" id="ecommerce-category-image" />
         </div>
         <!-- Parent category -->
         <div class="mb-6 ecommerce-select2-dropdown">
-          <label class="form-label" for="ecommerce-category-parent-category">Parent category</label>
+          <label class="form-label" for="ecommerce-category-parent-category">{{ __('Parent category') }}</label>
           <select id="ecommerce-category-parent-category" name="parent_id" class="select2 form-select"
-            data-placeholder="Select parent category">
-            <option value="">Select parent Category</option>
+            data-placeholder="{{ __('Select parent category') }}">
+            <option value="">{{ __('Select parent category') }}</option>
             @foreach($parentCategories as $parent)
               <option value="{{ $parent->id }}">{{ $parent->name }}</option>
             @endforeach
@@ -133,7 +133,7 @@
         </div>
         <!-- Description -->
         <div class="mb-6">
-          <label class="form-label">Description</label>
+          <label class="form-label">{{ __('Description') }}</label>
           <div class="form-control p-0 py-1">
             <div class="comment-editor border-0" id="ecommerce-category-description"></div>
             <div class="comment-toolbar border-0 rounded">
@@ -153,19 +153,19 @@
         </div>
         <!-- Status -->
         <div class="mb-6 ecommerce-select2-dropdown">
-          <label class="form-label">Select category status</label>
-          <select id="ecommerce-category-status" name="status" class="select2 form-select" data-placeholder="Select category status">
-            <option value="">Select category status</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Publish">Publish</option>
-            <option value="Inactive">Inactive</option>
+          <label class="form-label">{{ __('Select category status') }}</label>
+          <select id="ecommerce-category-status" name="status" class="select2 form-select" data-placeholder="{{ __('Select category status') }}">
+            <option value="">{{ __('Select category status') }}</option>
+            <option value="Scheduled">{{ __('Scheduled') }}</option>
+            <option value="Publish">{{ __('Publish') }}</option>
+            <option value="Inactive">{{ __('Inactive') }}</option>
           </select>
         </div>
         <!-- Submit and reset -->
         <div class="mb-6">
           <input type="hidden" name="description" id="hiddenDescription">
-          <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Add</button>
-          <button type="reset" class="btn btn-label-danger" data-bs-dismiss="offcanvas">Discard</button>
+          <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">{{ __('Add') }}</button>
+          <button type="reset" class="btn btn-label-danger" data-bs-dismiss="offcanvas">{{ __('Discard') }}</button>
         </div>
       </form>
     </div>
