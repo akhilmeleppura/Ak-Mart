@@ -1,165 +1,113 @@
-# AK Mart Developer Dashboard
+# 🛒 AK-MART — Enterprise Multi-Branch E-Commerce & Retail OS
 
-A complete multi-branch eCommerce administration platform built with **Laravel 12**, **Jetstream**, **Livewire 3**, **Spatie Permissions**, and **Laravel Modules**.
+<p align="center">
+  <img src="public/assets/img/branding/ak-mart-logo.svg" alt="AK-Mart Logo" width="180" />
+</p>
 
-AK Mart is designed for businesses that need centralized control over multiple branches, products, inventory, orders, user roles, and analytics from a modern dashboard.
+<p align="center">
+  <strong>Production-Grade Multi-Branch E-Commerce + Retail POS + Smart AI Importer + B2B Wholesale + Inventory 2.0 + WhatsApp & Email Communication Platform</strong>
+</p>
 
----
-
-## 🚀 Key Features
-
-### 🏢 Multi-Branch Management
-
-* Unlimited branches/stores
-* Branch-specific inventory
-* Branch managers and staff
-* Branch performance analytics
-
-### 🛍️ Product Management
-
-* Categories and subcategories
-* Product variants (size, color, etc.)
-* SKU generation
-* Pricing and compare-at pricing
-* Stock tracking
-* SEO metadata
-
-### 📦 Inventory Management
-
-* Real-time stock updates
-* Low stock alerts
-* Branch-wise stock counts
-
-### 🛒 Order Management
-
-* Order lifecycle tracking
-* Payment status tracking
-* Order items and totals
-* Delivered, Pending, Cancelled statuses
-
-### 👥 User & Role Management
-
-* Super Admin
-* Branch Manager
-* Staff roles
-* Permission-based access control
-
-### 📊 Analytics Dashboard
-
-* Sales reports
-* Branch performance
-* Product performance
-* Revenue charts
-
-### 🔐 Authentication & Security
-
-* Laravel Jetstream authentication
-* Sanctum API authentication
-* Email verification
-* CSRF protection
-
-### ⚙️ Modular Architecture
-
-* Built using `nwidart/laravel-modules`
-* Easy to extend and maintain
-
-### 🎨 Premium Admin UI
-
-* Sneat Admin Theme integration
-* Responsive design
-* Dark/light mode support
+<p align="center">
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 12" /></a>
+  <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2" /></a>
+  <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3.x-FB70A9?style=for-the-badge&logo=livewire&logoColor=white" alt="Livewire 3" /></a>
+  <a href="https://www.postgresql.org"><img src="https://img.shields.io/badge/PostgreSQL-Ready-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL Ready" /></a>
+  <a href="https://www.mysql.com"><img src="https://img.shields.io/badge/MySQL-Supported-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL Supported" /></a>
+  <img src="https://img.shields.io/badge/Tests-75%20Passed%20%7C%20321%20Assertions-brightgreen?style=for-the-badge&logo=checkmarx" alt="Tests" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License MIT" /></a>
+</p>
 
 ---
 
-# 🏗️ Tech Stack
+## 🌟 Overview
 
-| Technology                  | Version   |
-| --------------------------- | --------- |
-| PHP                         | 8.2+      |
-| Laravel                     | 12.x      |
-| Livewire                    | 3.x       |
-| Jetstream                   | 5.x       |
-| Sanctum                     | 4.x       |
-| Spatie Permission           | 6.x       |
-| Laravel Modules             | Latest    |
-| Vite                        | Latest    |
-| Tailwind CSS                | Latest    |
-| Sneat Admin Template        | 3.x       |
-| MySQL / PostgreSQL / SQLite | Supported |
+**AK-Mart** is a comprehensive, enterprise-ready E-Commerce and Omni-Channel Retail operating system. Designed for real-world mini-marts, multi-branch department stores, wholesale suppliers, and modern online brands, it unites catalog management, POS registers, warehouse stock logistics, B2B wholesale quoting, AI-assisted imports, and unified marketing communications into a unified, high-performance interface.
 
 ---
 
-# 📁 Project Structure
+## 🚀 Key Modules & Architecture
 
-```text
-AK-Mart/
-├── app/
-│   ├── Helpers/
-│   ├── Http/
-│   ├── Models/
-│   └── Services/
-├── Modules/
-│   ├── Branch/
-│   ├── Product/
-│   ├── Order/
-│   ├── Inventory/
-│   ├── User/
-│   └── Reports/
-├── database/
-│   ├── migrations/
-│   └── seeders/
-├── resources/
-│   ├── views/
-│   ├── js/
-│   └── css/
-├── routes/
-├── public/
-└── tests/
-```
+### 1. 🤖 Smart Product Engine 2.0 & Importer
+- **Universal Multi-Platform Scraping**: Automated data, image, variant, and specification extraction from **Amazon (ASIN)**, **Flipkart**, **Meesho**, **Shopify**, and standard **Schema.org JSON-LD** pages.
+- **Strict Non-Hallucinatory Fallback**: Deterministic parsing architecture that extracts ground truth without fabricating prices or stock.
+- **Product Listing Quality Scoring (0–100%)**: Real-time diagnostic engine evaluating title length, description richness, pricing, SKU/barcodes, image resolution, and SEO readiness with actionable suggestions.
+- **Staging & Approval Queue**: Ingest drafts, preview formatted data, edit attributes, and publish to the live store with one click.
+
+### 2. 🏢 Multi-Branch & Multi-Warehouse Inventory 2.0
+- **Multi-Location Fulfillment**: Independent branch and regional warehouse stock tracking.
+- **Atomic Stock Reservation & DB Row-Locking**: Concurrency-safe inventory reservations preventing overselling during flash sales.
+- **Inventory Intelligence & ABC Analysis**: Automated product classification into Fast-Moving (Class A), Moderate (Class B), and Dead Stock (Class C) with aging analysis.
+- **Cycle Counting & Stock Transfers**: Physical audit reconciliation and inter-branch inventory transfer workflows.
+
+### 3. 💳 POS Terminal 2.0 (Point of Sale)
+- **Barcode & Quick SKU Search**: Rapid item scanning with keyboard shortcuts and variant selectors.
+- **Cash Register Shift Sessions**: Track opening floats, cash sales, paid-in/paid-out adjustments, closing counts, and cash variance.
+- **Multi-Tender Checkout**: Cash, Card, UPI, and split payments.
+- **Offline Buffer**: Resilient transaction queue maintaining operations during network interruptions.
+
+### 4. 💼 B2B & Wholesale Commerce
+- **Corporate Company Accounts**: Credit limits, dedicated sales reps, and net payment terms (Net 15 / Net 30 / Net 60).
+- **Volume Tier Pricing**: Quantity-based pricing brackets (e.g., 50+ units @ ₹750 vs retail ₹1,000).
+- **RFQ Quote Workflow**: B2B quote request submission, admin price adjustments, customer approval, and auto-conversion to Purchase Orders.
+
+### 5. 💰 Zero-Trust Pricing & Checkout Engine
+- **Server-Side Verification**: 100% server recalculation preventing frontend tampering of prices, quantities, or totals.
+- **Split Tender Checkout**: Simultaneous redemption of Coupons, Digital Gift Cards, Store Credit / Wallet Balances, and Gateway payments.
+- **Automated Tax Splitting**: Comprehensive GST calculation with automatic CGST / SGST / IGST breakdown.
+
+### 6. 📱 Unified Communication Center (`/communication`)
+- **Email Gateway**: Transactional mailer with template variable parsing (`{{customer_name}}`, `{{order_number}}`, `{{tracking_number}}`, `{{discount_code}}`).
+- **WhatsApp Business Cloud API**: Direct order tracking, delivery notifications, and return confirmations via Meta's official Cloud API.
+- **Campaign Broadcast Manager**: Broadcast targeted marketing promotions to custom customer segments (All, VIP, Inactive, Abandoned Carts).
+- **Customer Opt-Out Governance**: Automatic compliance with customer marketing communication preferences while preserving critical transactional receipts.
+- **Zero Order Rollback Guarantee**: Communication delivery failures never crash or interrupt successful customer checkout transactions.
+
+### 7. 🛡️ Enterprise Security & Multi-Tenancy
+- **Supreme Admin Universal Gate**: Transparent superuser bypass across all system boundaries.
+- **IDOR Protection**: Strict customer ownership validation on orders, invoices, returns, and wallet records.
+- **Interactive SweetAlert2 Dialogs**: Global confirmation modals replacing raw browser popups on all delete and state-changing actions.
+- **2FA & Session Security**: Multi-factor authentication, rate limiting, and remote browser session invalidation.
 
 ---
 
-# 📦 Composer Packages
+## 🛠️ Technology Stack
 
-The application uses the following primary dependencies:
-
-* `laravel/framework ^12.0`
-* `laravel/jetstream ^5.3`
-* `livewire/livewire ^3.0`
-* `laravel/sanctum ^4.0`
-* `nwidart/laravel-modules`
-* `spatie/laravel-permission ^6.25`
-* `themeselection/sneat-html-laravel-jetstream ^3.0`
+| Component | Technology / Library |
+| :--- | :--- |
+| **Backend Framework** | Laravel 12.x (PHP 8.2+) |
+| **Frontend Reactive Layer** | Livewire 3.x, Alpine.js, Blade |
+| **Admin UI Theme** | Sneat Bootstrap 5 Enterprise Theme |
+| **Database Engines** | **PostgreSQL** (Production on Render) & **MySQL** / SQLite |
+| **Permissions & RBAC** | Spatie Laravel Permission 6.x |
+| **Authentication** | Laravel Jetstream 5.x & Sanctum API Tokens |
+| **Asset Bundler** | Vite 5.x |
+| **Dialogs & UI Alerts** | SweetAlert2 & Animate.css |
 
 ---
 
-# ⚡ Installation
+## ⚡ Quick Start & Local Setup
 
-## 1. Clone Repository
-
+### 1. Clone Repository
 ```bash
 git clone git@github.com:akhilmeleppura/Ak-Mart.git
 cd Ak-Mart
 ```
 
-## 2. Install Dependencies
-
+### 2. Install Dependencies
 ```bash
 composer install
 npm install
 ```
 
-## 3. Environment Setup
-
+### 3. Configure Environment
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-## 4. Configure Database
-
-Edit `.env`:
-
+### 4. Database Setup & Migration
+Configure your database credentials in `.env` (MySQL or PostgreSQL):
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -169,370 +117,91 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-## 5. Run Migrations
-
+Run migrations and seed the comprehensive demo catalog:
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
-## 6. Seed Demo Data
-
-```bash
-php artisan db:seed --class=DemoSeeder
-```
-
-## 7. Build Frontend Assets
-
+### 5. Build Frontend Assets & Run
 ```bash
 npm run build
-```
-
-For development:
-
-```bash
-npm run dev
-```
-
-## 8. Start Development Server
-
-```bash
-composer run dev
-```
-
-Or manually:
-
-```bash
 php artisan serve
 ```
 
-Application URL:
-
-```text
-http://127.0.0.1:8000
-```
+Access the store in your browser: `http://127.0.0.1:8000`
 
 ---
 
-# 🔑 Demo Credentials
+## ☁️ Free Cloud Deployment on Render (with PostgreSQL)
 
-The demo seeder creates the following users.
+AK-Mart is optimized for 1-click cloud deployment on [Render.com](https://render.com) using free PostgreSQL:
 
-## Super Admin
-
-* Email: `admin@admin.com`
-* Password: `admin123`
-
-## Branch Manager
-
-* Email: `manager@branch.com`
-* Password: `manager123`
-
-> These accounts are generated by the demo seeder.
-
----
-
-# 🏢 Seeded Branches
-
-1. Global HQ (New York)
-2. London Flagship
-3. Dubai Mall Branch
-
----
-
-# 🗂️ Seeded Categories
-
-* Electronics
-* Fashion
-* Home Decor
-* Accessories
+1. Create a free **PostgreSQL Database** on Render (`akmart-db`).
+2. Create a free **Web Service** on Render connected to `akhilmeleppura/Ak-Mart`.
+3. Set the build & start commands:
+   - **Build Command**:
+     ```bash
+     composer install --no-dev --optimize-autoloader && php artisan config:clear && php artisan migrate --force && php artisan db:seed --force
+     ```
+   - **Start Command**:
+     ```bash
+     php artisan serve --host=0.0.0.0 --port=$PORT
+     ```
+4. Set Environment Variables:
+   - `DB_CONNECTION` = `pgsql`
+   - `DATABASE_URL` = `<your-render-internal-database-url>`
+   - `APP_ENV` = `production`
+   - `APP_KEY` = `<your-256-bit-app-key>`
+   - `SESSION_DRIVER` = `cookie`
+   - `CACHE_STORE` = `file`
 
 ---
 
-# 📦 Seeded Data Summary
+## 🔑 Default Demo Credentials
 
-The demo seeder creates:
-
-* 3 branches
-* 2 demo users
-* Roles and permissions
-* 4 categories
-* 36 products (3 products × 4 categories × 3 branches)
-* Product variants (size and color)
-* 30 demo orders
-* Order items
+| Role | Email | Password | Access Scope |
+| :--- | :--- | :--- | :--- |
+| **Supreme Admin** | `supreme_admin@akmart.com` | `admin123` *(or `password`)* | Full System Access |
+| **Store Admin** | `admin@akmart.com` | `admin123` *(or `password`)* | Store Operations & POS |
+| **Branch Manager** | `manager@branch.com` | `manager123` | Branch Inventory & Sales |
+| **Cashier** | `cashier@akmart.com` | `password` | POS Terminal Only |
+| **B2B Wholesale Buyer**| `buyer@apexwholesale.com` | `password` | Wholesale Catalog & RFQ |
 
 ---
 
-# 🔐 Roles
+## 🧪 Automated Test Suite
 
-| Role           | Access                     |
-| -------------- | -------------------------- |
-| Super Admin    | Full system access         |
-| Branch Manager | Manage assigned branch     |
-| Staff          | Limited operational access |
-
----
-
-# 🛡️ Permissions Examples
-
-* manage branches
-* manage products
-* manage categories
-* manage inventory
-* manage orders
-* manage users
-* view analytics
-* manage settings
-
----
-
-# 📊 Dashboard Widgets
-
-* Total Revenue
-* Orders Today
-* Monthly Sales
-* Top Selling Products
-* Low Stock Products
-* Branch Performance
-* Recent Orders
-
----
-
-# 🧩 Modules Overview
-
-## Branch Module
-
-Handles branch creation, assignment, and reporting.
-
-## Product Module
-
-Manages products, categories, and variants.
-
-## Inventory Module
-
-Tracks stock quantities and alerts.
-
-## Order Module
-
-Handles order and order item management.
-
-## User Module
-
-User administration and role assignment.
-
-## Reports Module
-
-Sales and business analytics.
-
----
-
-# 🗄️ Important Models
-
-* User
-* Branch
-* Category
-* Product
-* ProductVariant
-* Order
-* OrderItem
-* Role
-* Permission
-
----
-
-# 🔄 Relationships
-
-* Branch has many Users
-* Branch has many Products
-* Branch has many Orders
-* Category has many Products
-* Product has many Variants
-* Order has many Items
-* User belongs to Branch
-
----
-
-# 🧪 Testing
-
-Run automated tests:
+AK-Mart includes a feature test suite verifying pricing calculations, concurrency locking, smart extraction, communication fallbacks, and security gates:
 
 ```bash
 php artisan test
 ```
 
-Run PHPUnit directly:
+```
+PASS  Tests\Feature\AuthenticationTest
+PASS  Tests\Feature\BranchAndPermissionTest
+PASS  Tests\Feature\CommerceRegressionAuditTest
+PASS  Tests\Feature\NextGenCommerceTest
+PASS  Tests\Feature\AdvancedECommerceSuiteTest
+PASS  Tests\Feature\UniversalProductImporterTest
+PASS  Tests\Feature\ProfileInformationTest
+PASS  Tests\Feature\PasswordResetTest
+PASS  Tests\Feature\TwoFactorAuthenticationSettingsTest
 
-```bash
-vendor/bin/phpunit
+Tests:       75 Passed, 321 Assertions, 0 Failures
+Duration:    11.89s
 ```
 
 ---
 
-# 🎨 Code Quality
-
-Format code with Laravel Pint:
-
-```bash
-./vendor/bin/pint
-```
-
----
-
-# 📜 Useful Artisan Commands
-
-## Create Module
-
-```bash
-php artisan module:make Product
-```
-
-## List Modules
-
-```bash
-php artisan module:list
-```
-
-## Cache Optimization
-
-```bash
-php artisan optimize
-```
-
-## Clear Cache
-
-```bash
-php artisan optimize:clear
-```
-
-## Queue Worker
-
-```bash
-php artisan queue:work
-```
-
----
-
-# 🔌 API Authentication
-
-Laravel Sanctum is enabled for API token authentication.
-
-Example protected endpoint:
-
-```php
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-```
-
----
-
-# 🖼️ Admin Theme
-
-This project uses the **Sneat Laravel Jetstream Admin Template** from ThemeSelection.
-
-Features include:
-
-* Responsive layout
-* Sidebar navigation
-* Charts and widgets
-* Form components
-* Authentication pages
-
----
-
-# 🚀 Deployment
-
-## Production Setup
-
-```bash
-composer install --no-dev --optimize-autoloader
-npm install
-npm run build
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan queue:restart
-```
-
-### Recommended Stack
-
-* Ubuntu 24.04 LTS
-* Nginx
-* PHP-FPM 8.2+
-* MySQL 8+
-* Redis (optional)
-* Supervisor
-
----
-
-# ☁️ Deployment Platforms
-
-* Laravel Forge
-* Ploi
-* DigitalOcean
-* AWS EC2
-* Shared Hosting with PHP 8.2+
-
----
-
-# 📈 Future Roadmap
-
-* Customer storefront
-* Coupons and discounts
-* Shipping integration
-* Payment gateways (Stripe, Razorpay, PayPal)
-* POS system
-* Mobile application API
-* Multi-language support
-* Multi-currency support
-
----
-
-# 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Push to your branch
-5. Open a pull request
-
----
-
-# 📝 License
-
-This project is licensed under the MIT License.
-
----
-
-# 👨‍💻 Developer
+## 👨‍💻 Author & Maintainer
 
 **Akhil Meleppura**
-
-* GitHub: [https://github.com/akhilmeleppura](https://github.com/akhilmeleppura)
-* Repository: [https://github.com/akhilmeleppura/Ak-Mart](https://github.com/akhilmeleppura/Ak-Mart)
-
----
-
-# ⭐ Support
-
-If you find this project useful:
-
-* Star the repository
-* Report issues
-* Contribute improvements
-* Share with others
+- **GitHub**: [@akhilmeleppura](https://github.com/akhilmeleppura)
+- **Repository**: [https://github.com/akhilmeleppura/Ak-Mart](https://github.com/akhilmeleppura/Ak-Mart)
 
 ---
 
-# 📬 Contact
+## 📝 License
 
-For custom development, bug fixes, and enterprise solutions, contact the project maintainer through GitHub.
-
----
-
-# 🏆 AK Mart
-
-**Complete Laravel 12 Multi-Branch eCommerce Dashboard Solution**.
-
-Built for scalability, maintainability, and real-world business operations.
+This project is open-sourced under the [MIT License](LICENSE).
