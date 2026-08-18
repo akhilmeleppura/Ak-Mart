@@ -13,10 +13,11 @@ class LocaleMiddleware
    *
    * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
    */
+  protected array $supportedLocales = ['en', 'ml', 'hi', 'ta', 'kn', 'ar', 'fr', 'de', 'it'];
+
   public function handle(Request $request, Closure $next): Response
   {
-    // Locale is enabled and allowed to be change
-    if (session()->has('locale') && in_array(session()->get('locale'), ['en', 'fr', 'ar', 'de'])) {
+    if (session()->has('locale') && in_array(session()->get('locale'), $this->supportedLocales)) {
       app()->setLocale(session()->get('locale'));
     }
 

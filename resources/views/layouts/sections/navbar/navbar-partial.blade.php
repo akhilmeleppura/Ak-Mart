@@ -68,21 +68,33 @@ use Illuminate\Support\Facades\Route;
           </a>
         </li>
         <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'fr' ? 'active' : '' }}" href="{{ url('lang/fr') }}"
-            data-language="fr" data-text-direction="ltr">
-            <span>French</span>
+          <a class="dropdown-item {{ app()->getLocale() === 'ml' ? 'active' : '' }}" href="{{ url('lang/ml') }}"
+            data-language="ml" data-text-direction="ltr">
+            <span class="fw-semibold">മലയാളം (Malayalam)</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item {{ app()->getLocale() === 'hi' ? 'active' : '' }}" href="{{ url('lang/hi') }}"
+            data-language="hi" data-text-direction="ltr">
+            <span>हिन्दी (Hindi)</span>
           </a>
         </li>
         <li>
           <a class="dropdown-item {{ app()->getLocale() === 'ar' ? 'active' : '' }}" href="{{ url('lang/ar') }}"
             data-language="ar" data-text-direction="rtl">
-            <span>Arabic</span>
+            <span>العربية (Arabic)</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item {{ app()->getLocale() === 'fr' ? 'active' : '' }}" href="{{ url('lang/fr') }}"
+            data-language="fr" data-text-direction="ltr">
+            <span>Français (French)</span>
           </a>
         </li>
         <li>
           <a class="dropdown-item {{ app()->getLocale() === 'de' ? 'active' : '' }}" href="{{ url('lang/de') }}"
             data-language="de" data-text-direction="ltr">
-            <span>German</span>
+            <span>Deutsch (German)</span>
           </a>
         </li>
       </ul>

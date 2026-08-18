@@ -247,4 +247,19 @@ class AdvancedECommerceSuiteTest extends TestCase
         $this->assertArrayHasKey('identifiers', $breakdown);
         $this->assertArrayHasKey('seo', $breakdown);
     }
+
+    /**
+     * Test 7: Language Switcher supports Malayalam (ml) and sets session
+     */
+    public function test_language_switch_to_malayalam_and_others(): void
+    {
+        $response = $this->get('/lang/ml');
+        $response->assertRedirect();
+        $response->assertSessionHas('locale', 'ml');
+
+        // Test with Authenticated Request
+        $authResponse = $this->actingAs($this->admin)->get('/lang/hi');
+        $authResponse->assertRedirect();
+        $authResponse->assertSessionHas('locale', 'hi');
+    }
 }

@@ -113,6 +113,7 @@ Route::get('/front-pages/checkout', [Checkout::class, 'index'])->name('front-pag
 Route::get('/front-pages/help-center', [HelpCenter::class, 'index'])->name('front-pages-help-center');
 Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index'])->name('front-pages-help-center-article');
 Route::get('/sitemap.xml', [\App\Http\Controllers\apps\SaaS\SeoController::class, 'sitemap'])->name('app-saas-sitemap');
+Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang-swap');
 
 // Authenticated Routes
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -121,8 +122,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/dashboard/analytics', [EcommerceDashboard::class, 'index'])->name('dashboard-analytics');
     Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
 
-    // Language & Branch
-    Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
+    // Branch
     Route::get('/branch/{id}', [\App\Http\Controllers\BranchController::class, 'swap'])->name('branch-swap')->middleware('branch.access');
 
     // SaaS Management (Super Admin)
