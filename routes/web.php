@@ -464,6 +464,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Notifications
     Route::get('/notifications', [\App\Http\Controllers\apps\SystemNotificationController::class, 'index'])->name('app-notifications');
     Route::post('/notifications/mark-all', [\App\Http\Controllers\apps\SystemNotificationController::class, 'markAllAsRead'])->name('app-notifications-mark-all');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\apps\SystemNotificationController::class, 'markAsRead'])->name('app-notifications-read');
+    Route::get('/notifications/{id}/read', [\App\Http\Controllers\apps\SystemNotificationController::class, 'markAsRead']);
 
     // Access Hub & Roles Management
     Route::get('/roles', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-roles');
