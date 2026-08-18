@@ -31,8 +31,13 @@ trait BelongsToBranch
         });
 
         static::addGlobalScope('branch', function (Builder $builder) {
-            // Bypass scope for Super Admin users
-            if (auth()->check() && auth()->user()->user_type === 'super_admin') {
+            // Bypass scope for Supreme Admin and Super Admin users
+            if (auth()->check() && (
+                auth()->user()->is_supreme_admin == 1 ||
+                auth()->user()->is_super_admin == 1 ||
+                auth()->user()->user_type === 'super_admin' ||
+                (method_exists(auth()->user(), 'hasRole') && (auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Admin') || auth()->user()->hasRole('admin')))
+            )) {
                 return;
             }
 

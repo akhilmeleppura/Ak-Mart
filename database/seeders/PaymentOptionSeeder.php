@@ -44,6 +44,8 @@ class PaymentOptionSeeder extends Seeder
             ],
         ];
 
-        DB::table('payment_options')->insert($paymentOptions);
+        foreach ($paymentOptions as $option) {
+            DB::table('payment_options')->updateOrInsert(['slug' => $option['slug']], $option);
+        }
     }
 }

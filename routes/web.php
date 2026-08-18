@@ -100,9 +100,11 @@ use App\Http\Controllers\modal\ModalExample;
 
 // Public Routes
 Route::get('/', function () {
-    // Simple health check endpoint
-    return response()->json(['message' => 'OK'], 200);
-});
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('auth-login-basic');
+})->name('root');
 Route::get('/dashboard', [EcommerceDashboard::class, 'index'])->name('dashboard');
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');
@@ -124,7 +126,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/branch/{id}', [\App\Http\Controllers\BranchController::class, 'swap'])->name('branch-swap')->middleware('branch.access');
 
     // SaaS Management (Super Admin)
-    Route::prefix('app/saas')->group(function () {
+    Route::prefix('saas')->group(function () {
         Route::get('/billing', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'index'])->name('app-saas-billing');
         Route::post('/billing/subscribe', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'subscribe'])->name('app-saas-subscribe');
         Route::post('/billing/cancel', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'cancel'])->name('app-saas-cancel');
@@ -148,17 +150,21 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/kyc', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'index'])->name('app-saas-kyc-admin');
         Route::post('/kyc/{vendorKyc}/approve', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'approve'])->name('app-saas-kyc-approve');
         Route::get('/dunning', [\App\Http\Controllers\apps\SaaS\DunningController::class, 'index'])->name('app-saas-dunning');
-        Route::post('/app/saas/dunning/trigger', [\App\Http\Controllers\apps\SaaS\DunningController::class, 'trigger'])->name('app-saas-dunning-trigger');
+        Route::post('/dunning/trigger', [\App\Http\Controllers\apps\SaaS\DunningController::class, 'trigger'])->name('app-saas-dunning-trigger');
     });
 
     // Vendor Management
-    Route::prefix('app/vendor')->group(function () {
+    Route::prefix('vendor')->group(function () {
         Route::get('/kyc', [\App\Http\Controllers\apps\Vendor\KycController::class, 'index'])->name('app-vendor-kyc');
         Route::post('/kyc', [\App\Http\Controllers\apps\Vendor\KycController::class, 'store'])->name('app-vendor-kyc-store');
         Route::get('/inventory', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'index'])->name('app-vendor-inventory');
         Route::post('/inventory/update', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'updateStock'])->name('app-vendor-inventory-update');
+        Route::post('/inventory/transfer', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'storeTransfer'])->name('app-inventory-transfer-store');
+        Route::post('/inventory/transfer/{id}/receive', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'receiveTransfer'])->name('app-inventory-transfer-receive');
         Route::get('/returns', [\App\Http\Controllers\apps\Vendor\ReturnRequestController::class, 'index'])->name('app-vendor-returns');
+        Route::post('/returns/{returnRequest}', [\App\Http\Controllers\apps\Vendor\ReturnRequestController::class, 'updateStatus'])->name('app-vendor-returns-update');
         Route::get('/pos', [\App\Http\Controllers\apps\Vendor\PosController::class, 'index'])->name('app-vendor-pos');
+        Route::get('/pos/search', [\App\Http\Controllers\apps\Vendor\PosController::class, 'search'])->name('app-vendor-pos-search');
         Route::post('/pos/checkout', [\App\Http\Controllers\apps\Vendor\PosController::class, 'checkout'])->name('app-vendor-pos-checkout');
         Route::get('/wallet', [\App\Http\Controllers\apps\Vendor\WalletController::class, 'index'])->name('app-vendor-wallet');
         Route::get('/store-builder', [\App\Http\Controllers\apps\Vendor\StoreBuilderController::class, 'index'])->name('app-vendor-store-builder');
@@ -169,113 +175,332 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/payment-settings', [\App\Http\Controllers\apps\Vendor\PaymentSettingsController::class, 'store'])->name('app-vendor-payment-settings-save');
     });
 
-    // Logistics
-    Route::get('/app/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'index'])->name('app-logistics-shipping');
-        Route::post('/app/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'store'])->name('app-logistics-shipping-store');
-    Route::get('/laravel/user-management', [\App\Http\Controllers\laravel_example\UserManagement::class, 'UserManagement'])->name('laravel-user-management');
-// DataTables routes for Laravel User Management
-Route::get('/user-list', [\App\Http\Controllers\laravel_example\UserManagement::class, 'index'])->name('user-list');
-Route::post('/user-list', [\App\Http\Controllers\laravel_example\UserManagement::class, 'store'])->name('user-list-store');
-Route::get('/user-list/{id}/edit', [\App\Http\Controllers\laravel_example\UserManagement::class, 'edit'])->name('user-list-edit');
-Route::put('/user-list/{id}', [\App\Http\Controllers\laravel_example\UserManagement::class, 'update'])->name('user-list-update');
-Route::delete('/user-list/{id}', [\App\Http\Controllers\laravel_example\UserManagement::class, 'destroy'])->name('user-list-destroy');
+    Route::post('/app/vendor/pos/checkout', [\App\Http\Controllers\apps\Vendor\PosController::class, 'checkout']);
 
-// Core E-commerce Apps
+    // Catalog Scanner & Duplicate Detection
+    Route::get('/catalog/scanner', [\App\Http\Controllers\apps\CatalogScannerController::class, 'index'])->name('app-catalog-scanner');
+    Route::get('/catalog/duplicates', [\App\Http\Controllers\apps\CatalogScannerController::class, 'duplicateScanner'])->name('app-catalog-duplicates');
+    Route::post('/catalog/scanner/autofix', [\App\Http\Controllers\apps\CatalogScannerController::class, 'autoFix'])->name('app-catalog-scanner-autofix');
+
+    // Smart Product Importer & URL Scraper
+    Route::get('/catalog/importer', [\App\Http\Controllers\apps\ProductImportController::class, 'index'])->name('app-product-importer');
+    Route::post('/catalog/importer/url', [\App\Http\Controllers\apps\ProductImportController::class, 'parseUrl'])->name('app-product-import-url');
+    Route::post('/catalog/importer/file', [\App\Http\Controllers\apps\ProductImportController::class, 'parseFile'])->name('app-product-import-file');
+    Route::get('/catalog/importer/review/{id}', [\App\Http\Controllers\apps\ProductImportController::class, 'review'])->name('app-product-import-review');
+    Route::post('/catalog/importer/review/{id}/publish', [\App\Http\Controllers\apps\ProductImportController::class, 'publish'])->name('app-product-import-publish');
+    Route::delete('/catalog/importer/draft/{id}', [\App\Http\Controllers\apps\ProductImportController::class, 'destroy'])->name('app-product-import-destroy');
+
+    // AI Product Tools & Optimizer
+    Route::post('/ai/product/generate', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent'])->name('app-ai-product-content');
+    Route::post('/ai/product/optimize', [\App\Http\Controllers\apps\AIProductToolsController::class, 'optimizeProduct'])->name('app-ai-product-optimize');
+    Route::post('/ai/product/extract-attributes', [\App\Http\Controllers\apps\AIProductToolsController::class, 'extractAttributes'])->name('app-ai-extract-attributes');
+    Route::post('/ai/product/suggest-category', [\App\Http\Controllers\apps\AIProductToolsController::class, 'suggestCategory'])->name('app-ai-suggest-category');
+
+    // Expenses Management
+    Route::get('/expenses', [\App\Http\Controllers\apps\ExpenseController::class, 'index'])->name('app-expenses');
+    Route::post('/expenses', [\App\Http\Controllers\apps\ExpenseController::class, 'store'])->name('app-expenses-store');
+    Route::post('/expenses/categories', [\App\Http\Controllers\apps\ExpenseController::class, 'storeCategory'])->name('app-expenses-category-store');
+    Route::delete('/expenses/{id}', [\App\Http\Controllers\apps\ExpenseController::class, 'destroy'])->name('app-expenses-destroy');
+
+    // Workflow Automation Engine
+    Route::get('/automation', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'index'])->name('app-automation');
+    Route::post('/automation', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'store'])->name('app-automation-store');
+    Route::post('/automation/{id}/toggle', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'toggle'])->name('app-automation-toggle');
+    Route::delete('/automation/{id}', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'destroy'])->name('app-automation-destroy');
+
+    // Multi-Warehouse Management
+    Route::get('/inventory/warehouses', [\App\Http\Controllers\apps\WarehouseController::class, 'index'])->name('app-warehouses');
+    Route::post('/inventory/warehouses', [\App\Http\Controllers\apps\WarehouseController::class, 'store'])->name('app-warehouses-store');
+    Route::get('/inventory/warehouses/{warehouse}', [\App\Http\Controllers\apps\WarehouseController::class, 'show'])->name('app-warehouses-show');
+    Route::post('/inventory/warehouses/{warehouse}/stock', [\App\Http\Controllers\apps\WarehouseController::class, 'updateStock'])->name('app-warehouses-stock-update');
+
+    // Cycle Counting & Stock Audits
+    Route::get('/inventory/stock-counts', [\App\Http\Controllers\apps\StockCountController::class, 'index'])->name('app-stock-counts');
+    Route::post('/inventory/stock-counts', [\App\Http\Controllers\apps\StockCountController::class, 'store'])->name('app-stock-counts-store');
+    Route::get('/inventory/stock-counts/{stockCount}', [\App\Http\Controllers\apps\StockCountController::class, 'show'])->name('app-stock-counts-show');
+    Route::post('/inventory/stock-counts/{stockCount}/item/{item}', [\App\Http\Controllers\apps\StockCountController::class, 'updateItem'])->name('app-stock-counts-item-update');
+    Route::post('/inventory/stock-counts/{stockCount}/reconcile', [\App\Http\Controllers\apps\StockCountController::class, 'reconcile'])->name('app-stock-counts-reconcile');
+
+    // ABC Inventory Analysis & Dead Stock
+    Route::get('/inventory/abc-analysis', [\App\Http\Controllers\apps\AbcAnalysisController::class, 'index'])->name('app-inventory-abc');
+
+    // B2B & Wholesale Accounts
+    Route::get('/b2b/companies', [\App\Http\Controllers\apps\B2bCompanyController::class, 'index'])->name('app-b2b-companies');
+    Route::post('/b2b/companies', [\App\Http\Controllers\apps\B2bCompanyController::class, 'store'])->name('app-b2b-companies-store');
+    Route::get('/b2b/companies/{company}', [\App\Http\Controllers\apps\B2bCompanyController::class, 'show'])->name('app-b2b-companies-show');
+    Route::post('/b2b/companies/{company}/buyer', [\App\Http\Controllers\apps\B2bCompanyController::class, 'addBuyer'])->name('app-b2b-companies-buyer');
+    Route::post('/b2b/companies/{company}/tier-price', [\App\Http\Controllers\apps\B2bCompanyController::class, 'addTierPrice'])->name('app-b2b-companies-tier-price');
+
+    // B2B Quotes
+    Route::get('/b2b/quotes', [\App\Http\Controllers\apps\B2bQuoteController::class, 'index'])->name('app-b2b-quotes');
+    Route::post('/b2b/quotes', [\App\Http\Controllers\apps\B2bQuoteController::class, 'store'])->name('app-b2b-quotes-store');
+    Route::post('/b2b/quotes/{quote}/status', [\App\Http\Controllers\apps\B2bQuoteController::class, 'updateStatus'])->name('app-b2b-quotes-status');
+
+    // Advanced Fulfillment
+    Route::get('/fulfillment', [\App\Http\Controllers\apps\FulfillmentController::class, 'index'])->name('app-fulfillment');
+    Route::post('/fulfillment', [\App\Http\Controllers\apps\FulfillmentController::class, 'store'])->name('app-fulfillment-store');
+    Route::post('/fulfillment/{fulfillment}/status', [\App\Http\Controllers\apps\FulfillmentController::class, 'updateStatus'])->name('app-fulfillment-status');
+    Route::get('/fulfillment/{fulfillment}/pickpack', [\App\Http\Controllers\apps\FulfillmentController::class, 'pickPackList'])->name('app-fulfillment-pickpack');
+
+    // Customer Experience Portal
+    Route::get('/customer/portal', [\App\Http\Controllers\apps\CustomerPortalController::class, 'index'])->name('app-customer-portal');
+    Route::post('/customer/wishlist/toggle', [\App\Http\Controllers\apps\CustomerPortalController::class, 'toggleWishlist'])->name('app-customer-wishlist-toggle');
+    Route::post('/customer/saved-cart', [\App\Http\Controllers\apps\CustomerPortalController::class, 'saveCart'])->name('app-customer-saved-cart');
+
+    // Gift Cards & Vouchers
+    Route::get('/gift-cards', [\App\Http\Controllers\apps\GiftCardController::class, 'index'])->name('app-gift-cards');
+    Route::post('/gift-cards', [\App\Http\Controllers\apps\GiftCardController::class, 'store'])->name('app-gift-cards-store');
+    Route::post('/gift-cards/lookup', [\App\Http\Controllers\apps\GiftCardController::class, 'lookup'])->name('app-gift-cards-lookup');
+
+    // Finance POS Register & Reconciliation
+    Route::get('/finance/pos-register', [\App\Http\Controllers\apps\PosRegisterController::class, 'index'])->name('app-pos-register');
+    Route::post('/finance/pos-register/open', [\App\Http\Controllers\apps\PosRegisterController::class, 'open'])->name('app-pos-register-open');
+    Route::post('/finance/pos-register/close', [\App\Http\Controllers\apps\PosRegisterController::class, 'close'])->name('app-pos-register-close');
+
+    // Marketing & Abandoned Carts
+    Route::get('/marketing/abandoned-carts', [\App\Http\Controllers\apps\AbandonedCartController::class, 'index'])->name('app-abandoned-carts');
+    Route::post('/marketing/abandoned-carts/{cart}/send', [\App\Http\Controllers\apps\AbandonedCartController::class, 'sendRecovery'])->name('app-abandoned-carts-send');
+
+    // Omnichannel Feeds
+    Route::get('/marketing/feeds', [\App\Http\Controllers\apps\ProductFeedController::class, 'index'])->name('app-feeds');
+    Route::get('/feeds/google.xml', [\App\Http\Controllers\apps\ProductFeedController::class, 'googleXml'])->name('app-feeds-google');
+    Route::get('/feeds/meta.csv', [\App\Http\Controllers\apps\ProductFeedController::class, 'metaCsv'])->name('app-feeds-meta');
+    Route::get('/feeds/tiktok.json', [\App\Http\Controllers\apps\ProductFeedController::class, 'tikTokJson'])->name('app-feeds-tiktok');
+
+    // Developer Webhooks Hub
+    Route::get('/developer/webhooks', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'index'])->name('app-developer-webhooks');
+    Route::post('/developer/webhooks', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'store'])->name('app-developer-webhooks-store');
+    Route::post('/developer/webhooks/{subscription}/ping', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'testPing'])->name('app-developer-webhooks-ping');
+    Route::post('/developer/webhooks/{subscription}/toggle', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'toggle'])->name('app-developer-webhooks-toggle');
+
+    // Unified Communication Center (Email & WhatsApp)
+    Route::get('/communication', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'index'])->name('app-communication-center');
+    Route::get('/marketing/communication', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'index']);
+    Route::post('/communication/send', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'send'])->name('app-communication-send');
+    Route::post('/communication/templates', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'saveTemplate'])->name('app-communication-template-save');
+    Route::post('/communication/campaigns', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'launchCampaign'])->name('app-communication-campaign-launch');
+
+    // System Health, Backups & Security Center
+    Route::get('/system/health', [\App\Http\Controllers\apps\SystemHealthController::class, 'index'])->name('app-system-health');
+    Route::get('/system/backups', [\App\Http\Controllers\apps\BackupController::class, 'index'])->name('app-backups');
+    Route::post('/system/backups/create', [\App\Http\Controllers\apps\BackupController::class, 'createSnapshot'])->name('app-backups-create');
+    Route::get('/system/security-center', [\App\Http\Controllers\apps\SecurityCenterController::class, 'index'])->name('app-security-center');
+
+    // Suppliers Management
+    Route::get('/suppliers', [\App\Http\Controllers\apps\SupplierController::class, 'index'])->name('app-suppliers');
+    Route::post('/suppliers', [\App\Http\Controllers\apps\SupplierController::class, 'store'])->name('app-suppliers-store');
+
+    // Purchase Orders Management
+    Route::get('/purchases', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'index'])->name('app-purchases');
+    Route::post('/purchases', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'store'])->name('app-purchases-store');
+    Route::post('/purchases/{id}/receive', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'markReceived'])->name('app-purchases-receive');
+
+    // POS Direct Endpoint
+    Route::get('/pos', [\App\Http\Controllers\apps\Vendor\PosController::class, 'index'])->name('pos-direct');
+
+    // Logistics
+    Route::get('/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'index'])->name('app-logistics-shipping');
+    Route::post('/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'store'])->name('app-logistics-shipping-store');
+    
+    // User Management
+    Route::get('/admin/users', [\App\Http\Controllers\laravel_example\UserManagement::class, 'UserManagement'])->name('laravel-user-management');
+    Route::get('/admin/users/list', [\App\Http\Controllers\laravel_example\UserManagement::class, 'index'])->name('user-list');
+    Route::post('/admin/users/list', [\App\Http\Controllers\laravel_example\UserManagement::class, 'store'])->name('user-list-store');
+    Route::get('/admin/users/{id}/edit', [\App\Http\Controllers\laravel_example\UserManagement::class, 'edit'])->name('user-list-edit');
+    Route::put('/admin/users/{id}', [\App\Http\Controllers\laravel_example\UserManagement::class, 'update'])->name('user-list-update');
+    Route::delete('/admin/users/{id}', [\App\Http\Controllers\laravel_example\UserManagement::class, 'destroy'])->name('user-list-destroy');
+
+    // Core E-commerce Apps
     Route::middleware(['tenant.subscription'])->group(function () {
-        Route::get('/app/ecommerce/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
+        Route::get('/admin/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
         
         // Products
-        Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
-        Route::get('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'index'])->name('app-ecommerce-product-add');
-        Route::post('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'store'])->name('app-ecommerce-product-add-post');
-        Route::get('/app/ecommerce/product/edit/{id}', [EcommerceProductAdd::class, 'edit'])->name('app-ecommerce-product-edit');
-        Route::put('/app/ecommerce/product/edit/{id}', [EcommerceProductAdd::class, 'update'])->name('app-ecommerce-product-update');
-        Route::delete('/app/ecommerce/product/{id}', [EcommerceProductList::class, 'destroy'])->name('app-ecommerce-product-delete');
-        Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
-        Route::post('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'store'])->name('app-ecommerce-category-add');
-        Route::put('/app/ecommerce/product/category/{id}', [EcommerceProductCategory::class, 'update'])->name('app-ecommerce-category-update');
-        Route::delete('/app/ecommerce/product/category/{id}', [EcommerceProductCategory::class, 'destroy'])->name('app-ecommerce-category-delete');
+        Route::get('/products', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
+        Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index']);
+        Route::get('/products/create', [EcommerceProductAdd::class, 'index'])->name('app-ecommerce-product-add');
+        Route::get('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'index']);
+        Route::post('/products/create', [EcommerceProductAdd::class, 'store'])->name('app-ecommerce-product-add-post');
+        Route::post('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'store']);
+        Route::get('/products/{id}/edit', [EcommerceProductAdd::class, 'edit'])->name('app-ecommerce-product-edit');
+        Route::get('/app/ecommerce/product/edit/{id}', [EcommerceProductAdd::class, 'edit']);
+        Route::put('/products/{id}/edit', [EcommerceProductAdd::class, 'update'])->name('app-ecommerce-product-update');
+        Route::put('/app/ecommerce/product/edit/{id}', [EcommerceProductAdd::class, 'update']);
+        Route::delete('/products/{id}', [EcommerceProductList::class, 'destroy'])->name('app-ecommerce-product-delete');
+        Route::delete('/app/ecommerce/product/{id}', [EcommerceProductList::class, 'destroy']);
+        Route::post('/products/bulk-status', [EcommerceProductList::class, 'bulkStatus'])->name('app-ecommerce-product-bulk-status');
+        Route::post('/products/bulk-category', [EcommerceProductList::class, 'bulkCategory'])->name('app-ecommerce-product-bulk-category');
+        Route::post('/products/bulk-pricing', [EcommerceProductList::class, 'bulkPricing'])->name('app-ecommerce-product-bulk-pricing');
+        Route::post('/products/{id}/duplicate', [EcommerceProductList::class, 'duplicate'])->name('app-ecommerce-product-duplicate');
+        Route::get('/products/categories', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
+        Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index']);
+        Route::post('/products/categories', [EcommerceProductCategory::class, 'store'])->name('app-ecommerce-category-add');
+        Route::post('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'store']);
+        Route::put('/products/categories/{id}', [EcommerceProductCategory::class, 'update'])->name('app-ecommerce-category-update');
+        Route::put('/app/ecommerce/product/category/{id}', [EcommerceProductCategory::class, 'update']);
+        Route::delete('/products/categories/{id}', [EcommerceProductCategory::class, 'destroy'])->name('app-ecommerce-category-delete');
+        Route::delete('/app/ecommerce/product/category/{id}', [EcommerceProductCategory::class, 'destroy']);
 
         // Orders
-        Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
-        Route::delete('/app/ecommerce/order/{id}', [EcommerceOrderList::class, 'destroy'])->name('app-ecommerce-order-delete');
-        Route::patch('/app/ecommerce/order/{id}/status', [EcommerceOrderList::class, 'updateStatus'])->name('app-ecommerce-order-status-update');
-        Route::get('/app/ecommerce/order/details/{id?}', [EcommerceOrderDetails::class, 'index'])->name('app-ecommerce-order-details');
+        Route::get('/orders', [EcommerceOrderList::class, 'index'])->name('app-ecommerce-order-list');
+        Route::get('/app/ecommerce/order/list', [EcommerceOrderList::class, 'index']);
+        Route::delete('/orders/{id}', [EcommerceOrderList::class, 'destroy'])->name('app-ecommerce-order-delete');
+        Route::delete('/app/ecommerce/order/{id}', [EcommerceOrderList::class, 'destroy']);
+        Route::patch('/orders/{id}/status', [EcommerceOrderList::class, 'updateStatus'])->name('app-ecommerce-order-status-update');
+        Route::patch('/app/ecommerce/order/{id}/status', [EcommerceOrderList::class, 'updateStatus']);
+        Route::get('/orders/{id?}', [EcommerceOrderDetails::class, 'index'])->name('app-ecommerce-order-details');
+        Route::get('/app/ecommerce/order/details/{id?}', [EcommerceOrderDetails::class, 'index']);
 
         // Management
-        Route::get('/app/ecommerce/manage/reviews', [EcommerceManageReviews::class, 'index'])->name('app-ecommerce-manage-reviews');
-        Route::get('/app/ecommerce/referrals', [EcommerceReferrals::class, 'index'])->name('app-ecommerce-referrals');
+        Route::get('/reviews', [EcommerceManageReviews::class, 'index'])->name('app-ecommerce-manage-reviews');
+        Route::get('/app/ecommerce/manage/reviews', [EcommerceManageReviews::class, 'index']);
+        Route::get('/referrals', [EcommerceReferrals::class, 'index'])->name('app-ecommerce-referrals');
+        Route::get('/app/ecommerce/referrals', [EcommerceReferrals::class, 'index']);
         
         // Branch Management
-        Route::get('/app/ecommerce/branch/list', [EcommerceBranchManagement::class, 'index'])->name('app-ecommerce-branch-list');
-        Route::post('/app/ecommerce/branch', [EcommerceBranchManagement::class, 'store'])->name('app-ecommerce-branch-store');
-        Route::get('/app/ecommerce/branch/{id}/edit', [EcommerceBranchManagement::class, 'edit'])->name('app-ecommerce-branch-edit');
-        Route::put('/app/ecommerce/branch/{id}', [EcommerceBranchManagement::class, 'update'])->name('app-ecommerce-branch-update');
-        Route::delete('/app/ecommerce/branch/{id}', [EcommerceBranchManagement::class, 'destroy'])->name('app-ecommerce-branch-delete');
+        Route::get('/branches', [EcommerceBranchManagement::class, 'index'])->name('app-ecommerce-branch-list');
+        Route::get('/app/ecommerce/branch/list', [EcommerceBranchManagement::class, 'index']);
+        Route::post('/branches', [EcommerceBranchManagement::class, 'store'])->name('app-ecommerce-branch-store');
+        Route::post('/app/ecommerce/branch', [EcommerceBranchManagement::class, 'store']);
+        Route::get('/branches/{id}/edit', [EcommerceBranchManagement::class, 'edit'])->name('app-ecommerce-branch-edit');
+        Route::put('/branches/{id}', [EcommerceBranchManagement::class, 'update'])->name('app-ecommerce-branch-update');
+        Route::delete('/branches/{id}', [EcommerceBranchManagement::class, 'destroy'])->name('app-ecommerce-branch-delete');
 
-        // Customers
-        Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');
-        Route::post('/app/ecommerce/customer', [EcommerceCustomerAll::class, 'store'])->name('app-ecommerce-customer-store');
-        Route::put('/app/ecommerce/customer/{id}', [EcommerceCustomerAll::class, 'update'])->name('app-ecommerce-customer-update');
-        Route::delete('/app/ecommerce/customer/{id}', [EcommerceCustomerAll::class, 'destroy'])->name('app-ecommerce-customer-delete');
-        Route::get('/app/ecommerce/customer/details/overview/{id?}', [EcommerceCustomerDetailsOverview::class, 'index'])->name('app-ecommerce-customer-details-overview');
+        // Customers (E-Commerce Store Customers)
+        Route::get('/customers', [EcommerceCustomerAll::class, 'index'])->name('app-ecommerce-customer-all');
+        Route::get('/app/ecommerce/customer/all', [EcommerceCustomerAll::class, 'index']);
+        Route::post('/customers', [EcommerceCustomerAll::class, 'store'])->name('app-ecommerce-customer-store');
+        Route::post('/app/ecommerce/customer', [EcommerceCustomerAll::class, 'store']);
+        Route::put('/customers/{id}', [EcommerceCustomerAll::class, 'update'])->name('app-ecommerce-customer-update');
+        Route::put('/app/ecommerce/customer/{id}', [EcommerceCustomerAll::class, 'update']);
+        Route::delete('/customers/{id}', [EcommerceCustomerAll::class, 'destroy'])->name('app-ecommerce-customer-delete');
+        Route::delete('/app/ecommerce/customer/{id}', [EcommerceCustomerAll::class, 'destroy']);
+        Route::get('/customers/{id?}/overview', [EcommerceCustomerDetailsOverview::class, 'index'])->name('app-ecommerce-customer-details-overview');
+        Route::get('/app/ecommerce/customer/details/overview/{id?}', [EcommerceCustomerDetailsOverview::class, 'index']);
+        Route::get('/customers/{id?}/security', [EcommerceCustomerDetailsSecurity::class, 'index'])->name('app-ecommerce-customer-details-security');
+        Route::get('/customers/{id?}/billing', [EcommerceCustomerDetailsBilling::class, 'index'])->name('app-ecommerce-customer-details-billing');
+        Route::get('/customers/{id?}/notifications', [EcommerceCustomerDetailsNotifications::class, 'index'])->name('app-ecommerce-customer-details-notifications');
         
         // Coupons
-        Route::get('/app/ecommerce/coupons', [EcommerceCouponController::class, 'index'])->name('app-ecommerce-coupon-list');
-        Route::post('/app/ecommerce/coupons', [EcommerceCouponController::class, 'store'])->name('app-ecommerce-coupon-store');
-        Route::get('/app/ecommerce/coupons/{id}/edit', [EcommerceCouponController::class, 'edit'])->name('app-ecommerce-coupon-edit');
-        Route::put('/app/ecommerce/coupons/{id}', [EcommerceCouponController::class, 'update'])->name('app-ecommerce-coupon-update');
-        Route::delete('/app/ecommerce/coupons/{id}', [EcommerceCouponController::class, 'destroy'])->name('app-ecommerce-coupon-delete');
-        Route::post('/app/ecommerce/coupon/bulk-generate', [EcommerceCouponController::class, 'bulkGenerate'])->name('app-ecommerce-coupon-bulk');
+        Route::get('/coupons', [EcommerceCouponController::class, 'index'])->name('app-ecommerce-coupon-list');
+        Route::get('/app/ecommerce/coupons', [EcommerceCouponController::class, 'index']);
+        Route::post('/coupons', [EcommerceCouponController::class, 'store'])->name('app-ecommerce-coupon-store');
+        Route::get('/coupons/{id}/edit', [EcommerceCouponController::class, 'edit'])->name('app-ecommerce-coupon-edit');
+        Route::put('/coupons/{id}', [EcommerceCouponController::class, 'update'])->name('app-ecommerce-coupon-update');
+        Route::delete('/coupons/{id}', [EcommerceCouponController::class, 'destroy'])->name('app-ecommerce-coupon-delete');
+        Route::post('/coupons/bulk-generate', [EcommerceCouponController::class, 'bulkGenerate'])->name('app-ecommerce-coupon-bulk');
         
         // Settings
-        Route::get('/app/ecommerce/settings/details', [EcommerceSettingsDetails::class, 'index'])->name('app-ecommerce-settings-details');
-Route::post('/app/ecommerce/settings/details/save', [EcommerceSettingsDetails::class, 'store'])->name('app-ecommerce-settings-details-save');
-        Route::get('/app/ecommerce/settings/payments', [EcommerceSettingsPayments::class, 'index'])->name('app-ecommerce-settings-payments');
-        Route::get('/app/ecommerce/settings/checkout', [EcommerceSettingsCheckout::class, 'index'])->name('app-ecommerce-settings-checkout');
-        Route::get('/app/ecommerce/settings/shipping', [EcommerceSettingsShipping::class, 'index'])->name('app-ecommerce-settings-shipping');
-        Route::post('/app/ecommerce/settings/shipping/save', [EcommerceSettingsShipping::class, 'store'])->name('app-ecommerce-settings-shipping-save');
-        Route::get('/app/ecommerce/settings/notifications', [EcommerceSettingsNotifications::class, 'index'])->name('app-ecommerce-settings-notifications');
-        Route::post('/app/ecommerce/settings/notifications/save', [EcommerceSettingsNotifications::class, 'store'])->name('app-ecommerce-settings-notifications-save');
-        Route::post('/app/ecommerce/settings/payments/save', [EcommerceSettingsPayments::class, 'store'])->name('app-ecommerce-settings-payments-save');
+        Route::get('/settings/store', [EcommerceSettingsDetails::class, 'index'])->name('app-ecommerce-settings-details');
+        Route::get('/app/ecommerce/settings/details', [EcommerceSettingsDetails::class, 'index']);
+        Route::post('/settings/store/save', [EcommerceSettingsDetails::class, 'store'])->name('app-ecommerce-settings-details-save');
+        Route::get('/settings/payments', [EcommerceSettingsPayments::class, 'index'])->name('app-ecommerce-settings-payments');
+        Route::get('/app/ecommerce/settings/payments', [EcommerceSettingsPayments::class, 'index']);
+        Route::post('/settings/payments/save', [EcommerceSettingsPayments::class, 'store'])->name('app-ecommerce-settings-payments-save');
+        Route::get('/settings/checkout', [EcommerceSettingsCheckout::class, 'index'])->name('app-ecommerce-settings-checkout');
+        Route::get('/app/ecommerce/settings/checkout', [EcommerceSettingsCheckout::class, 'index']);
+        Route::post('/settings/checkout/save', [EcommerceSettingsCheckout::class, 'store'])->name('app-ecommerce-settings-checkout-save');
+        Route::get('/settings/shipping', [EcommerceSettingsShipping::class, 'index'])->name('app-ecommerce-settings-shipping');
+        Route::get('/app/ecommerce/settings/shipping', [EcommerceSettingsShipping::class, 'index']);
+        Route::post('/settings/shipping/save', [EcommerceSettingsShipping::class, 'store'])->name('app-ecommerce-settings-shipping-save');
+        Route::get('/settings/locations', [EcommerceSettingsLocations::class, 'index'])->name('app-ecommerce-settings-locations');
+        Route::get('/app/ecommerce/settings/locations', [EcommerceSettingsLocations::class, 'index']);
+        Route::post('/settings/locations/save', [EcommerceSettingsLocations::class, 'store'])->name('app-ecommerce-settings-locations-save');
+        Route::get('/settings/notifications', [EcommerceSettingsNotifications::class, 'index'])->name('app-ecommerce-settings-notifications');
+        Route::get('/app/ecommerce/settings/notifications', [EcommerceSettingsNotifications::class, 'index']);
+        Route::post('/settings/notifications/save', [EcommerceSettingsNotifications::class, 'store'])->name('app-ecommerce-settings-notifications-save');
 
         // Invoices
-        Route::get('/app/invoice/list', 'App\Http\Controllers\apps\InvoiceList@index')->name('app-invoice-list');
-        Route::get('/app/invoice/preview/{id?}', 'App\Http\Controllers\apps\InvoicePreview@index')->name('app-invoice-preview');
-        Route::get('/app/invoice/print/{id?}', 'App\Http\Controllers\apps\InvoicePrint@index')->name('app-invoice-print');
-        Route::get('/app/invoice/add', 'App\Http\Controllers\apps\InvoiceAdd@index')->name('app-invoice-add');
-        Route::get('/app/invoice/edit', 'App\Http\Controllers\apps\InvoiceEdit@index')->name('app-invoice-edit');
+        Route::get('/invoices', 'App\Http\Controllers\apps\InvoiceList@index')->name('app-invoice-list');
+        Route::get('/app/invoice/list', 'App\Http\Controllers\apps\InvoiceList@index');
+        Route::get('/invoices/{id?}/preview', 'App\Http\Controllers\apps\InvoicePreview@index')->name('app-invoice-preview');
+        Route::get('/invoices/{id?}/print', 'App\Http\Controllers\apps\InvoicePrint@index')->name('app-invoice-print');
+        Route::get('/invoices/create', 'App\Http\Controllers\apps\InvoiceAdd@index')->name('app-invoice-add');
+        Route::get('/invoices/edit', 'App\Http\Controllers\apps\InvoiceEdit@index')->name('app-invoice-edit');
 
-        // User View
-        Route::get('/app/user/view/account', [UserViewAccount::class, 'index'])->name('app-user-view-account');
+        // System Users Management & Staff Profiles
+        Route::get('/staff', [UserList::class, 'index'])->name('app-user-list');
+        Route::get('/staff/account', [UserViewAccount::class, 'index'])->name('app-user-view-account');
+        Route::get('/staff/security', [UserViewSecurity::class, 'index'])->name('app-user-view-security');
+        Route::get('/staff/billing', [UserViewBilling::class, 'index'])->name('app-user-view-billing');
+        Route::get('/staff/notifications', [UserViewNotifications::class, 'index'])->name('app-user-view-notifications');
+        Route::get('/staff/connections', [UserViewConnections::class, 'index'])->name('app-user-view-connections');
 
         // AI Copilot
-        Route::post('/app/ai/copilot', [\App\Http\Controllers\apps\AICopilotController::class, 'chat'])->name('app-ai-copilot-chat');
+        Route::post('/ai/copilot', [\App\Http\Controllers\apps\AICopilotController::class, 'chat'])->name('app-ai-copilot-chat');
     });
 
-        // AI Settings
-        Route::get('/app/ecommerce/settings/ai', [AISettingsController::class, 'index'])->name('app-ecommerce-settings-ai');
-        Route::post('/app/ecommerce/settings/ai/save', [AISettingsController::class, 'store'])->name('app-ecommerce-settings-ai-save');
-        // Maps Settings
-        Route::get('/app/ecommerce/settings/maps', [MapsSettingsController::class, 'index'])->name('app-ecommerce-settings-maps');
-        Route::post('/app/ecommerce/settings/maps/save', [MapsSettingsController::class, 'store'])->name('app-ecommerce-settings-maps-save');
-        Route::get('/app/notifications', [\App\Http\Controllers\apps\SystemNotificationController::class, 'index'])->name('app-notifications');
-    Route::post('/app/notifications/mark-all', [\App\Http\Controllers\apps\SystemNotificationController::class, 'markAllAsRead'])->name('app-notifications-mark-all');
+    // Chat & Messaging App
+    Route::get('/chat', [\App\Http\Controllers\apps\Chat::class, 'index'])->name('app-chat');
+    Route::get('/app/chat', [\App\Http\Controllers\apps\Chat::class, 'index']);
+
+    // Calendar App
+    Route::get('/calendar', [\App\Http\Controllers\apps\Calendar::class, 'index'])->name('app-calendar');
+    Route::get('/app/calendar', [\App\Http\Controllers\apps\Calendar::class, 'index']);
+
+    // AI Copilot Hub & Settings
+    Route::get('/settings/ai', [AISettingsController::class, 'index'])->name('app-ecommerce-settings-ai');
+    Route::get('/app/ecommerce/settings/ai', [AISettingsController::class, 'index']);
+    Route::get('/apps/ai-copilot', [AISettingsController::class, 'index'])->name('app-ai-copilot');
+    Route::post('/settings/ai/save', [AISettingsController::class, 'store'])->name('app-ecommerce-settings-ai-save');
+    Route::post('/app/ecommerce/settings/ai/save', [AISettingsController::class, 'store']);
+
+    // Branding & Logo Settings
+    Route::get('/settings/branding', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'index'])->name('app-ecommerce-settings-branding');
+    Route::get('/app/ecommerce/settings/branding', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'index']);
+    Route::post('/settings/branding/save', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'store'])->name('app-ecommerce-settings-branding-save');
+    Route::post('/app/ecommerce/settings/branding/save', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'store']);
+
+    // Maps Settings
+    Route::get('/settings/maps', [MapsSettingsController::class, 'index'])->name('app-ecommerce-settings-maps');
+    Route::get('/app/ecommerce/settings/maps', [MapsSettingsController::class, 'index']);
+    Route::post('/settings/maps/save', [MapsSettingsController::class, 'store'])->name('app-ecommerce-settings-maps-save');
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\apps\SystemNotificationController::class, 'index'])->name('app-notifications');
+    Route::post('/notifications/mark-all', [\App\Http\Controllers\apps\SystemNotificationController::class, 'markAllAsRead'])->name('app-notifications-mark-all');
 
     // Access Hub & Roles Management
-    Route::get('/app/access-roles', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-roles');
-Route::get('/app/access-hub', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-hub');
-    Route::post('/app/access-hub/roles', [\App\Http\Controllers\apps\RoleController::class, 'store'])->name('app-access-roles-store');
-    Route::delete('/app/access-hub/roles/{id}', [\App\Http\Controllers\apps\RoleController::class, 'destroy'])->name('app-access-roles-destroy');
-    Route::post('/app/access-hub/roles/sync-permissions', [\App\Http\Controllers\apps\RoleController::class, 'syncPermissions'])->name('app-access-roles-sync-permissions');
-    Route::post('/app/access-hub/users/sync-roles', [\App\Http\Controllers\apps\RoleController::class, 'syncUserRoles'])->name('app-access-roles-sync-user-roles');
-    Route::get('/app/access-permission/list', [\App\Http\Controllers\apps\AccessPermission::class, 'list'])->name('app-access-permission-list');
-    Route::post('/app/access-permission', [\App\Http\Controllers\apps\AccessPermission::class, 'store'])->name('app-access-permission-store');
-    Route::delete('/app/access-permission/{id}/delete', [\App\Http\Controllers\apps\AccessPermission::class, 'destroy'])->name('app-access-permission-destroy');
-    Route::get('/app/access-permission', [\App\Http\Controllers\apps\AccessPermission::class, 'index'])->name('app-access-permission');
-    Route::get('/app/access-hub/users/{id}/roles', [\App\Http\Controllers\apps\RoleController::class, 'getUserRoles']);
+    Route::get('/roles', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-roles');
+    Route::get('/access-hub', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-hub');
+    Route::post('/access-hub/roles', [\App\Http\Controllers\apps\RoleController::class, 'store'])->name('app-access-roles-store');
+    Route::delete('/access-hub/roles/{id}', [\App\Http\Controllers\apps\RoleController::class, 'destroy'])->name('app-access-roles-destroy');
+    Route::post('/access-hub/roles/sync-permissions', [\App\Http\Controllers\apps\RoleController::class, 'syncPermissions'])->name('app-access-roles-sync-permissions');
+    Route::get('/permissions', [\App\Http\Controllers\apps\AccessPermission::class, 'index'])->name('app-access-permission-list');
+    Route::get('/permissions/data', [\App\Http\Controllers\apps\AccessPermission::class, 'list'])->name('app-access-permission-data');
+    Route::get('/app/access-permission/list', [\App\Http\Controllers\apps\AccessPermission::class, 'list']);
+    Route::post('/permissions', [\App\Http\Controllers\apps\AccessPermission::class, 'store'])->name('app-access-permission-store');
+    Route::delete('/permissions/{id}/delete', [\App\Http\Controllers\apps\AccessPermission::class, 'destroy'])->name('app-access-permission-destroy');
+    
+    // Suppliers Management
+    Route::get('/suppliers', [\App\Http\Controllers\apps\SupplierController::class, 'index'])->name('app-suppliers');
+    Route::post('/suppliers', [\App\Http\Controllers\apps\SupplierController::class, 'store'])->name('app-suppliers-store');
+    Route::put('/suppliers/{id}', [\App\Http\Controllers\apps\SupplierController::class, 'update'])->name('app-suppliers-update');
+    Route::delete('/suppliers/{id}', [\App\Http\Controllers\apps\SupplierController::class, 'destroy'])->name('app-suppliers-delete');
+
+    // Purchase Management
+    Route::get('/purchases', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'index'])->name('app-purchases');
+    Route::post('/purchases', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'store'])->name('app-purchases-store');
+    Route::post('/purchases/{id}/received', [\App\Http\Controllers\apps\PurchaseOrderController::class, 'markReceived'])->name('app-purchases-received');
+
+    // Reports Suite
+    Route::get('/reports', [\App\Http\Controllers\apps\ReportController::class, 'index'])->name('app-reports');
+    Route::get('/reports/export-csv', [\App\Http\Controllers\apps\ReportController::class, 'exportCsv'])->name('app-reports-export-csv');
+
+    // Global Search (Ctrl + K)
+    Route::get('/global-search', [\App\Http\Controllers\apps\GlobalSearchController::class, 'search'])->name('app-global-search');
+
+    // Calendar & Apps
+    Route::get('/calendar', [Calendar::class, 'index'])->name('app-calendar');
+
+    // Pages & Modals
+    Route::get('/faq', [Faq::class, 'index'])->name('pages-faq');
+    Route::get('/account/settings', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
+    Route::get('/modals', [ModalExample::class, 'index'])->name('modal-examples');
+    Route::get('/user/profile', [UserProfile::class, 'index'])->name('pages-profile-user');
 });
 
 // Authentication Routes (Public)
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
+Route::post('/auth/login-basic', [LoginBasic::class, 'store'])->name('auth-login-basic-store');
+Route::post('/login', [LoginBasic::class, 'store'])->name('login-store');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');

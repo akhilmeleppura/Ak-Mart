@@ -31,9 +31,19 @@ class SystemNotificationController extends Controller
     /**
      * Mark all as read.
      */
+    public function markAllAsRead()
+    {
+        if (auth()->check()) {
+            auth()->user()->unreadNotifications->markAsRead();
+        }
+        return redirect()->back()->with('success', 'All notifications marked as read.');
+    }
+
+    /**
+     * Alias for markAllAsRead.
+     */
     public function markAllRead()
     {
-        auth()->user()->unreadNotifications->markAsRead();
-        return redirect()->back()->with('success', 'All notifications marked as read.');
+        return $this->markAllAsRead();
     }
 }

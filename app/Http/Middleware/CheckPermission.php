@@ -24,8 +24,13 @@ class CheckPermission
 
         $user = Auth::user();
 
-        // Step 2: Super admin bypass (assumes column is `is_supreme_admin`)
-        if ($user->is_supreme_admin == 1) {
+        // Step 2: Supreme / Super admin bypass
+        if (
+            $user->is_supreme_admin == 1 ||
+            $user->is_super_admin == 1 ||
+            $user->user_type === 'super_admin' ||
+            (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+        ) {
             return $next($request);
         }
 
@@ -36,8 +41,8 @@ class CheckPermission
             abort(403, 'Route name or permission not defined.');
         }
 
-        // Step 4: Check permission using Spatie
-        if (!$user->hasPermissionTo($permissionName)) {
+        // Step 4: Check permission using Spatie / Gate
+        if (!$user->can($permissionName) && (method_exists($user, 'hasPermissionTo') ? !$user->hasPermissionTo($permissionName) : true)) {
             abort(403, 'Unauthorized: Missing permission for this action.');
         }
 

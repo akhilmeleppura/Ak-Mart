@@ -126,16 +126,49 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.btn-mark-review').forEach(btn => {
     btn.addEventListener('click', function () {
       apiCall(`/app/saas/kyc/${this.dataset.id}/review`)
-        .then(d => { if (d.success) location.reload(); else alert(d.message); });
+        .then(d => {
+          if (d.success) location.reload();
+          else if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', text: d.message });
+          else alert(d.message);
+        });
     });
   });
 
   // Approve
   document.querySelectorAll('.btn-approve').forEach(btn => {
     btn.addEventListener('click', function () {
-      if (!confirm('Approve this KYC? This will unlock vendor payouts.')) return;
-      apiCall(`/app/saas/kyc/${this.dataset.id}/approve`)
-        .then(d => { alert(d.message); if (d.success) location.reload(); });
+      const id = this.dataset.id;
+      const doApprove = () => {
+        apiCall(`/app/saas/kyc/${id}/approve`)
+          .then(d => {
+            if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                icon: d.success ? 'success' : 'error',
+                text: d.message,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => { if (d.success) location.reload(); });
+            } else {
+              alert(d.message);
+              if (d.success) location.reload();
+            }
+          });
+      };
+
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Approve KYC Application?',
+          text: 'This will verify the vendor and unlock merchant payouts.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, approve',
+          cancelButtonText: 'Cancel',
+          customClass: { confirmButton: 'btn btn-success me-3', cancelButton: 'btn btn-label-secondary' },
+          buttonsStyling: false
+        }).then(res => { if (res.isConfirmed) doApprove(); });
+      } else {
+        if (confirm('Approve this KYC? This will unlock vendor payouts.')) doApprove();
+      }
     });
   });
 
@@ -151,9 +184,28 @@ document.addEventListener('DOMContentLoaded', function () {
   // Confirm Rejection
   document.getElementById('confirmRejectBtn').addEventListener('click', function () {
     const reason = document.getElementById('rejectReason').value.trim();
-    if (!reason || reason.length < 10) { alert('Please provide a meaningful rejection reason (min 10 chars).'); return; }
+    if (!reason || reason.length < 10) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({ icon: 'warning', text: 'Please provide a meaningful rejection reason (min 10 chars).' });
+      } else {
+        alert('Please provide a meaningful rejection reason (min 10 chars).');
+      }
+      return;
+    }
     apiCall(`/app/saas/kyc/${rejectTargetId}/reject`, 'POST', { reason })
-      .then(d => { alert(d.message); if (d.success) location.reload(); });
+      .then(d => {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: d.success ? 'success' : 'error',
+            text: d.message,
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => { if (d.success) location.reload(); });
+        } else {
+          alert(d.message);
+          if (d.success) location.reload();
+        }
+      });
   });
 });
 </script>

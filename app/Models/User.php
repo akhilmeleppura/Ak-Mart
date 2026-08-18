@@ -32,6 +32,10 @@ class User extends Authenticatable
         'password',
         'phone',
         'user_type',
+        'is_supreme_admin',
+        'is_super_admin',
+        'role_id',
+        'branch_id',
         'address_line_1',
         'address_line_2',
         'town',
@@ -71,7 +75,34 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_supreme_admin' => 'boolean',
+            'is_super_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Determine if the user has Supreme Admin privileges.
+     */
+    public function isSupremeAdmin(): bool
+    {
+        return (bool) (
+            $this->is_supreme_admin ||
+            $this->user_type === 'super_admin' ||
+            (method_exists($this, 'hasRole') && $this->hasRole('Super Admin'))
+        );
+    }
+
+    /**
+     * Determine if the user has Super Admin or Supreme Admin privileges.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return (bool) (
+            $this->is_super_admin ||
+            $this->is_supreme_admin ||
+            $this->user_type === 'super_admin' ||
+            (method_exists($this, 'hasRole') && ($this->hasRole('Super Admin') || $this->hasRole('Admin')))
+        );
     }
 
     public function orders()

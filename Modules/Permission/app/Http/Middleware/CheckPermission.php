@@ -5,6 +5,7 @@ namespace Modules\Permission\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CheckPermission
 {
@@ -24,13 +25,18 @@ class CheckPermission
 
         $user = Auth::user();
 
-        // Step 2: Supreme admin bypass check (note: is_supre_admin)
-        if ($user->is_supre_admin == 1) {
+        // Step 2: Supreme / Super admin bypass check
+        if (
+            $user->is_supreme_admin == 1 ||
+            $user->is_super_admin == 1 ||
+            $user->user_type === 'super_admin' ||
+            (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+        ) {
             return $next($request);
         }
 
-        // Step 3: Check role_id
-        if (!$user->role_id) {
+        // Step 3: Check role_id or roles
+        if (!$user->role_id && (!method_exists($user, 'roles') || $user->roles()->count() === 0)) {
             abort(403, 'Unauthorized: No role assigned.');
         }
 
@@ -41,7 +47,12 @@ class CheckPermission
             abort(403, 'Route name not defined.');
         }
 
-        // Step 5: Check if a permission exists for this route
+        // Check if user has permission via Spatie or Gate
+        if ($user->can($routeName) || (method_exists($user, 'hasPermissionTo') && $user->hasPermissionTo($routeName))) {
+            return $next($request);
+        }
+
+        // Step 5: Check if a permission exists for this route in DB
         $permission = DB::table('permissions')
             ->where('name', $routeName)
             ->first();
@@ -51,8 +62,9 @@ class CheckPermission
         }
 
         // Step 6: Check if the user’s role has this permission
+        $roleId = $user->role_id ?? ($user->roles()->first()?->id);
         $hasPermission = DB::table('role_has_permissions')
-            ->where('role_id', $user->role_id)
+            ->where('role_id', $roleId)
             ->where('permission_id', $permission->id)
             ->exists();
 

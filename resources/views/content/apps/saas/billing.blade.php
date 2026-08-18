@@ -106,10 +106,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    alert(data.message);
-                    window.location.reload();
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Subscription Activated',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => window.location.reload());
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
                 } else {
-                    alert('Error: ' + data.error);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Subscription Failed',
+                            text: data.error || 'Unable to process subscription.'
+                        });
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
                     this.innerHTML = originalText;
                     this.disabled = false;
                 }

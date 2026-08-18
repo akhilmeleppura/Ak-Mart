@@ -1,0 +1,12 @@
+{
+    "name": "Ecommerce",
+    "alias": "ecommerce",
+    "description": "Ecommerce Core Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Ecommerce\\Providers\\EcommerceServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

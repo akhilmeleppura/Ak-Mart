@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\SampleModule\Http\Controllers\SampleModuleController;
+use Modules\SampleModule\App\Http\Controllers\SampleModuleController;
 use  Modules\SampleModule\App\Http\Controllers\Test\Test1Controller;
 use Modules\SampleModule\App\Http\Controllers\Test\Test2Controller;
 

@@ -19,7 +19,10 @@ class EcommerceSettingsCheckout extends Controller
     $fields = [
       'customer_account',
       'contact_method',
-      'shipping_address_phone',
+      'full_name_requirement',
+      'company_name_requirement',
+      'address_line_2_requirement',
+      'shipping_phone_requirement',
       'marketing_consent'
     ];
 

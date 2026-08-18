@@ -14,55 +14,46 @@
 <div class="row g-6">
   <!-- Navigation -->
   <div class="col-12 col-lg-4">
-    <div class="d-flex justify-content-between flex-column mb-4 mb-md-0">
-      <h5 class="mb-4">Getting Started</h5>
-      <ul class="nav nav-align-left nav-pills flex-column">
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/details') }}">
-            <i class="icon-base bx bx-store-alt icon-18px me-1_5"></i>
-            <span class="align-middle">Store details</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/payments') }}">
-            <i class="icon-base bx bx-credit-card icon-18px me-1_5"></i>
-            <span class="align-middle">Payments</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/checkout') }}">
-            <i class="icon-base bx bx-cart icon-18px me-1_5"></i>
-            <span class="align-middle">Checkout</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link active" href="javascript:void(0);">
-            <i class="icon-base bx bx-package icon-18px me-1_5"></i>
-            <span class="align-middle">Shipping & delivery</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/locations') }}">
-            <i class="icon-base bx bx-map icon-18px me-1_5"></i>
-            <span class="align-middle">Locations</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/notifications') }}">
-            <i class="icon-base bx bx-bell icon-18px me-1_5"></i>
-            <span class="align-middle">Notifications</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    @include('content.apps._settings-sidebar')
   </div>
   <!-- /Navigation -->
 
   <!-- Options -->
   <div class="col-12 col-lg-8 pt-6 pt-lg-0">
-    <div class="tab-content p-0">
-      <!-- Shipping & delivery Tab -->
-      <div class="tab-pane fade show active" id="shipping_delivery" role="tabpanel">
+    @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="icon-base bx bx-check-circle me-1"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
+    <form method="POST" action="{{ route('app-ecommerce-settings-shipping-save') }}">
+      @csrf
+      <div class="tab-content p-0">
+        <!-- Shipping & delivery Tab -->
+        <div class="tab-pane fade show active" id="shipping_delivery" role="tabpanel">
+
+          <!-- Shipping Rates Configuration -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h5 class="card-title m-0">Standard Shipping Rates</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-12 col-md-4">
+                  <label class="form-label" for="shipping_rate_domestic">Domestic Rate ($)</label>
+                  <input type="number" step="0.01" class="form-control" id="shipping_rate_domestic" name="shipping_rate_domestic" value="{{ $settings['shipping_rate_domestic'] ?? '5.00' }}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label" for="shipping_rate_international">International Rate ($)</label>
+                  <input type="number" step="0.01" class="form-control" id="shipping_rate_international" name="shipping_rate_international" value="{{ $settings['shipping_rate_international'] ?? '15.00' }}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label" for="free_shipping_threshold">Free Shipping Min Order ($)</label>
+                  <input type="number" step="0.01" class="form-control" id="free_shipping_threshold" name="free_shipping_threshold" value="{{ $settings['free_shipping_threshold'] ?? '50.00' }}">
+                </div>
+              </div>
+            </div>
+          </div>
         <div class="card mb-6">
           <div class="card-header d-flex justify-content-between align-items-center flex-wrap row-gap-2">
             <div class="card-title m-0">
@@ -258,11 +249,11 @@
 
         <div class="d-flex justify-content-end gap-4">
           <button type="reset" class="btn btn-label-secondary">Discard</button>
-          <a class="btn btn-primary" href="locations">Save Changes</a>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </div>
     </div>
-    <!-- /Options-->
+    </form>
   </div>
 </div>
 

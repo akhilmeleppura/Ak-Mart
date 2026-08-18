@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->string('module')->nullable()->after('name');
-            $table->string('label')->nullable()->after('module');
+            if (!Schema::hasColumn('permissions', 'module')) {
+                $table->string('module')->nullable()->after('name');
+            }
+            if (!Schema::hasColumn('permissions', 'label')) {
+                $table->string('label')->nullable()->after('module');
+            }
         });
     }
 

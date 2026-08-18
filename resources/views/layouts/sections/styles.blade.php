@@ -27,7 +27,7 @@
 @yield('page-style')
 
 <!-- app CSS -->
-@vite(['resources/css/app.css'])
+@vite(['resources/css/app.css', 'resources/assets/vendor/libs/animate-css/animate.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'])
 <!-- END: app CSS-->
 @livewireStyles
 

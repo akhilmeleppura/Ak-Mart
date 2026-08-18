@@ -1,157 +1,463 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Advanced Inventory Management')
+@section('title', 'Advanced Inventory & Stock Movements - AK-Mart')
 
 @section('content')
+{{-- Summary Widgets --}}
 <div class="row g-6 mb-6">
-    {{-- Summary Widgets --}}
-    <div class="col-md-4">
+    <div class="col-sm-6 col-xl-3">
         <div class="card bg-label-primary">
-            <div class="card-body text-center">
-                <div class="avatar avatar-md mx-auto mb-3">
-                    <span class="avatar-initial rounded-circle bg-primary"><i class="bx bx-package"></i></span>
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span class="text-heading">Total Products</span>
+                        <div class="d-flex align-items-center my-1">
+                            <h4 class="mb-0 me-2">{{ $totalProducts }}</h4>
+                        </div>
+                        <small class="mb-0">{{ number_format($totalStockQty) }} Total Units</small>
+                    </div>
+                    <div class="avatar">
+                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-package bx-sm"></i></span>
+                    </div>
                 </div>
-                <h4 class="mb-1 fw-bold">{{ $products->count() }}</h4>
-                <p class="mb-0">Total Products</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-label-success">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span class="text-heading">Total Valuation</span>
+                        <div class="d-flex align-items-center my-1">
+                            <h4 class="mb-0 me-2">${{ number_format($totalValuation, 2) }}</h4>
+                        </div>
+                        <small class="mb-0">Estimated Retail Value</small>
+                    </div>
+                    <div class="avatar">
+                        <span class="avatar-initial rounded bg-label-success"><i class="bx bx-dollar bx-sm"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
         <div class="card bg-label-warning">
-            <div class="card-body text-center">
-                <div class="avatar avatar-md mx-auto mb-3">
-                    <span class="avatar-initial rounded-circle bg-warning"><i class="bx bx-error"></i></span>
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span class="text-heading">Low Stock Alerts</span>
+                        <div class="d-flex align-items-center my-1">
+                            <h4 class="mb-0 me-2">{{ $lowStockProducts->count() }}</h4>
+                        </div>
+                        <small class="mb-0">Action Recommended</small>
+                    </div>
+                    <div class="avatar">
+                        <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-error bx-sm"></i></span>
+                    </div>
                 </div>
-                <h4 class="mb-1 fw-bold">{{ $lowStockProducts->count() }}</h4>
-                <p class="mb-0">Low Stock Items</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-xl-3">
         <div class="card bg-label-danger">
-            <div class="card-body text-center">
-                <div class="avatar avatar-md mx-auto mb-3">
-                    <span class="avatar-initial rounded-circle bg-danger"><i class="bx bx-block"></i></span>
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="content-left">
+                        <span class="text-heading">Out of Stock</span>
+                        <div class="d-flex align-items-center my-1">
+                            <h4 class="mb-0 me-2">{{ $outOfStockProducts->count() }}</h4>
+                        </div>
+                        <small class="mb-0">Requires Restocking</small>
+                    </div>
+                    <div class="avatar">
+                        <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-block bx-sm"></i></span>
+                    </div>
                 </div>
-                <h4 class="mb-1 fw-bold">{{ $outOfStockProducts->count() }}</h4>
-                <p class="mb-0">Out of Stock Items</p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">Inventory Ledger</h5>
-        <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary"><i class="bx bx-export me-1"></i> Export</button>
-            <button class="btn btn-sm btn-primary"><i class="bx bx-scan me-1"></i> Barcode Scanner</button>
+{{-- Main Card with Tabs --}}
+<div class="nav-align-top mb-6">
+    <ul class="nav nav-pills mb-4 gap-2" role="tablist">
+        <li class="nav-item">
+            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#tab-inventory" aria-controls="tab-inventory" aria-selected="true">
+                <i class="bx bx-cube me-1"></i> Stock Ledger
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-movements" aria-controls="tab-movements" aria-selected="false">
+                <i class="bx bx-history me-1"></i> Stock Movement Audit ({{ $movements->count() }})
+            </button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-transfers" aria-controls="tab-transfers" aria-selected="false">
+                <i class="bx bx-transfer-alt me-1"></i> Branch Transfers ({{ $transfers->count() }})
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content p-0">
+        {{-- Tab 1: Inventory Table --}}
+        <div class="tab-pane fade show active" id="tab-inventory" role="tabpanel">
+            <div class="card border-0 shadow-none">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="card-title mb-0">Product Inventory & Stock Controls</h5>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#adjustStockModal">
+                            <i class="bx bx-adjust me-1"></i> Quick Adjust Stock
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#transferModal">
+                            <i class="bx bx-transfer me-1"></i> New Branch Transfer
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product Details</th>
+                                <th>SKU / Barcode</th>
+                                <th>Unit Price</th>
+                                <th>In Stock</th>
+                                <th>Thresholds (Min / Max)</th>
+                                <th>Health Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($products as $product)
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ asset($product->image ?: 'assets/img/ecommerce-images/product-1.png') }}" class="rounded me-3" width="40" height="40" alt="" onerror="this.src='https://via.placeholder.com/40'">
+                                            <div>
+                                                <span class="text-body fw-semibold">{{ $product->name }}</span>
+                                                <div class="text-muted small">{{ $product->category->name ?? 'General' }} {{ $product->brand ? '• ' . $product->brand : '' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code class="text-primary">{{ $product->sku ?: 'N/A' }}</code><br>
+                                        <small class="text-muted">{{ $product->barcode ?: '' }}</small>
+                                    </td>
+                                    <td><strong>${{ number_format($product->price, 2) }}</strong></td>
+                                    <td>
+                                        <span class="fw-bold fs-6 {{ $product->qty <= 0 ? 'text-danger' : ($product->isLowStock() ? 'text-warning' : 'text-success') }}">
+                                            {{ $product->qty }} Units
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">Min: {{ $product->min_stock ?? 5 }} | Max: {{ $product->max_stock ?? 100 }}</small>
+                                    </td>
+                                    <td>
+                                        @if($product->qty <= 0)
+                                            <span class="badge bg-label-danger">Out of Stock</span>
+                                        @elseif($product->isLowStock())
+                                            <span class="badge bg-label-warning">Low Stock (Reorder {{ $product->recommendedPurchaseQty() }})</span>
+                                        @elseif($product->qty > ($product->max_stock ?? 100))
+                                            <span class="badge bg-label-info">Overstocked</span>
+                                        @else
+                                            <span class="badge bg-label-success">Optimal</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-icon btn-label-primary btn-quick-adjust" 
+                                            data-id="{{ $product->id }}" 
+                                            data-name="{{ $product->name }}" 
+                                            data-qty="{{ $product->qty }}"
+                                            title="Adjust Stock">
+                                            <i class="bx bx-slider"></i>
+                                        </button>
+                                        <a href="{{ route('app-ecommerce-product-edit', $product->id) }}" class="btn btn-sm btn-icon btn-label-secondary" title="Edit Product">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">No products found in inventory.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tab 2: Stock Movement Audit Log --}}
+        <div class="tab-pane fade" id="tab-movements" role="tabpanel">
+            <div class="card border-0 shadow-none">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">Traceable Stock Movements & Audit Ledger</h5>
+                    <small class="text-muted">Complete audit trail of every stock increase, deduction, adjustment, and transfer.</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Product</th>
+                                <th>Movement Type</th>
+                                <th>Quantity</th>
+                                <th>Stock Before & After</th>
+                                <th>Reason / Reference</th>
+                                <th>Operator</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($movements as $m)
+                                <tr>
+                                    <td><small>{{ $m->created_at->format('d M Y, h:i A') }}</small></td>
+                                    <td><strong>{{ $m->product?->name ?? 'Deleted Product' }}</strong></td>
+                                    <td>
+                                        @if(in_array($m->type, ['stock_in', 'purchase', 'transfer_in', 'return']))
+                                            <span class="badge bg-label-success"><i class="bx bx-plus me-1"></i>{{ ucfirst(str_replace('_', ' ', $m->type)) }}</span>
+                                        @elseif(in_array($m->type, ['stock_out', 'sale', 'transfer_out']))
+                                            <span class="badge bg-label-danger"><i class="bx bx-minus me-1"></i>{{ ucfirst(str_replace('_', ' ', $m->type)) }}</span>
+                                        @else
+                                            <span class="badge bg-label-warning"><i class="bx bx-adjust me-1"></i>{{ ucfirst(str_replace('_', ' ', $m->type)) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="fw-bold {{ $m->quantity > 0 ? 'text-success' : 'text-danger' }}">
+                                        {{ $m->quantity > 0 ? '+' . $m->quantity : $m->quantity }}
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ $m->before_qty }}</span> 
+                                        <i class="bx bx-right-arrow-alt text-primary mx-1"></i> 
+                                        <span class="fw-bold text-heading">{{ $m->after_qty }}</span>
+                                    </td>
+                                    <td><small>{{ $m->reason ?: ($m->reference_type . ' #' . $m->reference_id) }}</small></td>
+                                    <td><small class="badge bg-label-secondary">{{ $m->user?->name ?? 'System' }}</small></td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">No stock movements recorded yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tab 3: Branch Transfers --}}
+        <div class="tab-pane fade" id="tab-transfers" role="tabpanel">
+            <div class="card border-0 shadow-none">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Inter-Branch Stock Transfers</h5>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#transferModal">
+                        <i class="bx bx-plus me-1"></i> New Transfer
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transfer #</th>
+                                <th>From Branch</th>
+                                <th>To Branch</th>
+                                <th>Total Items</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($transfers as $t)
+                                <tr>
+                                    <td><strong class="text-primary">{{ $t->transfer_number }}</strong></td>
+                                    <td><span class="badge bg-label-info">{{ $t->fromBranch?->name ?? 'Main Branch' }}</span></td>
+                                    <td><span class="badge bg-label-primary">{{ $t->toBranch?->name ?? 'Target Branch' }}</span></td>
+                                    <td>{{ $t->items->sum('quantity') }} Units ({{ $t->items->count() }} SKUs)</td>
+                                    <td>
+                                        @if($t->status === 'completed')
+                                            <span class="badge bg-label-success"><i class="bx bx-check me-1"></i>Completed</span>
+                                        @elseif($t->status === 'in_transit')
+                                            <span class="badge bg-label-warning"><i class="bx bx-car me-1"></i>In Transit</span>
+                                        @else
+                                            <span class="badge bg-label-secondary">{{ ucfirst($t->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td><small>{{ $t->created_at->format('d M Y, h:i A') }}</small></td>
+                                    <td class="text-end">
+                                        @if($t->status === 'in_transit')
+                                            <form action="{{ route('app-inventory-transfer-receive', $t->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bx bx-check-double me-1"></i> Receive & Stock
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-sm btn-label-secondary" disabled>Received</button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">No branch transfers on record.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Product</th>
-                        <th>SKU / Barcode</th>
-                        <th>Current Stock</th>
-                        <th>Alert Level</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($products as $product)
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ $product->image ?? 'https://via.placeholder.com/50' }}" class="rounded me-3" width="40" height="40" alt="">
-                                    <div>
-                                        <span class="text-body fw-semibold">{{ $product->name }}</span>
-                                        <div class="text-muted small">{{ $product->category->name ?? 'General' }}</div>
-                                    </div>
+</div>
+
+{{-- Quick Adjust Stock Modal --}}
+<div class="modal fade" id="adjustStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="adjustStockForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Adjust Product Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Product</label>
+                        <select name="product_id" id="modal_product_id" class="form-select" required>
+                            @foreach($products as $p)
+                                <option value="{{ $p->id }}" data-qty="{{ $p->qty }}">{{ $p->name }} (Current: {{ $p->qty }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Adjustment Type</label>
+                        <select name="type" id="modal_type" class="form-select" required>
+                            <option value="stock_in">Stock-In (+) Purchase / Restock</option>
+                            <option value="stock_out">Stock-Out (-) Internal Use / Write-off</option>
+                            <option value="adjustment">Count Correction (+ / -)</option>
+                            <option value="damaged">Damaged Goods (-)</option>
+                            <option value="expired">Expired Goods (-)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantity to Adjust</label>
+                        <input type="number" name="qty" id="modal_qty" class="form-control" placeholder="e.g., 10" required min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reason / Notes</label>
+                        <input type="text" name="reason" id="modal_reason" class="form-control" placeholder="e.g., Monthly inventory cycle audit">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- New Branch Transfer Modal --}}
+<div class="modal fade" id="transferModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('app-inventory-transfer-store') }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Inter-Branch Stock Transfer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">From Branch (Source)</label>
+                            <select name="from_branch_id" class="form-select" required>
+                                @foreach($branches as $b)
+                                    <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">To Branch (Destination)</label>
+                            <select name="to_branch_id" class="form-select" required>
+                                @foreach($branches as $b)
+                                    <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Items to Transfer</label>
+                        <div id="transfer-items-container">
+                            <div class="row g-2 mb-2">
+                                <div class="col-8">
+                                    <select name="items[0][product_id]" class="form-select" required>
+                                        @foreach($products as $p)
+                                            <option value="{{ $p->id }}">{{ $p->name }} (Available: {{ $p->qty }})</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </td>
-                            <td>
-                                <code class="text-dark">{{ $product->sku ?? 'N/A' }}</code><br>
-                                <small class="text-muted">{{ $product->barcode ?? '' }}</small>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <input type="number" class="form-control form-control-sm w-px-75 stock-input" value="{{ $product->qty }}" data-id="{{ $product->id }}">
-                                    <span class="text-muted small">Units</span>
+                                <div class="col-4">
+                                    <input type="number" name="items[0][qty]" class="form-control" placeholder="Qty" min="1" value="1" required>
                                 </div>
-                            </td>
-                            <td>{{ $product->stock_alert_level }}</td>
-                            <td>
-                                @if($product->qty <= 0)
-                                    <span class="badge bg-label-danger">Out of Stock</span>
-                                @elseif($product->qty <= $product->stock_alert_level)
-                                    <span class="badge bg-label-warning">Low Stock</span>
-                                @else
-                                    <span class="badge bg-label-success">Healthy</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-icon btn-label-primary save-stock" style="display: none;">
-                                    <i class="bx bx-save"></i>
-                                </button>
-                                <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-label-secondary">
-                                    <i class="bx bx-history"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-10">No products found in inventory.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dispatch Notes</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="Transfer dispatch instructions or courier details..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Dispatch Stock Transfer</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const stockInputs = document.querySelectorAll('.stock-input');
-    
-    stockInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            const btn = this.parentElement.parentElement.parentElement.querySelector('.save-stock');
-            btn.style.display = 'inline-flex';
+    // Quick adjust button click
+    document.querySelectorAll('.btn-quick-adjust').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const pId = this.dataset.id;
+            document.getElementById('modal_product_id').value = pId;
+            const modal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
+            modal.show();
         });
     });
 
-    document.querySelectorAll('.save-stock').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('tr');
-            const input = row.querySelector('.stock-input');
-            const productId = input.dataset.id;
-            const qty = input.value;
+    // Handle Quick Adjust Form Submit
+    document.getElementById('adjustStockForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = {
+            product_id: document.getElementById('modal_product_id').value,
+            type: document.getElementById('modal_type').value,
+            qty: document.getElementById('modal_qty').value,
+            reason: document.getElementById('modal_reason').value,
+        };
 
-            fetch('{{ route("app-vendor-inventory-update") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ product_id: productId, qty: qty })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    this.style.display = 'none';
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Updated',
-                        text: 'Stock level updated successfully',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
-                }
-            });
+        fetch('{{ route("app-vendor-inventory-update") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Stock Updated',
+                    text: res.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            } else {
+                Swal.fire('Error', res.message || 'Failed to update stock', 'error');
+            }
         });
     });
 });

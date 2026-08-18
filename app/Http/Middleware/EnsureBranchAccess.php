@@ -14,6 +14,17 @@ class EnsureBranchAccess
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
+
+        // Supreme Admins & Super Admins can access and switch to any branch across the platform
+        if ($user && (
+            $user->is_supreme_admin == 1 ||
+            $user->is_super_admin == 1 ||
+            $user->user_type === 'super_admin' ||
+            (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+        )) {
+            return $next($request);
+        }
+
         $targetBranchId = $request->route('id') ?? session('branch_id');
 
         // If user is restricted to a specific branch

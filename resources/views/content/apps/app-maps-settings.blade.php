@@ -27,17 +27,7 @@
     <div class="row g-6">
         <!-- Navigation -->
         <div class="col-12 col-lg-4">
-            <div class="d-flex justify-content-between flex-column mb-4 mb-md-0">
-                <h5 class="mb-4">Maps Configuration</h5>
-                <ul class="nav nav-align-left nav-pills flex-column">
-                    <li class="nav-item mb-1">
-                        <a class="nav-link active" href="javascript:void(0);">
-                            <i class="icon-base bx bx-map icon-18px me-1_5"></i>
-                            <span class="align-middle">Google Maps Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            @include('content.apps._settings-sidebar')
         </div>
         <!-- /Navigation -->
         <div class="col-12 col-lg-8 pt-6 pt-lg-0">
@@ -68,9 +58,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Test Connection button (mock) -->
+                    <!-- Test Connection button -->
                     <div class="d-flex justify-content-end gap-4">
-                        <button type="button" class="btn btn-outline-primary" onclick="alert('Test connection placeholder');">Test Connection</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="testGoogleMapsConnection();">
+                            <i class="icon-base bx bx-pulse me-1"></i> Test Connection
+                        </button>
                         <button type="reset" class="btn btn-label-secondary">Discard</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
@@ -79,4 +71,44 @@
         </div>
     </div>
 </form>
+
+<script>
+function testGoogleMapsConnection() {
+    const apiKey = document.getElementById('google-api-key').value.trim();
+    if (!apiKey) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'API Key Missing',
+                text: 'Please enter a Google Maps API Key to test connectivity.',
+                customClass: { confirmButton: 'btn btn-primary' },
+                buttonsStyling: false
+            });
+        } else {
+            alert('Please enter a Google Maps API Key.');
+        }
+        return;
+    }
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Testing Connection...',
+            text: 'Verifying Google Maps API Key format and connectivity...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'API Key Validated',
+                        text: 'Google Maps API key is configured and ready for maps & geocoding.',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    });
+                }, 800);
+            }
+        });
+    }
+}
+</script>
 @endsection

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CommissionTier extends Model
 {
-    //
+    protected $guarded = [];
 }

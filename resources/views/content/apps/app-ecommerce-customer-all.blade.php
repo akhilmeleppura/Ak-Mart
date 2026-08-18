@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'eCommerce Customer All - Apps')
+@section('title', 'Store Customers Management - AK-Mart')
 
 @section('vendor-style')
 @vite([
@@ -34,10 +34,24 @@
 @endsection
 
 @section('content')
-<!-- customers List Table -->
+<!-- Customer Management Header (Type 1: E-Commerce Buyer Design) -->
+<div class="card mb-6 border-0 shadow-xs bg-label-success bg-opacity-10">
+  <div class="card-body py-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="avatar avatar-lg bg-teal text-white rounded-3 d-flex align-items-center justify-content-center" style="background-color: #14B8A6;">
+        <i class="bx bx-shopping-bag fs-2 text-white"></i>
+      </div>
+      <div>
+        <h4 class="mb-1 text-heading fw-bold">Store Customers Directory</h4>
+        <p class="mb-0 text-muted small">Manage retail buyers, wholesale clients, shipping addresses, and customer lifetime order spend.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Customers List Table -->
 <div class="card mb-6">
   <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-    <h5 class="card-title mb-0">Customers</h5>
+    <h5 class="card-title mb-0 fw-semibold text-heading"><i class="bx bx-group me-2 text-teal" style="color: #14B8A6;"></i>Customers List</h5>
     <div class="d-flex align-items-center gap-3">
         <div class="w-px-250">
             <input type="text" class="form-control date-picker" placeholder="Filter by Date Range" id="dateRange" />
@@ -59,106 +73,88 @@
       </thead>
     </table>
   </div>
-  <!-- Offcanvas to add new customer -->
+
+  <!-- Type 1 Offcanvas Form: Add Store Customer Form -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEcommerceCustomerAdd"
     aria-labelledby="offcanvasEcommerceCustomerAddLabel">
-    <div class="offcanvas-header">
-      <h5 id="offcanvasEcommerceCustomerAddLabel" class="offcanvas-title">Add Customer</h5>
+    <div class="offcanvas-header border-bottom bg-light py-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bx bx-cart text-teal fs-4" style="color: #14B8A6;"></i>
+        <h5 id="offcanvasEcommerceCustomerAddLabel" class="offcanvas-title fw-bold mb-0">Add Store Customer</h5>
+      </div>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body border-top mx-0 flex-grow-0">
       <form class="ecommerce-customer-add pt-0" id="eCommerceCustomerAddForm" onsubmit="return false">
         <input type="hidden" name="id" id="customerId">
+        
         <div class="ecommerce-customer-add-basic mb-4">
-          <h6 class="mb-6">Basic Information</h6>
-          <div class="mb-6 form-control-validation">
-            <label class="form-label" for="ecommerce-customer-add-name">Name*</label>
+          <h6 class="mb-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 0.5px;">1. Basic Customer Info</h6>
+          <div class="mb-3 form-control-validation">
+            <label class="form-label fw-semibold" for="ecommerce-customer-add-name">Customer Full Name*</label>
             <input type="text" class="form-control" id="ecommerce-customer-add-name" placeholder="John Doe"
-              name="customerName" aria-label="John Doe" />
+              name="customerName" required />
           </div>
-          <div class="mb-6 form-control-validation">
-            <label class="form-label" for="ecommerce-customer-add-email">Email*</label>
-            <input type="text" id="ecommerce-customer-add-email" class="form-control" placeholder="john.doe@example.com"
-              aria-label="john.doe@example.com" name="customerEmail" />
+          <div class="mb-3 form-control-validation">
+            <label class="form-label fw-semibold" for="ecommerce-customer-add-email">Email Address*</label>
+            <input type="email" id="ecommerce-customer-add-email" class="form-control" placeholder="john.doe@example.com"
+              name="customerEmail" required />
           </div>
-          <div>
-            <label class="form-label" for="ecommerce-customer-add-contact">Mobile</label>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="ecommerce-customer-add-contact">Mobile Phone Number</label>
             <input type="text" id="ecommerce-customer-add-contact" class="form-control phone-mask"
-              placeholder="+(123) 456-7890" aria-label="+(123) 456-7890" name="customerContact" />
+              placeholder="+1 (123) 456-7890" name="customerContact" />
           </div>
-        </div>
-
-        <div class="ecommerce-customer-add-shiping mb-6 pt-4">
-          <h6 class="mb-6">Shipping Information</h6>
-          <div class="mb-6">
-            <label class="form-label" for="ecommerce-customer-add-address">Address Line 1</label>
-            <input type="text" id="ecommerce-customer-add-address" class="form-control" placeholder="45 Roker Terrace"
-              aria-label="45 Roker Terrace" name="customerAddress1" />
-          </div>
-          <div class="mb-6">
-            <label class="form-label" for="ecommerce-customer-add-address-2">Address Line 2</label>
-            <input type="text" id="ecommerce-customer-add-address-2" class="form-control" aria-label="address2"
-              name="customerAddress2" />
-          </div>
-          <div class="mb-6">
-            <label class="form-label" for="ecommerce-customer-add-town">Town</label>
-            <input type="text" id="ecommerce-customer-add-town" class="form-control" placeholder="New York"
-              aria-label="New York" name="customerTown" />
-          </div>
-          <div class="col-12 mb-6">
-            <label class="form-label" for="ecommerce-customer-add-state">State / Province</label>
-            <input type="text" id="ecommerce-customer-add-state" class="form-control" placeholder="Southern tip"
-              aria-label="Southern tip" name="customerState" />
-          </div>
-          <div class="col-12 mb-6">
-            <label class="form-label" for="ecommerce-customer-add-post-code">Post Code</label>
-            <input type="text" id="ecommerce-customer-add-post-code" class="form-control" placeholder="734990"
-              aria-label="734990" name="pin" pattern="[0-9]{8}" maxlength="8" />
-          </div>
-          <div>
-            <label class="form-label" for="ecommerce-customer-add-country">Country</label>
-            <select id="ecommerce-customer-add-country" class="select2 form-select">
-              <option value="">Select</option>
-              <option value="Australia">Australia</option>
-              <option value="Bangladesh">Bangladesh</option>
-              <option value="Belarus">Belarus</option>
-              <option value="Brazil">Brazil</option>
-              <option value="Canada">Canada</option>
-              <option value="China">China</option>
-              <option value="France">France</option>
-              <option value="Germany">Germany</option>
-              <option value="India">India</option>
-              <option value="Indonesia">Indonesia</option>
-              <option value="Israel">Israel</option>
-              <option value="Italy">Italy</option>
-              <option value="Japan">Japan</option>
-              <option value="Korea">Korea, Republic of</option>
-              <option value="Mexico">Mexico</option>
-              <option value="Philippines">Philippines</option>
-              <option value="Russia">Russian Federation</option>
-              <option value="South Africa">South Africa</option>
-              <option value="Thailand">Thailand</option>
-              <option value="Turkey">Turkey</option>
-              <option value="Ukraine">Ukraine</option>
-              <option value="United Arab Emirates">United Arab Emirates</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="United States">United States</option>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="customer-group">Customer Group</label>
+            <select id="customer-group" class="form-select">
+              <option value="retail">Retail Buyer</option>
+              <option value="wholesale">Wholesale Buyer</option>
+              <option value="vip">VIP Member</option>
             </select>
           </div>
         </div>
 
-        <div class="d-sm-flex mb-6">
-          <div class="me-auto mb-2 mb-md-0">
-            <h6 class="mb-1">Use as a billing address?</h6>
-            <small>If you need more info, please check budget.</small>
+        <div class="ecommerce-customer-add-shiping mb-6 pt-3 border-top">
+          <h6 class="mb-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 0.5px;">2. Default Shipping Address</h6>
+          <div class="mb-3">
+            <label class="form-label" for="ecommerce-customer-add-address">Street Address Line 1</label>
+            <input type="text" id="ecommerce-customer-add-address" class="form-control" placeholder="45 Roker Terrace"
+              name="customerAddress1" />
           </div>
-          <div class="form-check form-switch my-auto me-n2">
-            <input type="checkbox" class="form-check-input" checked />
+          <div class="mb-3">
+            <label class="form-label" for="ecommerce-customer-add-town">City / Town</label>
+            <input type="text" id="ecommerce-customer-add-town" class="form-control" placeholder="New York"
+              name="customerTown" />
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label" for="ecommerce-customer-add-state">State / Province</label>
+              <input type="text" id="ecommerce-customer-add-state" class="form-control" placeholder="NY"
+                name="customerState" />
+            </div>
+            <div class="col-6">
+              <label class="form-label" for="ecommerce-customer-add-post-code">Postal Code</label>
+              <input type="text" id="ecommerce-customer-add-post-code" class="form-control" placeholder="10001"
+                name="pin" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="ecommerce-customer-add-country">Country</label>
+            <select id="ecommerce-customer-add-country" class="select2 form-select">
+              <option value="United States">United States</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Canada">Canada</option>
+              <option value="France">France</option>
+              <option value="Germany">Germany</option>
+              <option value="United Arab Emirates">United Arab Emirates</option>
+            </select>
           </div>
         </div>
-        <div>
-          <button type="submit" class="btn btn-primary me-sm-3 data-submit">Add</button>
-          <button type="reset" class="btn btn-label-danger" data-bs-dismiss="offcanvas">Discard</button>
+
+        <div class="d-flex gap-2 pt-3 border-top">
+          <button type="submit" class="btn btn-teal text-white me-2 data-submit" style="background-color: #14B8A6; border-color: #14B8A6;">Save Customer</button>
+          <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
         </div>
       </form>
     </div>

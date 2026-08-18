@@ -1,0 +1,12 @@
+{
+    "name": "Vendor",
+    "alias": "vendor",
+    "description": "Vendor Management Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Vendor\\Providers\\VendorServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Settings",
+    "alias": "settings",
+    "description": "Store Settings & Branding Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Settings\\Providers\\SettingsServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

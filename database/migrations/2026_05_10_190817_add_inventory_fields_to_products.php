@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->integer('stock_alert_level')->default(5)->after('qty');
-            $table->string('barcode')->nullable()->after('sku');
-            $table->string('brand')->nullable()->after('name');
+            if (!Schema::hasColumn('products', 'stock_alert_level')) {
+                $table->integer('stock_alert_level')->default(5);
+            }
+            if (!Schema::hasColumn('products', 'barcode')) {
+                $table->string('barcode')->nullable();
+            }
+            if (!Schema::hasColumn('products', 'brand')) {
+                $table->string('brand')->nullable();
+            }
         });
     }
 

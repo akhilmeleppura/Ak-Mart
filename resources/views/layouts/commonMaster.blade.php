@@ -19,7 +19,7 @@
   $contentLayout = isset($container) ? ($container === 'container-xxl' ? 'layout-compact' : 'layout-wide') : '';
 
   // Get skin name from configData - only applies to admin layouts
-  $isAdminLayout = !Str::contains($configData['layout'] ?? '', 'front');
+  $isAdminLayout = !\Illuminate\Support\Str::contains($configData['layout'] ?? '', 'front');
   $skinName = $isAdminLayout ? $configData['skinName'] ?? 'default' : 'default';
 
   // Get semiDark value from configData - only applies to admin layouts
@@ -65,8 +65,11 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <!-- Canonical SEO -->
   <link rel="canonical" href="{{ config('variables.productPage') ? config('variables.productPage') : '' }}" />
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+  <!-- Favicon & AK-Mart Brand Icons -->
+  @php $customFavicon = \App\Models\StoreSetting::get('site_favicon'); @endphp
+  <link rel="icon" type="image/png" href="{{ $customFavicon ? asset($customFavicon) : asset('images/brand/ak-mart-cartoon-logo.png') }}" />
+  <link rel="alternate icon" href="{{ $customFavicon ? asset($customFavicon) : asset('images/brand/ak-mart-cartoon-logo.png') }}" />
+  <link rel="apple-touch-icon" href="{{ $customFavicon ? asset($customFavicon) : asset('images/brand/ak-mart-cartoon-logo.png') }}" />
 
   <!-- Include Styles -->
   <!-- $isFront is used to append the front layout styles only on the front layout otherwise the variable will be blank -->
@@ -94,6 +97,9 @@
   <!--/ Layout Content -->
 
   
+
+  <!-- Include Global Search Modal -->
+  @include('_partials._search-modal')
 
   <!-- Include Scripts -->
   <!-- $isFront is used to append the front layout scripts only on the front layout otherwise the variable will be blank -->

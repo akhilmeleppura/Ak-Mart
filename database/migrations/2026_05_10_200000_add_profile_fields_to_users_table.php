@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('phone')->nullable()->after('email');
-            $table->string('user_type')->default('customer')->after('phone');
+            $table->boolean('marketing_opt_out')->default(false)->after('phone');
+            $table->string('user_type')->default('customer')->after('marketing_opt_out');
             $table->string('address_line_1')->nullable()->after('user_type');
             $table->string('address_line_2')->nullable()->after('address_line_1');
             $table->string('town')->nullable()->after('address_line_2');

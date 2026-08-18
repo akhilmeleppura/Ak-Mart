@@ -17,8 +17,13 @@ class EnsureActiveSubscription
     {
         $user = auth()->user();
 
-        // Super Admins bypass subscription checks
-        if ($user && $user->hasRole('Super Admin')) {
+        // Supreme Admins, Super Admins & Admins bypass subscription checks
+        if ($user && (
+            $user->is_supreme_admin == 1 ||
+            $user->is_super_admin == 1 ||
+            $user->user_type === 'super_admin' ||
+            (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+        )) {
             return $next($request);
         }
 
@@ -31,13 +36,29 @@ class EnsureActiveSubscription
 
         $subscription = \App\Models\TenantSubscription::where('branch_id', $branchId)->first();
 
-        // If no subscription or it is not active, redirect to billing
-        if (!$subscription || !$subscription->isActive()) {
+        // Auto-create active subscription for demo/testing if missing
+        if (!$subscription) {
+            $subscription = \App\Models\TenantSubscription::create([
+                'branch_id' => $branchId,
+                'subscription_plan_id' => 1,
+                'status' => 'active',
+                'starts_at' => now(),
+                'ends_at' => now()->addYear(),
+            ]);
+        }
+
+        // If subscription is expired/cancelled, redirect to SaaS billing
+        if (!$subscription->isActive()) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['error' => 'Subscription inactive or expired. Please update your billing.'], 403);
             }
-            // For now, redirect to user billing page. Later we can make a dedicated SaaS billing page.
-            return redirect()->route('app-user-view-billing')->with('error', 'Your store subscription is inactive. Please upgrade or renew your plan to continue.');
+
+            // Redirect to defined SaaS billing route or store payments setting
+            $targetRoute = \Illuminate\Support\Facades\Route::has('app-saas-billing') 
+                ? 'app-saas-billing' 
+                : 'app-ecommerce-settings-payments';
+
+            return redirect()->route($targetRoute)->with('error', 'Your store subscription is inactive. Please upgrade or renew your plan to continue.');
         }
 
         return $next($request);

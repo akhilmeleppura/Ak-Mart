@@ -1,0 +1,12 @@
+{
+    "name": "SaaS",
+    "alias": "saas",
+    "description": "SaaS Super Admin Platform Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SaaS\\Providers\\SaaSServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

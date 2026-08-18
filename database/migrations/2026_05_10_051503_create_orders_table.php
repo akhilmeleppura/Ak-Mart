@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->string('order_number')->unique();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->decimal('total_amount', 10, 2);
-            $table->string('payment_status')->default('unpaid'); // unpaid, paid, partially_paid
-            $table->string('order_status')->default('pending'); // pending, confirmed, completed, cancelled
-            $table->string('payment_method')->nullable();
-            $table->text('shipping_address')->nullable();
-            $table->text('billing_address')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('orders')) {
+            Schema::create('orders', function (Blueprint $table) {
+                $table->id();
+                $table->string('order_number')->unique();
+                $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+                $table->decimal('total_amount', 10, 2);
+                $table->string('payment_status')->default('unpaid');
+                $table->string('order_status')->default('pending');
+                $table->string('payment_method')->nullable();
+                $table->text('shipping_address')->nullable();
+                $table->text('billing_address')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

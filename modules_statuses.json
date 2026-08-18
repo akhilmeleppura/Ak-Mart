@@ -1,7 +1,12 @@
 {
     "Accounting": true,
-    "SampleModule": true,
-    "Permission": true,
     "Billing": true,
-    "General": true
+    "General": true,
+    "Permission": true,
+    "SampleModule": true,
+    "Ecommerce": true,
+    "Vendor": true,
+    "SaaS": true,
+    "Logistics": true,
+    "Settings": true
 }

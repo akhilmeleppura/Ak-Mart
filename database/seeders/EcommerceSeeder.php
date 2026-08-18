@@ -34,5 +34,18 @@ class EcommerceSeeder extends Seeder
             }
             $order->update(['total_amount' => $total]);
         });
+
+        // Seed Demo Coupons
+        $coupons = [
+            ['code' => 'WELCOME10', 'type' => 'percentage', 'value' => 10.00, 'usage_limit' => 500, 'usage_count' => 124, 'is_active' => true],
+            ['code' => 'SUMMER20', 'type' => 'percentage', 'value' => 20.00, 'usage_limit' => 200, 'usage_count' => 88, 'is_active' => true],
+            ['code' => 'FREESHIP50', 'type' => 'fixed', 'value' => 15.00, 'usage_limit' => 1000, 'usage_count' => 412, 'is_active' => true],
+            ['code' => 'VIP25', 'type' => 'percentage', 'value' => 25.00, 'usage_limit' => 50, 'usage_count' => 19, 'is_active' => true],
+            ['code' => 'AKMART100', 'type' => 'fixed', 'value' => 100.00, 'usage_limit' => 100, 'usage_count' => 45, 'is_active' => true],
+        ];
+
+        foreach ($coupons as $coupon) {
+            \App\Models\Coupon::updateOrCreate(['code' => $coupon['code']], $coupon);
+        }
     }
 }

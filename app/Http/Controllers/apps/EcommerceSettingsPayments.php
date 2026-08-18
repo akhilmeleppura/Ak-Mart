@@ -18,16 +18,19 @@ class EcommerceSettingsPayments extends Controller
   {
     $fields = [
       'payment_provider',
+      'paypal_enabled',
       'paypal_email',
+      'paypal_client_id',
+      'paypal_secret',
+      'stripe_enabled',
       'stripe_key',
       'stripe_secret',
+      'cod_enabled',
       'manual_payment_instruction'
     ];
 
     foreach ($fields as $field) {
-      if ($request->has($field)) {
-        StoreSetting::set($field, $request->input($field));
-      }
+      StoreSetting::set($field, $request->input($field, '0'));
     }
 
     return redirect()->back()->with('success', 'Payment settings saved successfully!');

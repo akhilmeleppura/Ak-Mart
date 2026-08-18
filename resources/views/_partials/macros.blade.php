@@ -1,7 +1,12 @@
 @php
-    $width = $width ?? '35';
+    $customLogo = \App\Models\StoreSetting::get('site_logo');
+    $height = $height ?? '36';
 @endphp
 
-<span class="app-brand-logo">
-    <img src="{{ asset('assets/img/branding/ak-mart-logo.png') }}" alt="Ak Mart Logo" height="42" style="border-radius: 4px; object-fit: contain;">
+<span class="app-brand-logo d-inline-flex align-items-center">
+    @if($customLogo)
+        <img src="{{ asset($customLogo) }}" alt="AK-Mart Logo Icon" height="{{ $height }}" class="ak-brand-icon rounded-3">
+    @else
+        <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart Cartoon Mascot Logo" height="{{ $height }}" class="ak-brand-icon rounded-3" style="object-fit: contain;">
+    @endif
 </span>

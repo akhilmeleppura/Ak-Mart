@@ -171,10 +171,28 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(r => r.json())
     .then(data => {
       if (data.success) {
-        alert(data.message);
-        location.reload();
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'success',
+            title: 'KYC Submitted',
+            text: data.message,
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => location.reload());
+        } else {
+          alert(data.message);
+          location.reload();
+        }
       } else {
-        alert('Error: ' + data.message);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Submission Failed',
+            text: data.message || 'Please check your submitted details.'
+          });
+        } else {
+          alert('Error: ' + data.message);
+        }
         btn.disabled = false;
         btn.innerHTML = '<i class="bx bx-upload me-2"></i> Submit for Verification';
       }

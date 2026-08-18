@@ -47,7 +47,10 @@ class EcommerceCouponController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
-        Coupon::create($request->all());
+        $data = $request->only(['code', 'type', 'value', 'usage_limit', 'start_date', 'end_date', 'min_spend', 'max_spend']);
+        $data['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
+
+        Coupon::create($data);
 
         return response()->json(['success' => 'Coupon created successfully!']);
     }
@@ -71,7 +74,12 @@ class EcommerceCouponController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
-        $coupon->update($request->all());
+        $data = $request->only(['code', 'type', 'value', 'usage_limit', 'start_date', 'end_date', 'min_spend', 'max_spend']);
+        if ($request->has('is_active')) {
+            $data['is_active'] = $request->boolean('is_active');
+        }
+
+        $coupon->update($data);
 
         return response()->json(['success' => 'Coupon updated successfully!']);
     }

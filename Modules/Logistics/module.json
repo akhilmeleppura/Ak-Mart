@@ -1,0 +1,12 @@
+{
+    "name": "Logistics",
+    "alias": "logistics",
+    "description": "Logistics & Shipping Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Logistics\\Providers\\LogisticsServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

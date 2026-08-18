@@ -14,136 +14,93 @@ $configData = Helper::appClasses();
 <div class="row g-6">
   <!-- Navigation -->
   <div class="col-12 col-lg-4">
-    <div class="d-flex justify-content-between flex-column mb-4 mb-md-0">
-      <h5 class="mb-4">Getting Started</h5>
-      <ul class="nav nav-align-left nav-pills flex-column">
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/details') }}">
-            <i class="icon-base bx bx-store-alt icon-18px me-1_5"></i>
-            <span class="align-middle">Store details</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link active" href="javascript:void(0);">
-            <i class="icon-base bx bx-credit-card icon-18px me-1_5"></i>
-            <span class="align-middle">Payments</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/checkout') }}">
-            <i class="icon-base bx bx-cart me-1_5"></i>
-            <span class="align-middle">Checkout</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/shipping') }}">
-            <i class="icon-base bx bx-package icon-18px me-1_5"></i>
-            <span class="align-middle">Shipping & delivery</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/locations') }}">
-            <i class="icon-base bx bx-map icon-18px me-1_5"></i>
-            <span class="align-middle">Locations</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/notifications') }}">
-            <i class="icon-base bx bx-bell icon-18px me-1_5"></i>
-            <span class="align-middle">Notifications</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    @include('content.apps._settings-sidebar')
   </div>
   <!-- /Navigation -->
   <!-- Options -->
-  <form method="POST" action="{{ route('app-ecommerce-settings-payments-save') }}">
-    @csrf
-    <div class="tab-content p-0">
-      <!-- Payments Tab -->
-      <div class="tab-pane fade show active" id="payments" role="tabpanel">
-        <div class="card mb-6">
-          <div class="card-header">
-            <h5 class="card-title m-0">Payment providers</h5>
-          </div>
-
-          <div class="card-body">
-            <p class="mb-5">Providers that enable you to accept payment methods at a rate set by the third-party. An
-              additional fee will apply to new orders once you select a plan</p>
-            <button class="btn btn-label-primary" data-bs-toggle="modal" data-bs-target="#paymentProvider">Choose a
-              provider</button>
-          </div>
-        </div>
-
-        <div class="card mb-6">
-          <div class="card-header">
-            <div class="card-title m-0">
-              <h5 class="m-0">Supported payment methods</h5>
-              <p class="my-0 card-subtitle">Payment methods that are available with one of Vuexy's approved payment
-                providers.</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <h6 class="mb-5">Default</h6>
-            <div class="row mb-5 g-6 bg-label-secondary px-6 rounded-2 mx-0 mt-0 bg-lighter">
-              <div class="col-12 d-flex justify-content-between align-items-center border-bottom p-0 pb-6">
-                <img src="{{ asset('assets/img/icons/payments/paypal_logo.png') }}" alt="Paypal" width="57" />
-
-                <span class="fw-medium"><a href="javascript:void(0);">Activate Paypal</a></span>
+  <div class="col-12 col-lg-8 pt-6 pt-lg-0">
+    @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="icon-base bx bx-check-circle me-1"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    @endif
+    <form method="POST" action="{{ route('app-ecommerce-settings-payments-save') }}">
+      @csrf
+      <div class="tab-content p-0">
+        <!-- Payments Tab -->
+        <div class="tab-pane fade show active" id="payments" role="tabpanel">
+          
+          <!-- PayPal Configuration -->
+          <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title m-0">PayPal Express Checkout</h5>
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" name="paypal_enabled" value="1" id="paypal_enabled" {{ ($settings['paypal_enabled'] ?? '0') == '1' ? 'checked' : '' }}>
+                <label class="form-check-label" for="paypal_enabled">Enable PayPal</label>
               </div>
-              <div class="col-12 p-0">
-                <div class="row text-body mb-2">
-                  <div class="col-4">
-                    <p class="mb-2 small">Provider</p>
-                    <p class="text-heading fw-medium">Paypal</p>
-                  </div>
-                  <div class="col-4">
-                    <p class="mb-2 small">Status</p>
-                    <p class="badge bg-label-warning fw-medium">Inactive</p>
-                  </div>
-                  <div class="col-4">
-                    <p class="mb-2 small">Transaction Fee</p>
-                    <p class="text-heading fw-medium">2.99%</p>
-                  </div>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="paypal_email">PayPal Account Email</label>
+                  <input type="email" class="form-control" id="paypal_email" name="paypal_email" value="{{ $settings['paypal_email'] ?? '' }}" placeholder="paypal@example.com">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="paypal_client_id">Client ID</label>
+                  <input type="text" class="form-control" id="paypal_client_id" name="paypal_client_id" value="{{ $settings['paypal_client_id'] ?? '' }}" placeholder="PayPal Client ID">
                 </div>
               </div>
             </div>
-            <button class="btn btn-label-primary" data-bs-toggle="modal" data-bs-target="#paymentMethods">Add payment
-              methods</button>
-          </div>
-        </div>
-
-        <div class="card mb-6">
-          <div class="card-header">
-            <h5 class="card-title m-0">Manual payment methods</h5>
           </div>
 
-          <div class="card-body">
-            <p class="mb-5">Payments that are made outside your online store. When a customer selects a manual payment
-              method such as cash on delivery. You'll need to approve their order before it can be fulfilled.</p>
-            <div class="btn-group">
-              <button type="button" class="btn btn-label-primary">Add manual payment method</button>
-              <button type="button" class="btn btn-label-primary dropdown-toggle dropdown-toggle-split"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="javascript:void(0);">Create custom payment method</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0);">Bank deposit</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0);">Money order</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0);">Cash on delivery (COD)</a></li>
-              </ul>
+          <!-- Stripe Configuration -->
+          <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title m-0">Stripe Credit Card Payments</h5>
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" name="stripe_enabled" value="1" id="stripe_enabled" {{ ($settings['stripe_enabled'] ?? '0') == '1' ? 'checked' : '' }}>
+                <label class="form-check-label" for="stripe_enabled">Enable Stripe</label>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="stripe_key">Stripe Publishable Key</label>
+                  <input type="text" class="form-control" id="stripe_key" name="stripe_key" value="{{ $settings['stripe_key'] ?? '' }}" placeholder="pk_test_...">
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="stripe_secret">Stripe Secret Key</label>
+                  <input type="password" class="form-control" id="stripe_secret" name="stripe_secret" value="{{ $settings['stripe_secret'] ?? '' }}" placeholder="sk_test_...">
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-            <div class="d-flex justify-content-end gap-4">
-                <button type="reset" class="btn btn-label-secondary">Discard</button>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+          <!-- Manual / COD Payment Methods -->
+          <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title m-0">Cash on Delivery (COD) & Manual Payments</h5>
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" name="cod_enabled" value="1" id="cod_enabled" {{ ($settings['cod_enabled'] ?? '1') == '1' ? 'checked' : '' }}>
+                <label class="form-check-label" for="cod_enabled">Enable COD</label>
+              </div>
             </div>
-        </form>
-    </div>
+            <div class="card-body">
+              <div class="col-12">
+                <label class="form-label" for="manual_payment_instruction">Payment Instructions for Customers</label>
+                <textarea class="form-control" id="manual_payment_instruction" name="manual_payment_instruction" rows="3" placeholder="Provide instructions shown to customer at checkout">{{ $settings['manual_payment_instruction'] ?? '' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-4">
+            <button type="reset" class="btn btn-label-secondary">Discard</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
   <!-- /Options-->
 </div>

@@ -17,15 +17,16 @@ class EcommerceSettingsNotifications extends Controller
   public function store(Request $request)
   {
     $fields = [
-      'order_notification',
-      'shipping_notification',
-      'customer_notification'
+      'notify_signup_email', 'notify_signup_app',
+      'notify_reset_email', 'notify_reset_app',
+      'notify_invite_email', 'notify_invite_app',
+      'notify_purchase_email', 'notify_purchase_app',
+      'notify_cancel_email', 'notify_cancel_app',
+      'notify_refund_email', 'notify_refund_app'
     ];
 
     foreach ($fields as $field) {
-      if ($request->has($field)) {
-        StoreSetting::set($field, $request->input($field));
-      }
+      StoreSetting::set($field, $request->input($field, '0'));
     }
 
     return redirect()->back()->with('success', 'Notification settings saved successfully!');

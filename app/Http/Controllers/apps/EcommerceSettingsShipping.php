@@ -19,7 +19,10 @@ class EcommerceSettingsShipping extends Controller
     $fields = [
       'shipping_origin',
       'shipping_zones',
-      'shipping_rates'
+      'shipping_rates',
+      'shipping_rate_domestic',
+      'shipping_rate_international',
+      'free_shipping_threshold'
     ];
 
     foreach ($fields as $field) {

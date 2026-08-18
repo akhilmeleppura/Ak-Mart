@@ -102,15 +102,15 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-nowrap text-heading">Vuexy Admin Template</td>
-                                <td class="text-nowrap">HTML Admin Template</td>
+                                <td class="text-nowrap text-heading">AK-Mart Enterprise Subscription</td>
+                                <td class="text-nowrap">Cloud Store Management License</td>
                                 <td>$32</td>
                                 <td>1</td>
                                 <td>$32.00</td>
                             </tr>
                             <tr>
-                                <td class="text-nowrap text-heading">Frest Admin Template</td>
-                                <td class="text-nowrap">Angular Admin Template</td>
+                                <td class="text-nowrap text-heading">AK-Mart POS Terminal System</td>
+                                <td class="text-nowrap">Point of Sale Hardware License</td>
                                 <td>$22</td>
                                 <td>1</td>
                                 <td>$22.00</td>

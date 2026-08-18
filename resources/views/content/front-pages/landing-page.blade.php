@@ -220,7 +220,7 @@
                           <img src="{{ asset('assets/img/front-pages/branding/logo-1.png') }}" alt="client logo"
                             class="client-logo img-fluid" />
                         </div>
-                        <p>“Vuexy is hands down the most useful front end Bootstrap theme I've ever used. I can't wait to
+                        <p>“AK-Mart is hands down the most useful e-commerce and POS platform I've ever used. I can't wait to
                           use it again for my next project.”</p>
                         <div class="text-warning mb-4">
                           <i class="icon-base bx bxs-star"></i>
@@ -248,7 +248,7 @@
                           <img src="{{ asset('assets/img/front-pages/branding/logo-2.png') }}" alt="client logo"
                             class="client-logo img-fluid" />
                         </div>
-                        <p>“I've never used a theme as versatile and flexible as Vuexy. It's my go to for building
+                        <p>“I've never used a platform as versatile and flexible as AK-Mart. It's my go to for building
                           dashboard sites on almost any project.”</p>
                         <div class="text-warning mb-4">
                           <i class="icon-base bx bxs-star"></i>
@@ -335,7 +335,7 @@
                           <img src="{{ asset('assets/img/front-pages/branding/logo-5.png') }}" alt="client logo"
                             class="client-logo img-fluid" />
                         </div>
-                        <p>“I've never used a theme as versatile and flexible as Vuexy. It's my go to for building
+                        <p>“I've never used a platform as versatile and flexible as AK-Mart. It's my go to for building
                           dashboard sites on almost any project.”</p>
                         <div class="text-warning mb-4">
                           <i class="icon-base bx bxs-star"></i>

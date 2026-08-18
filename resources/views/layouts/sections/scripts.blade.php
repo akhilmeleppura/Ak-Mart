@@ -28,28 +28,144 @@
 <script>
   window.addEventListener('DOMContentLoaded', function() {
     @if (session('success'))
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: "{{ session('success') }}",
-      timer: 3000,
-      showConfirmButton: false,
-      toast: true,
-      position: 'top-end'
-    });
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "{{ session('success') }}",
+        timer: 3000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      });
+    }
     @endif
 
     @if (session('error'))
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: "{{ session('error') }}",
-      timer: 3000,
-      showConfirmButton: false,
-      toast: true,
-      position: 'top-end'
-    });
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "{{ session('error') }}",
+        timer: 3000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      });
+    }
     @endif
+
+    // Automatic window.alert bridge to SweetAlert2
+    window.alert = function(msg) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'info',
+          title: 'Notification',
+          text: msg,
+          customClass: { confirmButton: 'btn btn-primary' },
+          buttonsStyling: false
+        });
+      }
+    };
+
+    // Global SweetAlert2 Form & Delete Interceptor
+    document.addEventListener('submit', function(e) {
+      const form = e.target;
+      if (form.dataset.swalConfirmed === 'true') {
+        return true;
+      }
+
+      const onsubmitAttr = form.getAttribute('onsubmit');
+      const dataConfirm = form.getAttribute('data-confirm');
+      const isDelete = form.action && (form.action.includes('destroy') || form.action.includes('delete') || form.action.includes('discard'));
+
+      let msg = null;
+      if (dataConfirm) {
+        msg = dataConfirm;
+      } else if (onsubmitAttr && onsubmitAttr.includes('confirm(')) {
+        const m = onsubmitAttr.match(/confirm\(['"](.*?)['"]\)/);
+        if (m && m[1]) msg = m[1];
+      } else if (isDelete) {
+        msg = 'Are you sure you want to delete this item? This action cannot be undone.';
+      }
+
+      if (msg && typeof Swal !== 'undefined') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: msg,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, proceed!',
+          cancelButtonText: 'Cancel',
+          customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+          },
+          buttonsStyling: false
+        }).then(function(res) {
+          if (res.isConfirmed) {
+            form.dataset.swalConfirmed = 'true';
+            form.removeAttribute('onsubmit');
+            form.submit();
+          }
+        });
+        return false;
+      }
+    }, true);
+
+    // Global SweetAlert2 Button & Link Click Interceptor
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('button, a');
+      if (!btn) return;
+
+      const onclickAttr = btn.getAttribute('onclick');
+      const dataConfirm = btn.getAttribute('data-confirm');
+
+      if ((onclickAttr && onclickAttr.includes('confirm(')) || dataConfirm) {
+        if (btn.dataset.swalConfirmed === 'true') return true;
+
+        let msg = dataConfirm;
+        if (!msg && onclickAttr) {
+          const m = onclickAttr.match(/confirm\(['"](.*?)['"]\)/);
+          if (m && m[1]) msg = m[1];
+        }
+
+        if (msg && typeof Swal !== 'undefined') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          Swal.fire({
+            title: 'Confirmation',
+            text: msg,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, proceed!',
+            cancelButtonText: 'Cancel',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function(res) {
+            if (res.isConfirmed) {
+              btn.dataset.swalConfirmed = 'true';
+              btn.removeAttribute('onclick');
+              if (btn.tagName === 'BUTTON' && btn.type === 'submit' && btn.form) {
+                btn.form.submit();
+              } else if (btn.tagName === 'A' && btn.href && !btn.href.startsWith('javascript:')) {
+                window.location.href = btn.href;
+              } else {
+                btn.click();
+              }
+            }
+          });
+          return false;
+        }
+      }
+    }, true);
   });
 </script>
 

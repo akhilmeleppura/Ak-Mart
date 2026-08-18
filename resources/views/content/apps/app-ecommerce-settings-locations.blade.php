@@ -15,50 +15,18 @@
 @endsection
 
 @section('content')
+@if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <i class="icon-base bx bx-check-circle me-1"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+<form method="POST" action="{{ route('app-ecommerce-settings-locations-save') }}">
+@csrf
 <div class="row g-6">
   <!-- Navigation -->
-        <div class="col-12 col-lg-4">
-    <div class="d-flex justify-content-between flex-column mb-4 mb-md-0">
-      <h5 class="mb-4">Getting Started</h5>
-      <ul class="nav nav-align-left nav-pills flex-column">
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/details') }}">
-            <i class="icon-base bx bx-store-alt icon-18px me-1_5"></i>
-            <span class="align-middle">Store details</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/payments') }}">
-            <i class="icon-base bx bx-credit-card icon-18px me-1_5"></i>
-            <span class="align-middle">Payments</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/checkout') }}">
-            <i class="icon-base bx bx-cart icon-18px me-1_5"></i>
-            <span class="align-middle">Checkout</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/shipping') }}">
-            <i class="icon-base bx bx-package icon-18px me-1_5"></i>
-            <span class="align-middle">Shipping & delivery</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link active" href="javascript:void(0);">
-            <i class="icon-base bx bx-map icon-18px me-1_5"></i>
-            <span class="align-middle">Locations</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/notifications') }}">
-            <i class="icon-base bx bx-bell icon-18px me-1_5"></i>
-            <span class="align-middle">Notifications</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+  <div class="col-12 col-lg-4">
+    @include('content.apps._settings-sidebar')
   </div>
   <!-- /Navigation -->
 
@@ -73,12 +41,12 @@
           </div>
           <div class="card-body">
             <div class="col-12 mb-6">
-              <label for="locationName" class="form-label mb-1">Location Name</label>
-              <input class="form-control" type="text" name="locationName" id="locationName"
-                placeholder="Shop location" />
+              <label for="location_name" class="form-label mb-1">Location Name</label>
+              <input class="form-control" type="text" name="location_name" id="location_name"
+                value="{{ $settings['location_name'] ?? '' }}" placeholder="Shop location" />
             </div>
             <div class="form-check mb-6 ms-2">
-              <input class="form-check-input" type="checkbox" value="" id="def_location" checked />
+              <input class="form-check-input" type="checkbox" name="def_location" value="1" id="def_location" {{ (!isset($settings['def_location']) || $settings['def_location'] == '1') ? 'checked' : '' }} />
               <label class="form-check-label" for="def_location"> Fulfill online orders from this location </label>
             </div>
             <div class="alert row alert-info mb-0 h6" role="alert">
@@ -97,69 +65,48 @@
             <div class="row g-6">
               <div class="col-12">
                 <label class="form-label mb-1" for="country_region">Country/region</label>
-                <select id="country_region" class="select2 form-select" data-placeholder="United States">
-                  <option value="">United States</option>
-                  <option value="Australia">Australia</option>
-                  <option value="Bangladesh">Bangladesh</option>
-                  <option value="Belarus">Belarus</option>
-                  <option value="Brazil">Brazil</option>
-                  <option value="Canada">Canada</option>
-                  <option value="China">China</option>
-                  <option value="France">France</option>
-                  <option value="Germany">Germany</option>
-                  <option value="India">India</option>
-                  <option value="Indonesia">Indonesia</option>
-                  <option value="Israel">Israel</option>
-                  <option value="Italy">Italy</option>
-                  <option value="Japan">Japan</option>
-                  <option value="Korea">Korea, Republic of</option>
-                  <option value="Mexico">Mexico</option>
-                  <option value="Philippines">Philippines</option>
-                  <option value="Russia">Russian Federation</option>
-                  <option value="South Africa">South Africa</option>
-                  <option value="Thailand">Thailand</option>
-                  <option value="Turkey">Turkey</option>
-                  <option value="Ukraine">Ukraine</option>
-                  <option value="United Arab Emirates">United Arab Emirates</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                  <option value="United States">United States</option>
+                @php $selectedCountry = $settings['location_country'] ?? 'United States'; @endphp
+                <select id="country_region" name="location_country" class="select2 form-select" data-placeholder="United States">
+                  @foreach(['United States', 'Australia', 'Bangladesh', 'Belarus', 'Brazil', 'Canada', 'China', 'France', 'Germany', 'India', 'Indonesia', 'Israel', 'Italy', 'Japan', 'Korea, Republic of', 'Mexico', 'Philippines', 'Russian Federation', 'South Africa', 'Thailand', 'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom'] as $country)
+                    <option value="{{ $country }}" {{ $selectedCountry == $country ? 'selected' : '' }}>{{ $country }}</option>
+                  @endforeach
                 </select>
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="loc_address">Address</label>
-                <input type="text" id="loc_address" class="form-control" placeholder="Address" />
+                <input type="text" id="loc_address" name="location_address" class="form-control" value="{{ $settings['location_address'] ?? '' }}" placeholder="Address" />
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="loc_apa_suite">Apartment, suite, etc.</label>
-                <input type="text" id="loc_apa_suite" class="form-control" placeholder="Apartment, suite, etc." />
+                <input type="text" id="loc_apa_suite" name="location_apt" class="form-control" value="{{ $settings['location_apt'] ?? '' }}" placeholder="Apartment, suite, etc." />
               </div>
-              <div class="col-12 col-md-4"><label class="form-label mb-0" for="loc_phone">Phone</label> <input
-                  type="tel" class="form-control phone-mask" id="loc_phone" placeholder="Phone" name="loc_phone"
-                  aria-label="loc_phone" /></div>
+              <div class="col-12 col-md-4">
+                <label class="form-label mb-0" for="loc_phone">Phone</label>
+                <input type="tel" class="form-control phone-mask" id="loc_phone" placeholder="Phone" name="location_phone" value="{{ $settings['location_phone'] ?? '' }}" aria-label="loc_phone" />
+              </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="loc_city">City</label>
-                <input type="text" id="loc_city" class="form-control" placeholder="City" />
+                <input type="text" id="loc_city" name="location_city" class="form-control" value="{{ $settings['location_city'] ?? '' }}" placeholder="City" />
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="loc_state">State</label>
-                <input type="text" id="loc_state" class="form-control" placeholder="State" />
+                <input type="text" id="loc_state" name="location_state" class="form-control" value="{{ $settings['location_state'] ?? '' }}" placeholder="State" />
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label mb-1" for="loc_pincode">PIN Code</label>
-                <input type="number" id="loc_pincode" class="form-control" placeholder="PIN Code" min="0"
-                  max="999999" />
+                <input type="number" id="loc_pincode" name="location_pincode" class="form-control" value="{{ $settings['location_pincode'] ?? '' }}" placeholder="PIN Code" min="0" max="999999" />
               </div>
             </div>
           </div>
         </div>
         <div class="d-flex justify-content-end gap-4">
           <button type="reset" class="btn btn-label-secondary">Discard</button>
-          <a class="btn btn-primary" href="{{ url('/app/ecommerce/settings/notifications') }}">Save
-            Changes</a>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </div>
     </div>
     <!-- /Options-->
   </div>
 </div>
+</form>
 @endsection

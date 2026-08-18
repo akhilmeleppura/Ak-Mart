@@ -1,249 +1,379 @@
 {
   "menu": [
     {
-      "name": "Dashboards",
+      "menuHeader": "Main"
+    },
+    {
+      "name": "Dashboard",
       "icon": "menu-icon icon-base bx bx-home-alt",
       "slug": "dashboard",
       "submenu": [
         {
-          "url": "app/ecommerce/dashboard",
-          "name": "eCommerce",
+          "url": "admin/dashboard",
+          "name": "eCommerce Analytics",
           "slug": "app-ecommerce-dashboard"
         },
         {
           "url": "dashboard/crm",
-          "name": "CRM",
+          "name": "CRM Dashboard",
           "slug": "dashboard-crm"
-        },
-        {
-          "url": "/",
-          "name": "Analytics",
-          "slug": "dashboard-analytics"
         }
       ]
     },
     {
-      "menuHeader": "eCommerce Pro"
-    },
-    {
-      "name": "Products",
-      "icon": "menu-icon icon-base bx bx-package",
-      "slug": "app-ecommerce-product",
-      "submenu": [
-        {
-          "url": "app/ecommerce/product/list",
-          "name": "Product List",
-          "slug": "app-ecommerce-product-list"
-        },
-        {
-          "url": "app/ecommerce/product/add",
-          "name": "Add Product",
-          "slug": "app-ecommerce-product-add"
-        },
-        {
-          "url": "app/ecommerce/product/category",
-          "name": "Category List",
-          "slug": "app-ecommerce-product-category"
-        }
-      ]
-    },
-    {
-      "name": "Orders",
-      "icon": "menu-icon icon-base bx bx-cart-alt",
-      "slug": "app-ecommerce-order",
-      "submenu": [
-        {
-          "url": "app/ecommerce/order/list",
-          "name": "Order List",
-          "slug": "app-ecommerce-order-list"
-        },
-        {
-          "url": "app/ecommerce/order/details",
-          "name": "Order Details",
-          "slug": "app-ecommerce-order-details"
-        }
-      ]
-    },
-    {
-      "name": "Customers",
-      "icon": "menu-icon icon-base bx bx-user-circle",
-      "slug": "app-ecommerce-customer",
-      "submenu": [
-        {
-          "url": "app/ecommerce/customer/all",
-          "name": "All Customers",
-          "slug": "app-ecommerce-customer-all"
-        },
-        {
-          "url": "app/ecommerce/customer/details/overview",
-          "name": "Customer Details",
-          "slug": "app-ecommerce-customer-details-overview"
-        }
-      ]
-    },
-    {
-      "url": "app/ecommerce/manage/reviews",
-      "name": "Reviews",
-      "icon": "menu-icon icon-base bx bx-message-square-dots",
-      "slug": "app-ecommerce-manage-reviews"
-    },
-    {
-      "url": "app/ecommerce/branch/list",
-      "name": "Branch Management",
-      "icon": "menu-icon icon-base bx bx-buildings",
-      "slug": "app-ecommerce-branch-list"
-    },
-    {
-      "url": "app/ecommerce/coupons",
-      "name": "Coupons",
-      "icon": "menu-icon icon-base bx bx-purchase-tag-alt",
-      "slug": "app-ecommerce-coupon-list"
-    },
-    {
-      "menuHeader": "Vendor"
-    },
-    {
-      "url": "app/vendor/inventory",
-      "name": "Inventory Management",
-      "icon": "menu-icon icon-base bx bx-cube-alt",
-      "slug": "app-vendor-inventory"
-    },
-    {
-      "url": "app/vendor/returns",
-      "name": "Returns & Refunds",
-      "icon": "menu-icon icon-base bx bx-redo",
-      "slug": "app-vendor-returns"
-    },
-    {
-      "url": "app/vendor/kyc",
-      "name": "KYC Verification",
-      "icon": "menu-icon icon-base bx bx-shield-quarter",
-      "slug": "app-vendor-kyc"
-    },
-    {
-      "url": "app/vendor/store-builder",
-      "name": "Visual Store Builder",
-      "icon": "menu-icon icon-base bx bx-palette",
-      "slug": "app-vendor-store-builder"
-    },
-    {
-      "url": "app/vendor/wallet",
-      "name": "Wallet & Payouts",
-      "icon": "menu-icon icon-base bx bx-wallet-alt",
-      "slug": "app-vendor-wallet"
-    },
-    {
-      "url": "app/vendor/support",
-      "name": "Support Tickets",
-      "icon": "menu-icon icon-base bx bx-conversation",
-      "slug": "app-vendor-support"
-    },
-    {
-      "url": "app/vendor/payment-settings",
-      "name": "Payment Methods",
-      "icon": "menu-icon icon-base bx bx-credit-card-alt",
-      "slug": "app-vendor-payment-settings"
-    },
-    {
-      "url": "app/vendor/pos",
+      "url": "pos",
       "name": "POS Terminal",
       "icon": "menu-icon icon-base bx bx-terminal",
       "slug": "app-vendor-pos"
     },
     {
-      "menuHeader": "SaaS Platform"
-    },
-    {
-      "url": "app/saas/analytics",
-      "name": "Platform Analytics",
-      "icon": "menu-icon icon-base bx bx-line-chart",
-      "slug": "app-saas-analytics"
-    },
-    {
-      "url": "app/saas/audit-logs",
-      "name": "Security Audit Logs",
-      "icon": "menu-icon icon-base bx bx-fingerprint",
-      "slug": "app-saas-audit-logs"
-    },
-    {
-      "url": "app/saas/currencies",
-      "name": "Currency Management",
-      "icon": "menu-icon icon-base bx bx-bitcoin",
-      "slug": "app-saas-currencies"
-    },
-    {
-      "url": "app/saas/languages",
-      "name": "Language Management",
-      "icon": "menu-icon icon-base bx bx-font-family",
-      "slug": "app-saas-languages"
-    },
-    {
-      "url": "app/saas/billing",
-      "name": "Subscription Billing",
-      "icon": "menu-icon icon-base bx bx-credit-card-front",
-      "slug": "app-saas-billing"
-    },
-    {
-      "url": "app/saas/commission",
-      "name": "Commission Rules",
-      "icon": "menu-icon icon-base bx bx-coin-stack",
-      "slug": "app-saas-commission"
-    },
-    {
-      "url": "app/saas/kyc",
-      "name": "KYC Applications",
-      "icon": "menu-icon icon-base bx bx-id-card",
-      "slug": "app-saas-kyc-admin"
-    },
-    {
-      "url": "app/saas/dunning",
-      "name": "Dunning System",
-      "icon": "menu-icon icon-base bx bx-error-alt",
-      "slug": "app-saas-dunning"
-    },
-    {
-      "url": "app/saas/seo",
-      "name": "SEO & Marketing",
-      "icon": "menu-icon icon-base bx bx-search-alt",
-      "slug": "app-saas-seo"
-    },
-    {
-      "menuHeader": "Logistics"
-    },
-    {
-      "url": "app/logistics/shipping",
-      "name": "Shipping Methods",
-      "icon": "menu-icon icon-base bx bx-truck",
-      "slug": "app-logistics-shipping"
-    },
-    {
-      "menuHeader": "Management"
-    },
-    {
-      "name": "Users",
-      "icon": "menu-icon icon-base bx bx-group",
-      "slug": "app-user",
+      "name": "AI & Chat Hub",
+      "icon": "menu-icon icon-base bx bx-bot",
+      "slug": "app-ai-hub-nav",
       "submenu": [
         {
-          "url": "laravel/user-management",
-          "name": "User Management",
-          "slug": "laravel-example-user-management"
+          "url": "settings/ai",
+          "name": "AI Copilot & Settings",
+          "slug": "app-ecommerce-settings-ai"
+        },
+        {
+          "url": "chat",
+          "name": "Live Chat & Support",
+          "slug": "app-chat"
+        },
+        {
+          "url": "calendar",
+          "name": "Appointments Calendar",
+          "slug": "app-calendar"
         }
       ]
     },
     {
-      "name": "Roles & Permissions",
-      "icon": "menu-icon icon-base bx bx-lock-alt",
-      "slug": "app-access",
+      "menuHeader": "Store Management"
+    },
+    {
+      "name": "Products & Catalog",
+      "icon": "menu-icon icon-base bx bx-package",
+      "slug": "app-ecommerce-product",
       "submenu": [
         {
-          "url": "app/access-hub",
+          "url": "products",
+          "name": "Product List",
+          "slug": "app-ecommerce-product-list"
+        },
+        {
+          "url": "products/create",
+          "name": "Add Product",
+          "slug": "app-ecommerce-product-add"
+        },
+        {
+          "url": "products/categories",
+          "name": "Category List",
+          "slug": "app-ecommerce-product-category"
+        },
+        {
+          "url": "catalog/scanner",
+          "name": "Catalog Health Scanner",
+          "slug": "app-catalog-scanner"
+        },
+        {
+          "url": "catalog/duplicates",
+          "name": "Duplicate Scanner",
+          "slug": "app-catalog-duplicates"
+        },
+        {
+          "url": "catalog/importer",
+          "name": "Smart Product Importer",
+          "slug": "app-product-importer"
+        },
+        {
+          "url": "vendor/inventory",
+          "name": "Inventory & Stock",
+          "slug": "app-vendor-inventory"
+        },
+        {
+          "url": "inventory/warehouses",
+          "name": "Multi-Warehouse",
+          "slug": "app-warehouses"
+        },
+        {
+          "url": "inventory/stock-counts",
+          "name": "Cycle Counting",
+          "slug": "app-stock-counts"
+        },
+        {
+          "url": "inventory/abc-analysis",
+          "name": "ABC & Dead Stock",
+          "slug": "app-inventory-abc"
+        },
+        {
+          "url": "suppliers",
+          "name": "Suppliers",
+          "slug": "app-suppliers"
+        },
+        {
+          "url": "purchases",
+          "name": "Purchase Orders",
+          "slug": "app-purchases"
+        }
+      ]
+    },
+    {
+      "name": "Sales & Fulfillment",
+      "icon": "menu-icon icon-base bx bx-cart-alt",
+      "slug": "app-ecommerce-sales",
+      "submenu": [
+        {
+          "url": "orders",
+          "name": "Order List",
+          "slug": "app-ecommerce-order-list"
+        },
+        {
+          "url": "fulfillment",
+          "name": "Advanced Fulfillment",
+          "slug": "app-fulfillment"
+        },
+        {
+          "url": "vendor/returns",
+          "name": "Returns & Refunds",
+          "slug": "app-vendor-returns"
+        },
+        {
+          "url": "logistics/shipping",
+          "name": "Shipping Methods",
+          "slug": "app-logistics-shipping"
+        },
+        {
+          "url": "coupons",
+          "name": "Coupons & Promos",
+          "slug": "app-ecommerce-coupon-list"
+        },
+        {
+          "url": "marketing/abandoned-carts",
+          "name": "Abandoned Carts",
+          "slug": "app-abandoned-carts"
+        },
+        {
+          "url": "marketing/feeds",
+          "name": "Omnichannel Feeds",
+          "slug": "app-feeds"
+        },
+        {
+          "url": "communication",
+          "name": "Communication Center",
+          "slug": "app-communication-center"
+        }
+      ]
+    },
+    {
+      "name": "B2B & Wholesale",
+      "icon": "menu-icon icon-base bx bx-briefcase-alt",
+      "slug": "app-b2b-nav",
+      "submenu": [
+        {
+          "url": "b2b/companies",
+          "name": "Corporate Accounts",
+          "slug": "app-b2b-companies"
+        },
+        {
+          "url": "b2b/quotes",
+          "name": "Quotes & Estimates",
+          "slug": "app-b2b-quotes"
+        }
+      ]
+    },
+    {
+      "name": "Finance & Cash Desk",
+      "icon": "menu-icon icon-base bx bx-receipt",
+      "slug": "app-expenses-nav",
+      "submenu": [
+        {
+          "url": "expenses",
+          "name": "Expense Ledger",
+          "slug": "app-expenses"
+        },
+        {
+          "url": "finance/pos-register",
+          "name": "POS Shift Register",
+          "slug": "app-pos-register"
+        },
+        {
+          "url": "gift-cards",
+          "name": "Gift Cards & Vouchers",
+          "slug": "app-gift-cards"
+        }
+      ]
+    },
+    {
+      "name": "Automation & Rules",
+      "icon": "menu-icon icon-base bx bx-cog",
+      "slug": "app-automation-nav",
+      "submenu": [
+        {
+          "url": "automation",
+          "name": "Workflow Rules",
+          "slug": "app-automation"
+        }
+      ]
+    },
+    {
+      "name": "Customers & Support",
+      "icon": "menu-icon icon-base bx bx-user-circle",
+      "slug": "app-ecommerce-customers",
+      "submenu": [
+        {
+          "url": "customers",
+          "name": "Customers Directory",
+          "slug": "app-ecommerce-customer-all"
+        },
+        {
+          "url": "customer/portal",
+          "name": "Customer Portal",
+          "slug": "app-customer-portal"
+        },
+        {
+          "url": "reviews",
+          "name": "Customer Reviews",
+          "slug": "app-ecommerce-manage-reviews"
+        },
+        {
+          "url": "vendor/support",
+          "name": "Support Tickets",
+          "slug": "app-vendor-support"
+        }
+      ]
+    },
+    {
+      "name": "Vendor Operations",
+      "icon": "menu-icon icon-base bx bx-store-alt",
+      "slug": "app-vendor-operations",
+      "submenu": [
+        {
+          "url": "branches",
+          "name": "Branch Management",
+          "slug": "app-ecommerce-branch-list"
+        },
+        {
+          "url": "vendor/store-builder",
+          "name": "Visual Store Builder",
+          "slug": "app-vendor-store-builder"
+        },
+        {
+          "url": "vendor/kyc",
+          "name": "KYC Verification",
+          "slug": "app-vendor-kyc"
+        },
+        {
+          "url": "vendor/wallet",
+          "name": "Wallet & Payouts",
+          "slug": "app-vendor-wallet"
+        },
+        {
+          "url": "vendor/payment-settings",
+          "name": "Payment Methods",
+          "slug": "app-vendor-payment-settings"
+        }
+      ]
+    },
+    {
+      "url": "reports",
+      "name": "Reports & Analytics",
+      "icon": "menu-icon icon-base bx bx-bar-chart-alt-2",
+      "slug": "app-reports"
+    },
+    {
+      "menuHeader": "SaaS Platform & Admin"
+    },
+    {
+      "name": "Platform Admin",
+      "icon": "menu-icon icon-base bx bx-line-chart",
+      "slug": "app-saas-platform",
+      "submenu": [
+        {
+          "url": "saas/analytics",
+          "name": "Platform Analytics",
+          "slug": "app-saas-analytics"
+        },
+        {
+          "url": "saas/billing",
+          "name": "Subscription Billing",
+          "slug": "app-saas-billing"
+        },
+        {
+          "url": "saas/commission",
+          "name": "Commission Rules",
+          "slug": "app-saas-commission"
+        },
+        {
+          "url": "saas/kyc",
+          "name": "KYC Applications",
+          "slug": "app-saas-kyc-admin"
+        },
+        {
+          "url": "saas/currencies",
+          "name": "Currency Management",
+          "slug": "app-saas-currencies"
+        },
+        {
+          "url": "saas/languages",
+          "name": "Language Management",
+          "slug": "app-saas-languages"
+        },
+        {
+          "url": "saas/dunning",
+          "name": "Dunning System",
+          "slug": "app-saas-dunning"
+        },
+        {
+          "url": "saas/seo",
+          "name": "SEO & Marketing",
+          "slug": "app-saas-seo"
+        },
+        {
+          "url": "developer/webhooks",
+          "name": "Developer Webhooks",
+          "slug": "app-developer-webhooks"
+        },
+        {
+          "url": "system/health",
+          "name": "System Health",
+          "slug": "app-system-health"
+        },
+        {
+          "url": "system/backups",
+          "name": "Backup Manager",
+          "slug": "app-backups"
+        },
+        {
+          "url": "system/security-center",
+          "name": "Security Center",
+          "slug": "app-security-center"
+        },
+        {
+          "url": "saas/audit-logs",
+          "name": "Security Audit Logs",
+          "slug": "app-saas-audit-logs"
+        }
+      ]
+    },
+    {
+      "name": "Staff & Access Control",
+      "icon": "menu-icon icon-base bx bx-group",
+      "slug": "app-user-access",
+      "submenu": [
+        {
+          "url": "admin/users/list",
+          "name": "User Management",
+          "slug": "laravel-example-user-management"
+        },
+        {
+          "url": "roles",
           "name": "Roles",
           "slug": "app-access-roles"
         },
         {
-          "url": "app/access-permission",
-          "name": "Permission",
+          "url": "permissions",
+          "name": "Permission Registry",
           "slug": "app-access-permission"
         }
       ]
@@ -252,39 +382,53 @@
       "menuHeader": "System Settings"
     },
     {
-      "name": "Ecom Settings",
+      "url": "settings/store",
+      "name": "Store Settings",
       "icon": "menu-icon icon-base bx bx-cog",
-      "slug": "app-ecommerce-settings",
+      "slug": ["settings", "app-ecommerce-settings"]
+    },
+    {
+      "menuHeader": "Templates & Demos"
+    },
+    {
+      "name": "Demo Pages",
+      "icon": "menu-icon icon-base bx bx-copy-alt",
+      "slug": "templates-demo-pages",
       "submenu": [
         {
-          "url": "app/ecommerce/settings/details",
-          "name": "Store Details",
-          "slug": "app-ecommerce-settings-details"
+          "url": "customers/1/overview",
+          "name": "Customer Details Demo",
+          "slug": "app-ecommerce-customer-details-overview"
         },
         {
-          "url": "app/ecommerce/settings/payments",
-          "name": "Payments",
-          "slug": "app-ecommerce-settings-payments"
+          "url": "orders/1",
+          "name": "Order Details Demo",
+          "slug": "app-ecommerce-order-details"
         },
         {
-          "url": "app/ecommerce/settings/checkout",
-          "name": "Checkout",
-          "slug": "app-ecommerce-settings-checkout"
+          "url": "invoices/1/preview",
+          "name": "Invoice Preview Demo",
+          "slug": "app-invoice-preview"
         },
         {
-          "url": "app/ecommerce/settings/shipping",
-          "name": "Shipping & Delivery",
-          "slug": "app-ecommerce-settings-shipping"
+          "url": "user/profile",
+          "name": "User Profile Demo",
+          "slug": "pages-profile-user"
         },
         {
-          "url": "app/ecommerce/settings/locations",
-          "name": "Locations",
-          "slug": "app-ecommerce-settings-locations"
+          "url": "staff/account",
+          "name": "Staff Account View",
+          "slug": "app-user-view-account"
         },
         {
-          "url": "app/ecommerce/settings/notifications",
-          "name": "Notifications",
-          "slug": "app-ecommerce-settings-notifications"
+          "url": "faq",
+          "name": "FAQ Demo",
+          "slug": "pages-faq"
+        },
+        {
+          "url": "modals",
+          "name": "Modal Popups Demo",
+          "slug": "modal-examples"
         }
       ]
     }

@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('currencies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('code', 3)->unique(); // USD, INR, etc
-            $table->string('symbol');
-            $table->decimal('exchange_rate', 15, 8)->default(1);
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_default')->default(false);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('currencies')) {
+            Schema::create('currencies', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('code', 3)->unique();
+                $table->string('symbol');
+                $table->decimal('exchange_rate', 15, 8)->default(1);
+                $table->boolean('is_active')->default(true);
+                $table->boolean('is_default')->default(false);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

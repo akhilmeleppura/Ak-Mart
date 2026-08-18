@@ -40,8 +40,12 @@ class UserManagement extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index(Request $request): JsonResponse
+  public function index(Request $request)
   {
+    if (!$request->ajax() && !$request->wantsJson() && !$request->has('draw')) {
+      return $this->UserManagement();
+    }
+
     $columns = [
       1 => 'id',
       2 => 'name',
@@ -53,8 +57,8 @@ class UserManagement extends Controller
     $totalData = User::count();
     $totalFiltered = $totalData;
 
-    $limit = $request->input('length');
-    $start = $request->input('start');
+    $limit = $request->input('length', 10);
+    $start = $request->input('start', 0);
     $order = $columns[$request->input('order.0.column')] ?? 'id';
     $dir = $request->input('order.0.dir') ?? 'desc';
 
@@ -72,10 +76,14 @@ class UserManagement extends Controller
       $totalFiltered = $query->count();
     }
 
-    $users = $query->offset($start)
-      ->limit($limit)
-      ->orderBy($order, $dir)
-      ->get();
+    if (!is_null($start) && intval($start) > 0) {
+      $query->offset(intval($start));
+    }
+    if (!is_null($limit) && intval($limit) > 0) {
+      $query->limit(intval($limit));
+    }
+
+    $users = $query->orderBy($order, $dir)->get();
 
     $data = [];
     $ids = $start;

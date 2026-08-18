@@ -217,9 +217,20 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(r => r.json())
     .then(data => {
-      alert(data.message);
-      if (data.success) location.reload();
-      else {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: data.success ? 'success' : 'error',
+          title: data.success ? 'Payout Requested' : 'Request Failed',
+          text: data.message,
+          timer: 2000,
+          showConfirmButton: !data.success
+        }).then(() => { if (data.success) location.reload(); });
+      } else {
+        alert(data.message);
+        if (data.success) location.reload();
+      }
+
+      if (!data.success) {
         btn.disabled = false;
         btn.innerHTML = '<i class="bx bx-money-withdraw me-1"></i> Request Payout';
       }

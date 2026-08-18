@@ -18,7 +18,7 @@
           "slug": "dashboard-crm"
         },
         {
-          "url": "app/ecommerce/dashboard",
+          "url": "admin/dashboard",
           "name": "eCommerce",
           "icon": "menu-icon icon-base bx bx-cart-alt",
           "slug": "app-ecommerce-dashboard"
@@ -114,7 +114,7 @@
           "slug": "app-ecommerce",
           "submenu": [
             {
-              "url": "app/ecommerce/dashboard",
+              "url": "admin/dashboard",
               "name": "Dashboard",
               "slug": "app-ecommerce-dashboard"
             },
@@ -208,40 +208,9 @@
               "slug": "app-ecommerce-coupon-list"
             },
             {
+              "url": "app/ecommerce/settings/details",
               "name": "Settings",
-              "slug": "app-ecommerce-settings",
-              "submenu": [
-                {
-                  "url": "app/ecommerce/settings/details",
-                  "name": "Store Details",
-                  "slug": "app-ecommerce-settings-details"
-                },
-                {
-                  "url": "app/ecommerce/settings/payments",
-                  "name": "Payments",
-                  "slug": "app-ecommerce-settings-payments"
-                },
-                {
-                  "url": "app/ecommerce/settings/checkout",
-                  "name": "Checkout",
-                  "slug": "app-ecommerce-settings-checkout"
-                },
-                {
-                  "url": "app/ecommerce/settings/shipping",
-                  "name": "Shipping & Delivery",
-                  "slug": "app-ecommerce-settings-shipping"
-                },
-                {
-                  "url": "app/ecommerce/settings/locations",
-                  "name": "Locations",
-                  "slug": "app-ecommerce-settings-locations"
-                },
-                {
-                  "url": "app/ecommerce/settings/notifications",
-                  "name": "Notifications",
-                  "slug": "app-ecommerce-settings-notifications"
-                }
-              ]
+              "slug": "app-ecommerce-settings"
             }
           ]
         },

@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-      $table->boolean('is_supreme_admin')->default(0)->after('remember_token');
-            $table->boolean('is_super_admin')->default(0)->after('is_supreme_admin');
-
-            // Add role_id column and foreign key constraint
-            $table->unsignedBigInteger('role_id')->nullable()->after('is_super_admin');
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+            if (!Schema::hasColumn('users', 'is_supreme_admin')) {
+                $table->boolean('is_supreme_admin')->default(0)->after('remember_token');
+            }
+            if (!Schema::hasColumn('users', 'is_super_admin')) {
+                $table->boolean('is_super_admin')->default(0)->after('is_supreme_admin');
+            }
+            if (!Schema::hasColumn('users', 'role_id')) {
+                $table->unsignedBigInteger('role_id')->nullable()->after('is_super_admin');
+                $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+            }
         });
     }
 

@@ -18,9 +18,14 @@ class EcommerceSettingsLocations extends Controller
   {
     $fields = [
       'location_name',
-      'location_email',
+      'location_country',
+      'location_address',
+      'location_apt',
       'location_phone',
-      'location_address'
+      'location_city',
+      'location_state',
+      'location_pincode',
+      'def_location'
     ];
 
     foreach ($fields as $field) {

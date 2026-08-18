@@ -90,5 +90,7 @@ isset($configData['contentLayout']) && $configData['contentLayout'] === 'compact
         <!-- Drag Target Area To SlideIn Menu On Small Screens -->
         <div class="drag-target"></div>
     </div>
+    <!-- Global AI Assistant Copilot Widget -->
+    @include('layouts/sections/ai-copilot')
     <!-- / Layout wrapper -->
     @endsection

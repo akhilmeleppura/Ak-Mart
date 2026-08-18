@@ -26,47 +26,7 @@
 <div class="row g-6">
   <!-- Navigation -->
   <div class="col-12 col-lg-4">
-    <div class="d-flex justify-content-between flex-column mb-4 mb-md-0">
-      <h5 class="mb-4">Getting Started</h5>
-      <ul class="nav nav-align-left nav-pills flex-column">
-        <li class="nav-item mb-1">
-          <a class="nav-link active" href="javascript:void(0);">
-            <i class="icon-base bx bx-store-alt icon-18px me-1_5"></i>
-            <span class="align-middle">Store details</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/payments') }}">
-            <i class="icon-base bx bx-credit-card icon-18px me-1_5"></i>
-            <span class="align-middle">Payments</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/checkout') }}">
-            <i class="icon-base bx bx-cart icon-18px me-1_5"></i>
-            <span class="align-middle">Checkout</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/shipping') }}">
-            <i class="icon-base bx bx-package icon-18px me-1_5"></i>
-            <span class="align-middle">Shipping & delivery</span>
-          </a>
-        </li>
-        <li class="nav-item mb-1">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/locations') }}">
-            <i class="icon-base bx bx-map icon-18px me-1_5"></i>
-            <span class="align-middle">Locations</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url('/app/ecommerce/settings/notifications') }}">
-            <i class="icon-base bx bx-bell icon-18px me-1_5"></i>
-            <span class="align-middle">Notifications</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    @include('content.apps._settings-sidebar')
   </div>
   <!-- /Navigation -->
 

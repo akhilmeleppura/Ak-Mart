@@ -19,7 +19,12 @@ class EcommerceOrderDetails extends Controller
       $user = auth()->user();
       $currentBranch = session('branch_id') ?? ($user ? $user->branch_id : null);
       
-      $isSuperAdmin = $user && $user->user_type === 'super_admin';
+      $isSuperAdmin = $user && (
+          $user->user_type === 'super_admin' ||
+          $user->is_supreme_admin == 1 ||
+          $user->is_super_admin == 1 ||
+          (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+      );
       
       if (!$isSuperAdmin && $currentBranch && $order->branch_id && $order->branch_id != $currentBranch) {
           abort(403, 'Unauthorized access to this order.');

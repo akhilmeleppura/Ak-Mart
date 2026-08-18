@@ -123,9 +123,10 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'aliases' => [
-        // Other aliases...
+    'aliases' => \Illuminate\Support\Facades\Facade::defaultAliases()->merge([
         'Helper' => App\Helpers\Helpers::class,
-    ],
+        'Str'    => \Illuminate\Support\Str::class,
+        'Arr'    => \Illuminate\Support\Arr::class,
+    ])->toArray(),
 
 ];

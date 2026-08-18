@@ -25,15 +25,16 @@ class AICopilotController extends Controller
             'messages.*.content' => 'required|string',
         ]);
 
-        $apiKey = env('GEMINI_API_KEY');
+        // 2. Fetch API Key and AI Mode from StoreSetting / DB / env
+        $apiKey = \App\Models\StoreSetting::get('gemini_api_key') ?: env('GEMINI_API_KEY');
         if (!$apiKey) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gemini API key is not configured. Please add GEMINI_API_KEY to your .env file.'
-            ], 400);
+            try {
+                $apiKey = \Illuminate\Support\Facades\DB::table('ai_settings')->value('gemini_api_key');
+            } catch (\Exception $e) {}
         }
+        $aiMode = \App\Models\StoreSetting::get('ai_mode', 'gemini');
 
-        // 2. Fetch real-time branch and dashboard metrics
+        // 3. Fetch real-time branch and dashboard metrics
         $branchName = \App\Models\Branch\Branch::find(session('branch_id'))?->name ?? 'Global/HQ';
         $totalSales = \App\Models\Order::sum('total_amount');
         $totalOrders = \App\Models\Order::count();
@@ -43,7 +44,45 @@ class AICopilotController extends Controller
             return "#{$o->order_number} (${$o->total_amount}, {$o->order_status})";
         })->implode(', ');
 
-        // 3. Construct System Context/Prompt
+        $lastMessage = strtolower(end($request->messages)['content'] ?? '');
+
+        // 4. Handle Manual / Fallback Assistant Mode when no API key is provided or manual mode is active
+        if ($aiMode === 'manual' || empty($apiKey)) {
+            if (str_contains($lastMessage, 'marketing') || str_contains($lastMessage, 'promo') || str_contains($lastMessage, 'discount')) {
+                $reply = "💡 **Marketing Recommendations ($branchName)**:\n\n" .
+                         "✓ **Flash Sale**: Launch a 15% weekend discount on top-selling items.\n" .
+                         "✓ **Free Shipping**: Offer free shipping for orders over $50 to increase average order value.\n" .
+                         "✓ **Customer Retention**: Send personalized email offers to repeat customers.\n\n" .
+                         "*(Operating in Manual Business Engine mode. Configure a Gemini API Key in Ecom Settings -> AI Settings for generative AI responses.)*";
+            } elseif (str_contains($lastMessage, 'warning') || str_contains($lastMessage, 'stock') || str_contains($lastMessage, 'inventory')) {
+                $reply = "⚠ **Inventory Status Warning ($branchName)**:\n\n" .
+                         "- **Low Stock Products (< 10 units)**: $lowStock\n" .
+                         "- **Out of Stock Products**: $outOfStock\n\n" .
+                         "💡 **Action Required**: Please review inventory under Stock Management and reorder low-stock items.\n\n" .
+                         "*(Operating in Manual Business Engine mode)*";
+            } elseif (str_contains($lastMessage, 'insight') || str_contains($lastMessage, 'sales') || str_contains($lastMessage, 'revenue') || str_contains($lastMessage, 'growth')) {
+                $reply = "✓ **Business Performance Insights ($branchName)**:\n\n" .
+                         "📈 **Total Sales**: $" . number_format($totalSales, 2) . "\n" .
+                         "📦 **Total Orders**: $totalOrders\n" .
+                         "🛍️ **Recent Orders**: " . ($recentOrders ?: 'No recent orders') . "\n\n" .
+                         "*(Operating in Manual Business Engine mode)*";
+            } else {
+                $reply = "👋 **Hello! I am Ak-Mart Business Copilot ($branchName)**.\n\n" .
+                         "Here is your real-time store snapshot:\n" .
+                         "✓ **Total Sales**: $" . number_format($totalSales, 2) . "\n" .
+                         "✓ **Total Orders**: $totalOrders\n" .
+                         "⚠ **Stock Alerts**: $lowStock low stock / $outOfStock out of stock\n\n" .
+                         "How can I help you manage and optimize your store today?\n\n" .
+                         "*(Note: You are currently using the Offline Business Engine. Enter a Gemini API Key in Ecom Settings -> AI Settings to enable live generative AI responses.)*";
+            }
+
+            return response()->json([
+                'success' => true,
+                'reply' => $reply
+            ]);
+        }
+
+        // 5. Construct System Context/Prompt for live Gemini API
         $systemPrompt = "You are Ak-Mart AI, an advanced eCommerce Business Copilot integrated into the admin dashboard.\n";
         $systemPrompt .= "You have access to real-time business data for the current branch ($branchName):\n";
         $systemPrompt .= "- Current Branch: $branchName\n";
@@ -61,12 +100,11 @@ class AICopilotController extends Controller
         $systemPrompt .= "💡 Recommendations\n\n";
         $systemPrompt .= "Never fabricate data. If you don't know or don't have access to certain details, say so.\n";
 
-        // 4. Format chat history for Gemini API
+        // 6. Format chat history for Gemini API
         $formattedContents = [];
         foreach ($request->messages as $index => $msg) {
             $text = $msg['content'];
             
-            // Prepend system prompt to the first user message
             if ($index === 0 && $msg['role'] === 'user') {
                 $text = "[SYSTEM INSTRUCTION: " . $systemPrompt . "]\n\nUser: " . $text;
             }
@@ -105,7 +143,7 @@ class AICopilotController extends Controller
             Log::error('Copilot Gemini API Error: ' . $response->body());
             return response()->json([
                 'success' => false,
-                'message' => 'AI Service encountered an error. Please try again later.'
+                'message' => 'AI Service encountered an error. Please check your Gemini API key or switch to Manual AI mode in AI Settings.'
             ], 500);
 
         } catch (\Exception $e) {

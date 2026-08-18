@@ -34,7 +34,7 @@
                                 @endif
                             </td>
                             <td>
-                                @php $color = Str::contains($log->event, 'deleted') ? 'danger' : (Str::contains($log->event, 'login') ? 'success' : 'primary'); @endphp
+                                @php $color = \Illuminate\Support\Str::contains($log->event, 'deleted') ? 'danger' : (\Illuminate\Support\Str::contains($log->event, 'login') ? 'success' : 'primary'); @endphp
                                 <span class="badge bg-label-{{ $color }}">{{ strtoupper(str_replace('_', ' ', $log->event)) }}</span>
                             </td>
                             <td>

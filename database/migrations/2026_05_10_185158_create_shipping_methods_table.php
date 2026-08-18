@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipping_methods', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // e.g. FedEx Standard, Shiprocket Express
-            $table->string('carrier_code'); // fedex, shiprocket, self
-            $table->decimal('base_cost', 10, 2)->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->json('settings')->nullable(); // API keys or zone rates
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('shipping_methods')) {
+            Schema::create('shipping_methods', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('carrier_code');
+                $table->decimal('base_cost', 10, 2)->default(0);
+                $table->boolean('is_active')->default(true);
+                $table->json('settings')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

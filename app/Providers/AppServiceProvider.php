@@ -21,7 +21,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
-            return $user->hasRole('Super Admin') ? true : null;
+            if (
+                $user->is_supreme_admin == 1 ||
+                $user->is_super_admin == 1 ||
+                $user->user_type === 'super_admin' ||
+                (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
+            ) {
+                return true;
+            }
+            return null;
         });
 
         \App\Models\Product::observe(\App\Observers\ProductObserver::class);

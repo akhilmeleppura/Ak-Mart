@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   // Variable declaration for table
   const dt_product_table = document.querySelector('.datatables-products'),
-    productAdd = baseUrl + 'app/ecommerce/product/add',
+    productAdd = baseUrl + 'products/create',
     statusObj = {
       1: { title: 'Scheduled', class: 'bg-label-warning' },
       2: { title: 'Publish', class: 'bg-label-success' },
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   if (dt_product_table) {
     var dt_products = new DataTable(dt_product_table, {
       ajax: {
-        url: baseUrl + 'app/ecommerce/product/list',
+        url: baseUrl + 'products',
         data: function (d) {
           const dateRange = $('#dateRange').val();
           if (dateRange && dateRange.includes(' to ')) {
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             let id = full['id'];
             return `
               <div class="d-inline-block text-nowrap">
-                <a href="${baseUrl}app/ecommerce/product/edit/${id}" class="btn btn-icon"><i class="icon-base bx bx-edit icon-md"></i></a>
+                <a href="${baseUrl}products/${id}/edit" class="btn btn-icon"><i class="icon-base bx bx-edit icon-md"></i></a>
                 <button class="btn btn-icon delete-record" data-id="${id}"><i class="icon-base bx bx-trash icon-md text-danger"></i></button>
               </div>
             `;
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }).then(function (result) {
             if (result.value) {
               $.ajax({
-                url: `${baseUrl}app/ecommerce/product/${id}`,
+                url: `${baseUrl}products/${id}`,
                 type: 'DELETE',
                 headers: {
                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -11,27 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('customer_types')) {
+            Schema::create('customer_types', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->unique();
+                $table->timestamps();
+            });
+        }
 
-        // Then create customers table with foreign key
-        Schema::create('customers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->nullable()->unique();
-            $table->string('phone')->nullable();
-            $table->text('address')->nullable();
+        if (!Schema::hasTable('customers')) {
+            Schema::create('customers', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->nullable()->unique();
+                $table->string('phone')->nullable();
+                $table->text('address')->nullable();
 
-            // Foreign key to customer_types
-            $table->foreignId('customer_type_id')
-                ->constrained('customer_types')
-                ->onDelete('cascade');
+                $table->foreignId('customer_type_id')
+                    ->constrained('customer_types')
+                    ->onDelete('cascade');
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
 

@@ -134,7 +134,7 @@
               <div class="w-100">
                 <label class="form-label mb-1" for="referralLink">Share referral link in social media</label>
                 <input type="text" id="referralLink" name="referralLink" class="form-control w-100 h-px-40"
-                  placeholder="pixinvent.com/?ref=6479" />
+                  placeholder="ak-mart.com/?ref=6479" />
               </div>
               <div class="d-flex">
                 <button type="button" class="btn btn-facebook btn-icon me-2"><i
