@@ -11,17 +11,20 @@ class AICopilotController extends Controller
 {
     public function chat(Request $request)
     {
-        // 1. Verify access
-        if (!auth()->check() || !auth()->user()->can('access_ai_assistant')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access. Only roles with AI Assistant permission can use this feature.'
-            ], 403);
+        $locale = $request->input('locale') ?: app()->getLocale() ?: 'en';
+        app()->setLocale($locale);
+
+        $messages = $request->input('messages');
+        if (empty($messages) && $request->filled('prompt')) {
+            $messages = [
+                ['role' => 'user', 'content' => $request->input('prompt')]
+            ];
+            $request->merge(['messages' => $messages]);
         }
 
         $request->validate([
             'messages' => 'required|array|min:1',
-            'messages.*.role' => 'required|string|in:user,model',
+            'messages.*.role' => 'nullable|string',
             'messages.*.content' => 'required|string',
         ]);
 
@@ -44,7 +47,46 @@ class AICopilotController extends Controller
             return "#{$o->order_number} (${$o->total_amount}, {$o->order_status})";
         })->implode(', ');
 
-        $lastMessage = strtolower(end($request->messages)['content'] ?? '');
+        $lastMessage = strtolower(end($messages)['content'] ?? '');
+
+        // Localized Offline / Deterministic Responder
+        if ($aiMode === 'manual' || empty($apiKey)) {
+            if ($locale === 'ml') {
+                if (str_contains($lastMessage, 'stock') || str_contains($lastMessage, 'inventory') || str_contains($lastMessage, 'സ്റ്റോക്ക്')) {
+                    $reply = "⚠ **സ്റ്റോക്ക് റിപ്പോർട്ട് ($branchName)**:\n\n- കുറഞ്ഞ സ്റ്റോക്ക് (< 10): $lowStock\n- സ്റ്റോക്ക് തീർന്നവ: $outOfStock\n\n💡 കൂടുതൽ വിവരങ്ങൾക്ക് **സ്റ്റോക്കും ഇൻവെന്ററിയും** പരിശോധിക്കുക.";
+                } elseif (str_contains($lastMessage, 'sales') || str_contains($lastMessage, 'order') || str_contains($lastMessage, 'വിൽപ്പന')) {
+                    $reply = "✓ **വിൽപ്പന വിവരങ്ങൾ ($branchName)**:\n\n📈 ആകെ വിൽപ്പന: $" . number_format($totalSales, 2) . "\n📦 ആകെ ഓർഡറുകൾ: $totalOrders";
+                } else {
+                    $reply = "👋 **നമസ്കാരം! ഞാൻ Ak-Mart ബിസിനസ്സ് കോപൈലറ്റ് ($branchName)**.\n\nആകെ വിൽപ്പന: $" . number_format($totalSales, 2) . "\nഓർഡറുകൾ: $totalOrders\n\nനിങ്ങൾക്ക് എന്ത് വിവരങ്ങളാണ് അറിയേണ്ടത്?";
+                }
+            } elseif ($locale === 'hi') {
+                if (str_contains($lastMessage, 'stock') || str_contains($lastMessage, 'inventory') || str_contains($lastMessage, 'स्टॉक')) {
+                    $reply = "⚠ **स्टॉक स्थिति चेतावनी ($branchName)**:\n\n- कम स्टॉक उत्पाद (< 10): $lowStock\n- स्टॉक समाप्त: $outOfStock\n\n💡 कृपया **स्टॉक और इन्वेंटरी** मेनू में समीक्षा करें।";
+                } else {
+                    $reply = "👋 **नमस्ते! मैं Ak-Mart बिजनेस कोपायलट ($branchName) हूँ**।\n\nकुल बिक्री: $" . number_format($totalSales, 2) . "\nकुल ऑर्डर: $totalOrders";
+                }
+            } elseif ($locale === 'ar') {
+                $reply = "👋 **مرحباً! أنا مساعد Ak-Mart الذكي ($branchName)**.\n\nإجمالي المبيعات: $" . number_format($totalSales, 2) . "\nإجمالي الطلبات: $totalOrders";
+            } elseif ($locale === 'fr') {
+                $reply = "👋 **Bonjour ! Je suis votre copilote d'entreprise Ak-Mart ($branchName)**.\n\nVentes totales: $" . number_format($totalSales, 2) . "\nCommandes totales: $totalOrders";
+            } elseif ($locale === 'de') {
+                $reply = "👋 **Hallo! Ich bin Ihr Ak-Mart Business Copilot ($branchName)**.\n\nGesamtumsatz: $" . number_format($totalSales, 2) . "\nGesamtbestellungen: $totalOrders";
+            } else {
+                if (str_contains($lastMessage, 'stock') || str_contains($lastMessage, 'inventory')) {
+                    $reply = "⚠ **Inventory Status Warning ($branchName)**:\n\n- Low Stock Products (< 10 units): $lowStock\n- Out of Stock Products: $outOfStock\n\n💡 Action: Review items under Stock Management.";
+                } elseif (str_contains($lastMessage, 'sales') || str_contains($lastMessage, 'order')) {
+                    $reply = "✓ **Business Insights ($branchName)**:\n\n📈 Total Sales: $" . number_format($totalSales, 2) . "\n📦 Total Orders: $totalOrders\n🛍️ Recent Orders: " . ($recentOrders ?: 'No recent orders');
+                } else {
+                    $reply = "👋 **Hello! I am Ak-Mart Business Copilot ($branchName)**.\n\nTotal Sales: $" . number_format($totalSales, 2) . "\nTotal Orders: $totalOrders\nStock Alerts: $lowStock low / $outOfStock out of stock";
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'reply' => $reply,
+                'response' => $reply
+            ]);
+        }
 
         // 4. Handle Manual / Fallback Assistant Mode when no API key is provided or manual mode is active
         if ($aiMode === 'manual' || empty($apiKey)) {

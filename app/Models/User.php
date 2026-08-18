@@ -42,6 +42,7 @@ class User extends Authenticatable
         'state',
         'post_code',
         'country',
+        'locale',
     ];
 
     /**

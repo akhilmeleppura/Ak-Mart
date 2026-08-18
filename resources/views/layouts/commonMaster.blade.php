@@ -31,11 +31,14 @@
       $primaryColorCSS = Helpers::generatePrimaryColorCSS($configData['color']);
   }
 
+  // Dynamic Locale & RTL Direction
+  $currentLocale = app()->getLocale() ?: session()->get('locale', 'en');
+  $textDirection = in_array($currentLocale, ['ar', 'fa', 'ur', 'he']) ? 'rtl' : ($configData['textDirection'] ?? 'ltr');
 @endphp
 
-<html lang="{{ session()->get('locale') ?? app()->getLocale() }}"
+<html lang="{{ $currentLocale }}"
   class="{{ $navbarType ?? '' }} {{ $contentLayout ?? '' }} {{ $menuFixed ?? '' }} {{ $menuCollapsed ?? '' }} {{ $footerFixed ?? '' }} {{ $customizerHidden ?? '' }}"
-  dir="{{ $configData['textDirection'] }}" data-skin="{{ $skinName }}" data-assets-path="{{ asset('/assets') . '/' }}"
+  dir="{{ $textDirection }}" data-skin="{{ $skinName }}" data-assets-path="{{ asset('/assets') . '/' }}"
   data-base-url="{{ url('/') }}" data-framework="laravel" data-template="{{ $configData['layout'] }}-menu-template"
   data-bs-theme="{{ $configData['theme'] }}" @if ($isAdminLayout && $semiDarkEnabled) data-semidark-menu="true" @endif>
 

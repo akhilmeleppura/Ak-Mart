@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'save' => 'Save Changes',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'create' => 'Create',
+    'view' => 'View',
+    'search' => 'Search',
+    'search_shortcut' => 'Search [CTRL + K]',
+    'actions' => 'Actions',
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'enabled' => 'Enabled',
+    'disabled' => 'Disabled',
+    'success' => 'Success',
+    'error' => 'Error',
+    'warning' => 'Warning',
+    'info' => 'Information',
+    'loading' => 'Loading...',
+    'processing' => 'Processing...',
+    'no_records' => 'No records found',
+    'confirm_delete' => 'Are you sure you want to delete this?',
+    'online_assistant' => 'Online Assistant',
+];

@@ -170,5 +170,7 @@
   "Custom System Instructions / Prompt": "കസ്റ്റം സിസ്റ്റം നിർദ്ദേശങ്ങൾ / പ്രോംപ്റ്റ്",
   "Custom rules or persona instructions for the assistant": "അസിസ്റ്റന്റിനായുള്ള പ്രത്യേക നിർദ്ദേശങ്ങൾ",
   "Discard": "റദ്ദാക്കുക",
-  "Save Changes": "മാറ്റങ്ങൾ സേവ് ചെയ്യുക"
+  "Save Changes": "മാറ്റങ്ങൾ സേവ് ചെയ്യുക",
+  "Success": "വിജയം",
+  "Error": "പിശക്"
 }

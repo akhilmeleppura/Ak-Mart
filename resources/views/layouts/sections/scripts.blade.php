@@ -26,12 +26,26 @@
 <!-- END: app JS-->
 
 <script>
+  window.AK_I18N = {
+    locale: "{{ app()->getLocale() }}",
+    dir: "{{ in_array(app()->getLocale(), ['ar', 'fa', 'ur', 'he']) ? 'rtl' : 'ltr' }}",
+    translations: @json(file_exists(base_path('lang/' . app()->getLocale() . '.json')) ? json_decode(file_get_contents(base_path('lang/' . app()->getLocale() . '.json')), true) : [])
+  };
+
+  window.__ = function(key, replace = {}) {
+    let translation = (window.AK_I18N.translations && window.AK_I18N.translations[key]) ? window.AK_I18N.translations[key] : key;
+    for (const [placeholder, value] of Object.entries(replace)) {
+      translation = translation.replace(':' + placeholder, value);
+    }
+    return translation;
+  };
+
   window.addEventListener('DOMContentLoaded', function() {
     @if (session('success'))
     if (typeof Swal !== 'undefined') {
       Swal.fire({
         icon: 'success',
-        title: 'Success',
+        title: window.__('Success') || 'Success',
         text: "{{ session('success') }}",
         timer: 3000,
         showConfirmButton: false,
@@ -45,7 +59,7 @@
     if (typeof Swal !== 'undefined') {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: window.__('Error') || 'Error',
         text: "{{ session('error') }}",
         timer: 3000,
         showConfirmButton: false,
