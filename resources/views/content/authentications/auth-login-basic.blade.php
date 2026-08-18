@@ -4,7 +4,7 @@
 
 @extends('layouts/layoutMaster')
 
-@section('title', 'Login — AK-Mart Platform')
+@section('title', __('Login') . ' — AK-Mart')
 
 @section('page-style')
   @vite(['resources/css/app.css'])
@@ -191,10 +191,11 @@
       <div class="col-lg-6 ak-login-left d-none d-lg-flex">
         <div>
           <div class="d-flex align-items-center mb-4">
-            <img src="{{ asset('images/brand/ak-mart-logo-dark.svg') }}" alt="AK-Mart Logo" height="52" class="me-2">
+            @include('_partials.macros', ['height' => 52])
+            <span class="app-brand-text fs-3 text-white fw-bold ms-3">AK-Mart</span>
           </div>
-          <h2 class="text-white fw-bold display-6 mb-2">Smart Management for Modern Stores</h2>
-          <p class="text-white-50 fs-6">Manage inventory, automate POS checkouts, issue purchase orders, and track real-time revenue.</p>
+          <h2 class="text-white fw-bold display-6 mb-2">{{ __('Smart Management for Modern Stores') }}</h2>
+          <p class="text-white-50 fs-6">{{ __('Manage inventory, automate POS checkouts, issue purchase orders, and track real-time revenue.') }}</p>
         </div>
 
         <div class="my-4">
@@ -206,7 +207,7 @@
                   <i class="bx bx-dollar-circle text-white fs-4"></i>
                 </div>
                 <div>
-                  <span class="text-white-50 small d-block">Today's Revenue</span>
+                  <span class="text-white-50 small d-block">{{ __('Today\'s Revenue') }}</span>
                   <span class="fw-bold fs-5 text-white">$4,850.00</span>
                 </div>
               </div>
@@ -222,12 +223,12 @@
                   <i class="bx bx-cart text-white fs-4"></i>
                 </div>
                 <div>
-                  <span class="text-white-50 small d-block">Active POS Sales</span>
-                  <span class="fw-bold fs-5 text-white">128 Transactions</span>
+                  <span class="text-white-50 small d-block">{{ __('Active POS Sales') }}</span>
+                  <span class="fw-bold fs-5 text-white">128 {{ __('Transactions') }}</span>
                 </div>
               </div>
               <span class="badge bg-white bg-opacity-25 text-white px-2.5 py-1.5 d-flex align-items-center gap-1.5">
-                <span class="ak-pulse-dot"></span> Live Terminal
+                <span class="ak-pulse-dot"></span> {{ __('Live Terminal') }}
               </span>
             </div>
           </div>
@@ -240,17 +241,17 @@
                   <i class="bx bx-package text-white fs-4"></i>
                 </div>
                 <div>
-                  <span class="text-white-50 small d-block">Inventory Monitor</span>
-                  <span class="fw-bold fs-6 text-white">All Stock Synced</span>
+                  <span class="text-white-50 small d-block">{{ __('Inventory Monitor') }}</span>
+                  <span class="fw-bold fs-6 text-white">{{ __('All Stock Synced') }}</span>
                 </div>
               </div>
-              <span class="badge bg-info text-white">Automated</span>
+              <span class="badge bg-info text-white">{{ __('Automated') }}</span>
             </div>
           </div>
         </div>
 
         <div class="pt-3 border-top border-white-10 text-white-50 small d-flex justify-content-between align-items-center">
-          <span>&copy; {{ date('Y') }} AK-Mart. Author: Akhil S.</span>
+          <span>&copy; {{ date('Y') }} AK-Mart.</span>
           <span class="badge bg-white bg-opacity-15 text-white-50">v1.0.0</span>
         </div>
       </div>
@@ -259,32 +260,33 @@
       <div class="col-lg-6 ak-login-right d-flex flex-column justify-content-between">
         <div>
           <div class="d-lg-none text-center mb-4">
-            <img src="{{ asset('images/brand/ak-mart-logo.svg') }}" alt="AK-Mart Logo" height="46">
+            @include('_partials.macros', ['height' => 48])
+            <div class="app-brand-text fs-3 text-heading fw-bold mt-2">AK-Mart</div>
           </div>
 
           <div class="mb-4">
-            <h3 class="fw-bold mb-1 text-heading">Welcome Back 👋</h3>
-            <p class="text-muted">Sign in to your AK-Mart store management console</p>
+            <h3 class="fw-bold mb-1 text-heading">{{ __('Welcome Back') }} 👋</h3>
+            <p class="text-muted">{{ __('Sign in to your AK-Mart store management console') }}</p>
           </div>
 
           <!-- Quick Fill Demo Accounts with Supreme Admin Access -->
           <div class="mb-4 p-3 bg-light rounded-3 border">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Quick 1-Click Access:</small>
-              <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.7rem;"><i class="bx bxs-crown me-1"></i>Supreme Access</span>
+              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ __('Quick 1-Click Access:') }}</small>
+              <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.7rem;"><i class="bx bxs-crown me-1"></i>{{ __('Supreme Access') }}</span>
             </div>
             <div class="d-flex flex-wrap gap-2">
               <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('supreme@ak-mart.com', 'supreme123')" style="border-color: #F59E0B !important; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%) !important;">
-                <i class="bx bxs-crown text-warning me-1.5 fs-6"></i> <strong class="text-dark">Supreme Admin</strong>
+                <i class="bx bxs-crown text-warning me-1.5 fs-6"></i> <strong class="text-dark">{{ __('Supreme Admin') }}</strong>
               </span>
               <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('admin@ak-mart.com', 'password')">
-                <i class="bx bx-shield-quarter text-primary me-1.5 fs-6"></i> AK-Mart Admin
+                <i class="bx bx-shield-quarter text-primary me-1.5 fs-6"></i> {{ __('AK-Mart Admin') }}
               </span>
               <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('manager@ak-mart.com', 'password')">
-                <i class="bx bx-briefcase text-info me-1.5 fs-6"></i> Manager
+                <i class="bx bx-briefcase text-info me-1.5 fs-6"></i> {{ __('Manager') }}
               </span>
               <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('cashier@ak-mart.com', 'password')">
-                <i class="bx bx-terminal text-success me-1.5 fs-6"></i> Cashier
+                <i class="bx bx-terminal text-success me-1.5 fs-6"></i> {{ __('Cashier') }}
               </span>
             </div>
           </div>
@@ -302,7 +304,7 @@
           <form id="formAuthentication" action="{{ route('auth-login-basic-store') }}" method="POST">
             @csrf
             <div class="mb-3">
-              <label for="email" class="form-label fw-semibold">Email or Username</label>
+              <label for="email" class="form-label fw-semibold">{{ __('Email or Username') }}</label>
               <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-envelope fs-5"></i></span>
                 <input type="text" class="form-control border-start-0 ps-0" id="email" name="email" placeholder="admin@ak-mart.com" required autofocus value="admin@ak-mart.com" />
@@ -311,8 +313,8 @@
 
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <label for="password" class="form-label fw-semibold mb-0">Password</label>
-                <a href="{{ url('auth/forgot-password-basic') }}" class="small text-primary text-decoration-none">Forgot password?</a>
+                <label for="password" class="form-label fw-semibold mb-0">{{ __('Password') }}</label>
+                <a href="{{ url('auth/forgot-password-basic') }}" class="small text-primary text-decoration-none">{{ __('Forgot password?') }}</a>
               </div>
               <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-lock-alt fs-5"></i></span>
@@ -326,19 +328,19 @@
             <div class="mb-4 d-flex justify-content-between align-items-center">
               <div class="form-check mb-0">
                 <input class="form-check-input" type="checkbox" id="remember-me" name="remember" checked />
-                <label class="form-check-label text-muted" for="remember-me">Keep me signed in</label>
+                <label class="form-check-label text-muted" for="remember-me">{{ __('Keep me signed in') }}</label>
               </div>
             </div>
 
             <button class="btn btn-ak-primary btn-shine w-100 py-3 fs-6 shadow-sm mb-3" type="submit" id="submitBtn">
-              <span>Sign In to AK-Mart Console</span>
+              <span>{{ __('Sign In to AK-Mart Console') }}</span>
               <i class="bx bx-right-arrow-alt ms-1 fs-5 align-middle"></i>
             </button>
           </form>
         </div>
 
         <div class="text-center text-muted small pt-3 border-top">
-          Need assistance? Contact system administrator or <a href="#" class="text-primary fw-semibold">AK-Mart Support</a>
+          {{ __('Need assistance? Contact system administrator or') }} <a href="#" class="text-primary fw-semibold">{{ __('AK-Mart Support') }}</a>
         </div>
       </div>
     </div>
@@ -364,7 +366,7 @@
     if (form && submitBtn) {
       form.addEventListener('submit', function() {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Authenticating...';
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ' + @json(__('Authenticating...'));
       });
     }
   });

@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'eCommerce Dashboard - Apps')
+@section('title', __('eCommerce Analytics') . ' — AK-Mart')
 
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
@@ -11,7 +11,7 @@
 @endsection
 
 @section('vendor-script')
-@vite('resources/assets/vendor/libs/apex-charts/apexcharts.js',)
+@vite('resources/assets/vendor/libs/apex-charts/apexcharts.js')
 @endsection
 
 @section('page-script')
@@ -102,12 +102,12 @@
                   <i class="icon-base bx bx-dots-vertical-rounded text-body-secondary"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
-                  <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                  <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('View More') }}</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('Delete') }}</a>
                 </div>
               </div>
             </div>
-            <p class="mb-1">Sales</p>
+            <p class="mb-1">{{ __('Sales') }}</p>
             <h4 class="card-title mb-3">${{ number_format($totalSales, 2) }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.42%</small>
           </div>
@@ -116,7 +116,7 @@
       <div class="col-xxl-6 col-md-3 col-sm-6 col-12 mb-6">
         <div class="card h-100">
           <div class="card-body pb-2">
-            <span class="d-block fw-medium mb-1">Profit</span>
+            <span class="d-block fw-medium mb-1">{{ __('Profit') }}</span>
             <h4 class="card-title mb-4">${{ number_format($totalProfit / 1000, 1) }}k</h4>
             <div id="profitChart"></div>
           </div>
@@ -125,11 +125,11 @@
       <div class="col-xxl-6 col-md-3 col-sm-6 col-12 mb-6">
         <div class="card h-100">
           <div class="card-body pb-0">
-            <span class="d-block fw-medium mb-1">Expenses</span>
+            <span class="d-block fw-medium mb-1">{{ __('Expenses') }}</span>
           </div>
           <div id="expensesChart" class="mb-2"></div>
           <div class="p-4 pt-2">
-            <small class="d-block text-center">${{ number_format($totalExpenses / 1000, 1) }}k Expenses more than last month</small>
+            <small class="d-block text-center">${{ number_format($totalExpenses / 1000, 1) }}k {{ __('Expenses more than last month') }}</small>
           </div>
         </div>
       </div>
@@ -146,12 +146,12 @@
                   <i class="icon-base bx bx-dots-vertical-rounded text-body-secondary"></i>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                  <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                  <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('View More') }}</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('Delete') }}</a>
                 </div>
               </div>
             </div>
-            <p class="mb-1">Transactions</p>
+            <p class="mb-1">{{ __('Transactions') }}</p>
             <h4 class="card-title mb-3">{{ $totalTransactions }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +28.14%</small>
           </div>
@@ -167,8 +167,8 @@
         <div class="col-md-8">
           <div class="card-header d-flex justify-content-between">
             <div>
-              <h5 class="card-title mb-1">Total Income</h5>
-              <p class="card-subtitle">Yearly report overview</p>
+              <h5 class="card-title mb-1">{{ __('Total Income') }}</h5>
+              <p class="card-subtitle">{{ __('Yearly report overview') }}</p>
             </div>
             <div class="dropdown">
               <button class="btn p-0" type="button" id="totalIncome" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -176,9 +176,9 @@
                 <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalIncome">
-                <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last 28 Days') }}</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Month') }}</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Year') }}</a>
               </div>
             </div>
           </div>
@@ -189,8 +189,8 @@
         <div class="col-md-4">
           <div class="card-header d-flex justify-content-between">
             <div>
-              <h5 class="card-title mb-1">Report</h5>
-              <p class="card-subtitle">Monthly Avg. ${{ number_format($totalSales / 12 / 1000, 1) }}k</p>
+              <h5 class="card-title mb-1">{{ __('Report') }}</h5>
+              <p class="card-subtitle">{{ __('Monthly Avg.') }} ${{ number_format($totalSales / 12 / 1000, 1) }}k</p>
             </div>
             <div class="dropdown">
               <button class="btn p-0" type="button" id="totalReport" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -198,9 +198,9 @@
                 <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalReport">
-                <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last 28 Days') }}</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Month') }}</a>
+                <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Year') }}</a>
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
-                      <span>Income</span>
+                      <span>{{ __('Income') }}</span>
                       <h5 class="mb-0">${{ number_format($totalRevenue, 2) }}</h5>
                     </div>
                     <small class="text-success">+2.34k</small>
@@ -228,7 +228,7 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
-                      <span>Expense</span>
+                      <span>{{ __('Expense') }}</span>
                       <h5 class="mb-0">${{ number_format($totalExpenses, 2) }}</h5>
                     </div>
                     <small class="text-danger">-1.15k</small>
@@ -242,7 +242,7 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
                     <div class="d-flex flex-column">
-                      <span>Profit</span>
+                      <span>{{ __('Profit') }}</span>
                       <h5 class="mb-0">${{ number_format($totalProfit, 2) }}</h5>
                     </div>
                     <small class="text-success">+1.35k</small>
@@ -263,26 +263,26 @@
   <div class="col-md-6 col-xxl-4 mb-6">
     <div class="card h-100">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="card-title m-0 me-2">Performance</h5>
+        <h5 class="card-title m-0 me-2">{{ __('Performance') }}</h5>
         <div class="dropdown">
           <button class="btn p-0" type="button" id="performanceId" data-bs-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
             <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="performanceId">
-            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last 28 Days') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Month') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Year') }}</a>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="row justify-content-between mb-5">
           <div class="col-6">
-            <p class="mb-0">Earnings: ${{ number_format($totalRevenue, 2) }}</p>
+            <p class="mb-0">{{ __('Earnings:') }} ${{ number_format($totalRevenue, 2) }}</p>
           </div>
           <div class="col-6">
-            <p class="mb-0 text-end">Sales: {{ number_format($totalSales / 1000, 1) }}k</p>
+            <p class="mb-0 text-end">{{ __('Sales:') }} {{ number_format($totalSales / 1000, 1) }}k</p>
           </div>
         </div>
         <div id="performanceChart"></div>
@@ -296,8 +296,8 @@
     <div class="card h-100">
       <div class="card-header d-flex justify-content-between">
         <div class="card-title mb-0">
-          <h5 class="mb-1 me-2">Conversion Rate</h5>
-          <p class="card-subtitle">Compared To Last Month</p>
+          <h5 class="mb-1 me-2">{{ __('Conversion Rate') }}</h5>
+          <p class="card-subtitle">{{ __('Compared To Last Month') }}</p>
         </div>
         <div class="dropdown">
           <button class="btn text-body-secondary p-0" type="button" id="conversionRate" data-bs-toggle="dropdown"
@@ -305,9 +305,9 @@
             <i class="icon-base bx bx-dots-vertical-rounded icon-lg"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="conversionRate">
-            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Select All') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Refresh') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Share') }}</a>
           </div>
         </div>
       </div>
@@ -326,8 +326,8 @@
           <li class="d-flex mb-6">
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
-                <h6 class="mb-0 fw-normal">Impressions</h6>
-                <small>{{ number_format($totalOrders * 50) }} Visits</small>
+                <h6 class="mb-0 fw-normal">{{ __('Impressions') }}</h6>
+                <small>{{ number_format($totalOrders * 50) }} {{ __('Visits') }}</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>12.8%</span>
@@ -337,8 +337,8 @@
           <li class="d-flex mb-6">
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
-                <h6 class="mb-0 fw-normal">Added To Cart</h6>
-                <small>{{ number_format($totalOrders * 5) }} Product in cart</small>
+                <h6 class="mb-0 fw-normal">{{ __('Added To Cart') }}</h6>
+                <small>{{ number_format($totalOrders * 5) }} {{ __('Product in cart') }}</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-down-arrow-alt text-danger me-2"></i> <span>-
                   8.5% </span></div>
@@ -347,8 +347,8 @@
           <li class="d-flex mb-6">
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
-                <h6 class="mb-0 fw-normal">Checkout</h6>
-                <small>{{ number_format($totalOrders * 1.5) }} Products checkout</small>
+                <h6 class="mb-0 fw-normal">{{ __('Checkout') }}</h6>
+                <small>{{ number_format($totalOrders * 1.5) }} {{ __('Products checkout') }}</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>9.12%</span>
@@ -358,8 +358,8 @@
           <li class="d-flex">
             <div class="d-flex w-100 flex-wrap justify-content-between gap-2">
               <div class="me-2">
-                <h6 class="mb-0 fw-normal">Purchased</h6>
-                <small>{{ $totalOrders }} Orders</small>
+                <h6 class="mb-0 fw-normal">{{ __('Purchased') }}</h6>
+                <small>{{ $totalOrders }} {{ __('Orders') }}</small>
               </div>
               <div class="user-progress"><i class="icon-base bx icon-lg bx-up-arrow-alt text-success me-2"></i>
                 <span>2.83%</span>
@@ -387,12 +387,12 @@
                   <i class="icon-base bx bx-dots-vertical-rounded text-body-secondary"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt5">
-                  <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                  <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('View More') }}</a>
+                  <a class="dropdown-item" href="javascript:void(0);">{{ __('Delete') }}</a>
                 </div>
               </div>
             </div>
-            <p class="mb-1">Revenue</p>
+            <p class="mb-1">{{ __('Revenue') }}</p>
             <h4 class="card-title mb-3">${{ number_format($totalRevenue, 2) }}</h4>
             <small class="text-success fw-medium"><i class="icon-base bx bx-up-arrow-alt"></i> +52.18%</small>
           </div>
@@ -401,10 +401,10 @@
       <div class="col-12 col-sm-6 col-md-3 col-lg-6 mb-6">
         <div class="card">
           <div class="card-body">
-            <span class="d-block fw-medium mb-1">Sales</span>
+            <span class="d-block fw-medium mb-1">{{ __('Sales') }}</span>
             <h4 class="card-title mb-3">{{ number_format($totalSales / 1000, 1) }}k</h4>
             <span class="badge bg-label-info mb-5">+34%</span>
-            <small class="d-block mb-1">Sales Target</small>
+            <small class="d-block mb-1">{{ __('Sales Target') }}</small>
             <div class="d-flex align-items-center">
               <div class="progress w-75 me-2" style="height: 8px;">
                 <div class="progress-bar bg-info shadow-none" style="width: 78%" role="progressbar" aria-valuenow="78"
@@ -421,7 +421,7 @@
             <div class="d-flex justify-content-between flex-wrap">
               <div class="d-flex align-items-start flex-column justify-content-between">
                 <div class="card-title">
-                  <h5 class="mb-0">Expenses</h5>
+                  <h5 class="mb-0">{{ __('Expenses') }}</h5>
                 </div>
                 <div class="d-flex justify-content-between">
                   <div class="mt-auto">
@@ -430,7 +430,7 @@
                       8.2%</span>
                   </div>
                 </div>
-                <span class="badge bg-label-secondary">{{ date('Y') }} YEAR</span>
+                <span class="badge bg-label-secondary">{{ date('Y') }} {{ __('YEAR') }}</span>
               </div>
               <div id="expensesBarChart"></div>
             </div>
@@ -442,51 +442,68 @@
   <div class="col-lg-7 col-xxl-8 mb-6 mb-lg-0">
     <div class="card h-100">
       <div class="card-header">
-        <h5 class="card-title mb-0">Recent Orders</h5>
+        <h5 class="card-title mb-0">{{ __('Recent Orders') }}</h5>
       </div>
       <div class="table-responsive text-nowrap">
         <table class="table table-sm text-nowrap table-border-top-0">
           <thead>
             <tr>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{{ __('Order ID') }}</th>
+              <th>{{ __('Date') }}</th>
+              <th>{{ __('Customer') }}</th>
+              <th>{{ __('Amount') }}</th>
+              <th>{{ __('Status') }}</th>
+              <th>{{ __('Actions') }}</th>
             </tr>
           </thead>
           <tbody class="table-border-bottom-0">
-            @foreach($recentOrders as $item)
+            @foreach($recentOrders as $order)
             <tr>
               <td>
                 <div class="d-flex align-items-center">
                    <div class="d-flex flex-column">
-                    <h6 class="mb-0">{{ $item->order?->order_number ?? 'N/A' }}</h6>
-                    <small class="text-body">{{ $item->product_name }}</small>
+                    <h6 class="mb-0">{{ $order->order_number ?? ('ORD-'.$order->id) }}</h6>
+                    <small class="text-body">{{ $order->customer?->email ?? __('Store Customer') }}</small>
                   </div>
                 </div>
               </td>
               <td>
-                {{ $item->order?->created_at?->format('M d, Y') ?? 'N/A' }}
+                {{ $order->created_at?->format('M d, Y') ?? 'N/A' }}
               </td>
               <td>
-                <div class="text-body">{{ $item->order?->customer?->name ?? 'Guest' }}</div>
+                <div class="text-body">{{ $order->customer?->name ?? __('Guest') }}</div>
               </td>
-              <td><span class="text-primary fw-medium">${{ number_format($item->price * $item->qty, 2) }}</span></td>
-              <td><span class="badge bg-label-{{ ($item->order?->order_status ?? '') == 'Delivered' ? 'success' : 'primary' }}">{{ $item->order?->order_status ? ucfirst($item->order->order_status) : 'N/A' }}</span></td>
+              <td><span class="text-primary fw-medium">${{ number_format($order->total_amount, 2) }}</span></td>
+              <td>
+                @php
+                  $statusColors = [
+                    'completed' => 'success',
+                    'pending' => 'warning',
+                    'processing' => 'info',
+                    'cancelled' => 'danger'
+                  ];
+                  $status = $order->order_status ?? 'pending';
+                  $badgeColor = $statusColors[$status] ?? 'primary';
+                @endphp
+                <span class="badge bg-label-{{ $badgeColor }}">{{ ucfirst($status) }}</span>
+              </td>
               <td>
                 <div class="dropdown">
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                       class="icon-base bx bx-dots-vertical-rounded"></i></button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ route('app-ecommerce-order-details', $item->order_id) }}"><i class="icon-base bx bx-show me-1"></i>
-                      View Details</a>
+                    <a class="dropdown-item" href="{{ route('app-ecommerce-order-details', $order->id) }}"><i class="icon-base bx bx-show me-1"></i>
+                      {{ __('View Details') }}</a>
                   </div>
                 </div>
               </td>
             </tr>
             @endforeach
+            @if(count($recentOrders) === 0)
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">{{ __('No recent orders found.') }}</td>
+            </tr>
+            @endif
           </tbody>
         </table>
       </div>
@@ -496,16 +513,16 @@
   <div class="col-lg-5 col-xxl-4">
     <div class="card h-100">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="card-title m-0 me-2">Total Balance</h5>
+        <h5 class="card-title m-0 me-2">{{ __('Total Balance') }}</h5>
         <div class="dropdown">
           <button class="btn p-0" type="button" id="totalBalance" data-bs-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
             <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalBalance">
-            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last 28 Days') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Month') }}</a>
+            <a class="dropdown-item" href="javascript:void(0);">{{ __('Last Year') }}</a>
           </div>
         </div>
       </div>
@@ -517,8 +534,8 @@
                   class="icon-base bx bx-wallet icon-lg text-warning"></i></span>
             </div>
             <div>
-              <h6 class="mb-0">$2.54k</h6>
-              <small>Wallet</small>
+              <h6 class="mb-0">${{ number_format($walletBalance / 1000, 2) }}k</h6>
+              <small>{{ __('Wallet') }}</small>
             </div>
           </div>
           <div class="col d-flex">
@@ -527,8 +544,8 @@
                   class="icon-base bx bx-dollar icon-lg text-secondary"></i></span>
             </div>
             <div>
-              <h6 class="mb-0">$4.2k</h6>
-              <small>Paypal</small>
+              <h6 class="mb-0">${{ number_format($paypalBalance / 1000, 2) }}k</h6>
+              <small>{{ __('Paypal') }}</small>
             </div>
           </div>
         </div>
@@ -537,7 +554,7 @@
       <hr class="m-0" />
       <div class="card-footer">
         <div class="d-flex justify-content-between">
-          <small class="text-body">You have done 57.6% more sales.<br />Check your new badge in your profile.</small>
+          <small class="text-body">{{ __('You have done 57.6% more sales.') }}<br />{{ __('Check your new badge in your profile.') }}</small>
           <div>
             <span class="badge bg-label-warning rounded-2 p-2"><i
                 class="icon-base bx bx-chevron-right icon-md text-warning"></i></span>

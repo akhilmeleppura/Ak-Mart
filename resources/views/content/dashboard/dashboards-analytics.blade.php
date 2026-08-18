@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('layouts/layoutMaster')
 
-@section('title', __('Dashboard - Analytics'))
+@section('title', __('Dashboard - Analytics') . ' — AK-Mart')
 
 @section('vendor-style')
 @vite(['resources/assets/vendor/libs/apex-charts/apex-charts.scss', 'resources/assets/vendor/fonts/flag-icons.scss'])
@@ -404,7 +404,7 @@ $configData = Helper::appClasses();
             <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
               <div class="me-2">
                 <small class="d-block">{{ __('Wallet') }}</small>
-                <h6 class="fw-normal mb-0">{{ __('Starbucks') }}</h6>
+                <h6 class="fw-normal mb-0">Starbucks</h6>
               </div>
               <div class="user-progress d-flex align-items-center gap-2">
                 <h6 class="fw-normal mb-0">+270.69</h6>
@@ -449,7 +449,7 @@ $configData = Helper::appClasses();
             <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
               <div class="me-2">
                 <small class="d-block">{{ __('Wallet') }}</small>
-                <h6 class="fw-normal mb-0">{{ __('Starbucks') }}</h6>
+                <h6 class="fw-normal mb-0">Starbucks</h6>
               </div>
               <div class="user-progress d-flex align-items-center gap-2">
                 <h6 class="fw-normal mb-0">+203.33</h6>

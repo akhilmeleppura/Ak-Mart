@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('layouts/layoutMaster')
 
-@section('title', __('Dashboard - CRM'))
+@section('title', __('CRM Dashboard') . ' — AK-Mart')
 
 @section('vendor-style')
 @vite([
@@ -227,7 +227,7 @@ $configData = Helper::appClasses();
                 </div>
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                   <div class="me-2">
-                    <h6 class="mb-0">Bluetooth Earphone</h6>
+                    <h6 class="mb-0">{{ __('Bluetooth Earphone') }}</h6>
                     <small class="d-block">Beats</small>
                   </div>
                   <div class="user-progress d-flex align-items-center gap-1">
@@ -289,7 +289,7 @@ $configData = Helper::appClasses();
                 </div>
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                   <div class="me-2">
-                    <h6 class="mb-0">Smart Watch</h6>
+                    <h6 class="mb-0">{{ __('Smart Watch') }}</h6>
                     <small class="d-block">Fitbit</small>
                   </div>
                   <div class="user-progress d-flex align-items-center gap-1">
@@ -317,7 +317,7 @@ $configData = Helper::appClasses();
                 </div>
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                   <div class="me-2">
-                    <h6 class="mb-0">Wireless Headphone</h6>
+                    <h6 class="mb-0">{{ __('Wireless Headphone') }}</h6>
                     <small class="d-block">Sony</small>
                   </div>
                   <div class="user-progress d-flex align-items-center gap-1">
