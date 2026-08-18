@@ -227,4 +227,96 @@ class AIProductToolsController extends Controller
             ] : ($categories->first() ? ['id' => $categories->first()->id, 'name' => $categories->first()->name] : null),
         ]);
     }
+
+    /**
+     * Multilingual AI Copilot Chat Endpoint.
+     */
+    public function copilotChat(Request $request)
+    {
+        $prompt = trim($request->input('prompt', ''));
+        $locale = $request->input('locale') ?: app()->getLocale() ?: 'en';
+        app()->setLocale($locale);
+
+        if (empty($prompt)) {
+            return response()->json(['success' => false, 'message' => 'Prompt cannot be empty.'], 422);
+        }
+
+        $apiKey = StoreSetting::get('gemini_api_key') ?: env('GEMINI_API_KEY');
+        $aiMode = StoreSetting::get('ai_mode', 'gemini');
+        $assistantName = StoreSetting::get('assistant_name', 'Ak-Mart AI');
+
+        // Check if Gemini API is live
+        if ($apiKey && $aiMode !== 'manual') {
+            try {
+                $langInstruction = match($locale) {
+                    'ml' => 'Always answer in Malayalam language (മലയാളത്തിൽ മറുപടി നൽകുക).',
+                    'hi' => 'Always answer in Hindi language (हिन्दी में उत्तर दें).',
+                    'ar' => 'Always answer in Arabic language (يرجى الرد باللغة العربية).',
+                    'fr' => 'Always answer in French language (Répondez en français).',
+                    'de' => 'Always answer in German language (Antworten Sie auf Deutsch).',
+                    default => 'Answer in English.',
+                };
+
+                $systemContext = "You are {$assistantName}, the AI assistant and e-commerce business advisor for AK-Mart. {$langInstruction} Provide concise, actionable, professional store management insights.";
+
+                $res = Http::timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}", [
+                    'contents' => [
+                        ['role' => 'user', 'parts' => [['text' => "{$systemContext}\n\nUser Question: {$prompt}"]]]
+                    ],
+                    'generationConfig' => ['temperature' => 0.6, 'maxOutputTokens' => 512]
+                ]);
+
+                if ($res->successful()) {
+                    $aiText = $res->json()['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                    if ($aiText) {
+                        return response()->json(['success' => true, 'response' => trim($aiText)]);
+                    }
+                }
+            } catch (\Exception $e) {
+                // Fallback to intelligent localized responder
+            }
+        }
+
+        // Multilingual Deterministic E-Commerce Assistant
+        $lowerPrompt = strtolower($prompt);
+        $totalProducts = Product::count();
+        $totalCategories = Category::count();
+
+        if ($locale === 'ml') {
+            if (str_contains($lowerPrompt, 'stock') || str_contains($lowerPrompt, 'inventory') || str_contains($lowerPrompt, 'സ്റ്റോക്ക്')) {
+                $response = "📊 **സ്റ്റോക്ക് റിപ്പോർട്ട്**: നിങ്ങളുടെ സ്റ്റോറിൽ ആകെ **{$totalProducts}** ഉൽപ്പന്നങ്ങളുണ്ട്. കുറഞ്ഞ സ്റ്റോക്കുള്ള ഉൽപ്പന്നങ്ങൾ പരിശോധിക്കാൻ **സ്റ്റോക്കും ഇൻവെന്ററിയും** സന്ദർശിക്കുക.";
+            } elseif (str_contains($lowerPrompt, 'order') || str_contains($lowerPrompt, 'sales') || str_contains($lowerPrompt, 'ഓർഡർ') || str_contains($lowerPrompt, 'വിൽപ്പന')) {
+                $response = "🛒 **വിൽപ്പന വിവരങ്ങൾ**: നിങ്ങളുടെ ഓർഡറുകളും ഫുൾഫിൽമെന്റും പരിശോധിക്കാൻ **ഓർഡർ പട്ടിക** അല്ലെങ്കിൽ **ഇ-കൊമേഴ്‌സ് അനലിറ്റിക്സ്** ഡാഷ്‌ബോർഡ് പരിശോധിക്കുക.";
+            } elseif (str_contains($lowerPrompt, 'category') || str_contains($lowerPrompt, 'വിഭാഗം')) {
+                $response = "🗂️ **വിഭാഗങ്ങൾ**: നിങ്ങളുടെ സ്റ്റോറിൽ നിലവിൽ **{$totalCategories}** വിഭാഗങ്ങളുണ്ട്. പുതിയ വിഭാഗങ്ങൾ ചേർക്കാൻ **വിഭാഗങ്ങളുടെ പട്ടിക** സന്ദർശിക്കുക.";
+            } else {
+                $response = "നമസ്കാരം! നിങ്ങളുടെ സ്റ്റോർ മാനേജ്മെന്റ്, ഉൽപ്പന്നങ്ങൾ, കാറ്റലോഗ്, അല്ലെങ്കിൽ ഓർഡർ വിശകലനം എന്നിവയിൽ എന്നോട് എന്ത് വേണമെങ്കിലും ചോദിക്കാം.";
+            }
+        } elseif ($locale === 'hi') {
+            if (str_contains($lowerPrompt, 'stock') || str_contains($lowerPrompt, 'inventory')) {
+                $response = "📊 **स्टॉक रिपोर्ट**: आपके स्टोर में कुल **{$totalProducts}** उत्पाद सक्रिय हैं। कम स्टॉक जांचने के लिए **स्टॉक और इन्वेंटरी** मेनू देखें।";
+            } else {
+                $response = "नमस्ते! मैं आपका AK-Mart AI सहायक हूँ। स्टोर प्रबंधन, उत्पाद या ऑर्डर के बारे में आप कुछ भी पूछ सकते हैं।";
+            }
+        } elseif ($locale === 'ar') {
+            $response = "مرحباً! أنا مساعد AK-Mart الذكي. كيف يمكنني مساعدتك في إدارة متجرك الإلكتروني وتحليل المنتجات اليوم؟";
+        } elseif ($locale === 'fr') {
+            $response = "Bonjour ! Je suis votre assistant AK-Mart AI. Comment puis-je vous aider à gérer et optimiser votre boutique aujourd'hui ?";
+        } elseif ($locale === 'de') {
+            $response = "Hallo! Ich bin Ihr AK-Mart AI-Assistent. Wie kann ich Ihnen heute bei der Verwaltung und Optimierung Ihres Online-Shops helfen?";
+        } else {
+            if (str_contains($lowerPrompt, 'stock') || str_contains($lowerPrompt, 'inventory')) {
+                $response = "📊 **Stock Report**: Your store currently tracks **{$totalProducts}** catalog products across **{$totalCategories}** categories. You can review low stock alerts in the **Inventory & Stock** module.";
+            } elseif (str_contains($lowerPrompt, 'order') || str_contains($lowerPrompt, 'sales')) {
+                $response = "🛒 **Sales Overview**: Recent orders and shipments are synchronized. Head over to **Order List** or **eCommerce Analytics** for real-time order breakdowns.";
+            } else {
+                $response = "Hello! I am **{$assistantName}**. You can ask me about product optimization, warehouse inventory, order trends, marketing campaigns, or catalog health diagnostics.";
+            }
+        }
+
+        return response()->json([
+            'success'  => true,
+            'response' => $response,
+        ]);
+    }
 }

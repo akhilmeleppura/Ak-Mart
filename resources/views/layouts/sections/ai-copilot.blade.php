@@ -43,7 +43,7 @@
             <div>
                 <h6 class="m-0 text-white fw-bold">{{ $assistantName }}</h6>
                 <small class="text-white-50 d-flex align-items-center gap-1 fs-tiny">
-                    <span class="badge badge-dot bg-success"></span> Online Assistant
+                    <span class="badge badge-dot bg-success"></span> {{ __('Online Assistant') }}
                 </small>
             </div>
         </div>
@@ -57,13 +57,13 @@
                 <i class="bx bx-bot"></i>
             </div>
             <div class="p-3 rounded-3 bg-white shadow-sm border border-light text-dark" style="font-size: 0.875rem;">
-                Hello! I am <strong>{{ $assistantName }}</strong>, your advanced eCommerce Business Copilot. How can I help you manage, analyze, and optimize your business today?
+                {{ __('Hello! I am') }} <strong>{{ $assistantName }}</strong>{{ __(', your advanced eCommerce Business Copilot. How can I help you manage, analyze, and optimize your business today?') }}
             </div>
         </div>
     </div>
     
     <div class="card-footer p-3 bg-white border-top d-flex align-items-center gap-2">
-        <textarea class="form-control border-0 p-2 scrollbar-hidden" id="aiCopilotInput" rows="1" placeholder="Ask your copilot anything..." style="resize: none; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;"></textarea>
+        <textarea class="form-control border-0 p-2 scrollbar-hidden" id="aiCopilotInput" rows="1" placeholder="{{ __('Ask your copilot anything...') }}" style="resize: none; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;"></textarea>
         <button class="btn btn-icon btn-primary d-flex align-items-center justify-content-center rounded-circle" id="aiCopilotSend" style="width: 40px; height: 40px; background: #696cff; border: none; transition: transform 0.2s;">
             <i class="bx bx-paper-plane fs-5 text-white"></i>
         </button>
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         typingDiv.innerHTML = `
             <div class="avatar avatar-xs rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.75rem;"><i class="bx bx-bot"></i></div>
             <div class="p-3 rounded-3 bg-white shadow-sm border border-light text-muted" style="font-size: 0.875rem;">
-                <span class="spinner-border spinner-border-sm text-primary me-2" role="status"></span> Analyzing business metrics...
+                <span class="spinner-border spinner-border-sm text-primary me-2" role="status"></span> {{ __('Analyzing business metrics...') }}
             </div>
         `;
         chatBody.appendChild(typingDiv);
@@ -141,7 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({ prompt: query })
+                body: JSON.stringify({
+                    prompt: query,
+                    locale: '{{ app()->getLocale() }}'
+                })
             });
 
             const data = await response.json();

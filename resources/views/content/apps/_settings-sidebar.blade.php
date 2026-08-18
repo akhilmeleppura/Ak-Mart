@@ -86,11 +86,11 @@ $settingsLinks = [
         <i class="icon-base bx bx-slider-alt fs-5"></i>
       </div>
       <div>
-        <h6 class="mb-0 fw-bold text-heading" style="font-size: 0.95rem;">Settings Menu</h6>
-        <small class="text-muted fs-tiny">Store Configuration</small>
+        <h6 class="mb-0 fw-bold text-heading" style="font-size: 0.95rem;">{{ __('Settings Menu') }}</h6>
+        <small class="text-muted fs-tiny">{{ __('Store Configuration') }}</small>
       </div>
     </div>
-    <span class="badge bg-label-primary rounded-pill px-2.5 py-1 fs-tiny fw-semibold">{{ count($settingsLinks) }} Sections</span>
+    <span class="badge bg-label-primary rounded-pill px-2.5 py-1 fs-tiny fw-semibold">{{ count($settingsLinks) }} {{ __('Sections') }}</span>
   </div>
 
   <div class="card-body p-2 p-md-3">
@@ -106,8 +106,8 @@ $settingsLinks = [
               <i class="icon-base {{ $item['icon'] }} fs-5"></i>
             </span>
             <div>
-              <span class="d-block fw-semibold {{ $isActive ? 'text-white' : 'text-heading' }}" style="font-size: 0.88rem;">{{ $item['title'] }}</span>
-              <small class="d-block {{ $isActive ? 'text-white-75' : 'text-muted' }}" style="font-size: 0.75rem;">{{ $item['subtitle'] }}</small>
+              <span class="d-block fw-semibold {{ $isActive ? 'text-white' : 'text-heading' }}" style="font-size: 0.88rem;">{{ __($item['title']) }}</span>
+              <small class="d-block {{ $isActive ? 'text-white-75' : 'text-muted' }}" style="font-size: 0.75rem;">{{ __($item['subtitle']) }}</small>
             </div>
           </div>
           <i class="icon-base bx bx-chevron-right fs-5 {{ $isActive ? 'text-white' : 'text-muted opacity-50 settings-chevron' }}"></i>

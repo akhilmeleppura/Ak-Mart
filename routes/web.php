@@ -443,6 +443,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/apps/ai-copilot', [AISettingsController::class, 'index'])->name('app-ai-copilot');
     Route::post('/settings/ai/save', [AISettingsController::class, 'store'])->name('app-ecommerce-settings-ai-save');
     Route::post('/app/ecommerce/settings/ai/save', [AISettingsController::class, 'store']);
+    Route::post('/api/ai/copilot-chat', [\App\Http\Controllers\apps\AIProductToolsController::class, 'copilotChat'])->name('app-ai-copilot-chat');
+    Route::post('/api/ai/generate-content', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent'])->name('app-ai-generate-content');
+    Route::post('/api/ai/quality-score', [\App\Http\Controllers\apps\AIProductToolsController::class, 'calculateQualityScore'])->name('app-ai-quality-score');
+    Route::post('/api/ai/extract-attributes', [\App\Http\Controllers\apps\AIProductToolsController::class, 'extractAttributes'])->name('app-ai-extract-attributes');
+    Route::post('/api/ai/suggest-category', [\App\Http\Controllers\apps\AIProductToolsController::class, 'suggestCategory'])->name('app-ai-suggest-category');
 
     // Branding & Logo Settings
     Route::get('/settings/branding', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'index'])->name('app-ecommerce-settings-branding');
