@@ -37,7 +37,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # 8. Build frontend Vite assets
-RUN npm install && npm run build
+RUN npm install --legacy-peer-deps && npm run build
 
 # 9. Set permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
