@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Vendor Wallet & Payouts')
+@section('title', __('Wallet & Payouts'))
 
 @section('content')
 <div class="row">
@@ -11,7 +11,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-success p-2 me-3"><i class="bx bx-wallet bx-md"></i></div>
         <div>
-          <small class="text-muted">Available Balance</small>
+          <small class="text-muted">{{ __('Available Balance') }}</small>
           <h4 class="mb-0 text-success">${{ number_format($wallet->available_balance, 2) }}</h4>
         </div>
       </div>
@@ -22,7 +22,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-warning p-2 me-3"><i class="bx bx-time bx-md"></i></div>
         <div>
-          <small class="text-muted">Pending Clearance</small>
+          <small class="text-muted">{{ __('Pending Clearance') }}</small>
           <h4 class="mb-0 text-warning">${{ number_format($wallet->pending_balance, 2) }}</h4>
         </div>
       </div>
@@ -33,7 +33,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-primary p-2 me-3"><i class="bx bx-trending-up bx-md"></i></div>
         <div>
-          <small class="text-muted">Total Earned</small>
+          <small class="text-muted">{{ __('Total Earned') }}</small>
           <h4 class="mb-0">${{ number_format($wallet->total_earned, 2) }}</h4>
         </div>
       </div>
@@ -44,7 +44,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-info p-2 me-3"><i class="bx bx-transfer bx-md"></i></div>
         <div>
-          <small class="text-muted">Total Withdrawn</small>
+          <small class="text-muted">{{ __('Total Withdrawn') }}</small>
           <h4 class="mb-0">${{ number_format($wallet->total_withdrawn, 2) }}</h4>
         </div>
       </div>
@@ -57,7 +57,7 @@
     <div class="alert alert-warning d-flex align-items-center">
       <i class="bx bx-shield-x bx-md me-3"></i>
       <div>
-        <strong>KYC Verification Required</strong> — Your account has not been verified yet. You cannot request payouts until an admin verifies your identity. Please contact support.
+        <strong>{{ __('KYC Verification Required') }}</strong> — {{ __('Your account has not been verified yet. You cannot request payouts until an admin verifies your identity. Please contact support.') }}
       </div>
     </div>
   </div>
@@ -67,33 +67,33 @@
   <div class="col-12 col-lg-5 mb-6">
     <div class="card h-100">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Request Payout</h5>
+        <h5 class="card-title mb-0">{{ __('Request Payout') }}</h5>
       </div>
       <div class="card-body">
         @if(!$wallet->kyc_verified)
-          <p class="text-muted text-center py-4">KYC verification pending. Payouts locked.</p>
+          <p class="text-muted text-center py-4">{{ __('KYC verification pending. Payouts locked.') }}</p>
         @else
         <form id="payoutForm">
           @csrf
           <div class="mb-4">
-            <label class="form-label">Amount (USD)</label>
+            <label class="form-label">{{ __('Amount (USD)') }}</label>
             <div class="input-group">
               <span class="input-group-text">$</span>
               <input type="number" id="payoutAmount" name="amount" class="form-control" min="10" step="0.01"
                 placeholder="Min. $10.00" max="{{ $wallet->available_balance }}">
             </div>
-            <div class="form-text">Available: <strong>${{ number_format($wallet->available_balance, 2) }}</strong></div>
+            <div class="form-text">{{ __('Available:') }} <strong>${{ number_format($wallet->available_balance, 2) }}</strong></div>
           </div>
           <div class="mb-4">
-            <label class="form-label">Payout Method</label>
+            <label class="form-label">{{ __('Payout Method') }}</label>
             <select name="payout_method" class="form-select">
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="paypal">PayPal</option>
-              <option value="upi">UPI</option>
+              <option value="bank_transfer">{{ __('Bank Transfer') }}</option>
+              <option value="paypal">{{ __('PayPal') }}</option>
+              <option value="upi">{{ __('UPI') }}</option>
             </select>
           </div>
           <button type="submit" class="btn btn-primary w-100" id="payoutBtn">
-            <i class="bx bx-money-withdraw me-1"></i> Request Payout
+            <i class="bx bx-money-withdraw me-1"></i> {{ __('Request Payout') }}
           </button>
         </form>
         @endif
@@ -105,18 +105,18 @@
   <div class="col-12 col-lg-7 mb-6">
     <div class="card h-100">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Payout History</h5>
+        <h5 class="card-title mb-0">{{ __('Payout History') }}</h5>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Status</th>
-                <th>Ref</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Amount') }}</th>
+                <th>{{ __('Method') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Ref') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="5" class="text-center text-muted py-5">No payout requests yet.</td>
+                <td colspan="5" class="text-center text-muted py-5">{{ __('No payout requests yet.') }}</td>
               </tr>
               @endforelse
             </tbody>
@@ -150,19 +150,19 @@
   <div class="col-12">
     <div class="card">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Recent Order Commissions</h5>
+        <h5 class="card-title mb-0">{{ __('Recent Order Commissions') }}</h5>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th>Date</th>
-                <th>Order</th>
-                <th>Order Total</th>
-                <th>Platform Fee</th>
-                <th>Your Earning</th>
-                <th>Status</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Order') }}</th>
+                <th>{{ __('Order Total') }}</th>
+                <th>{{ __('Platform Fee') }}</th>
+                <th>{{ __('Your Earning') }}</th>
+                <th>{{ __('Status') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -186,7 +186,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="6" class="text-center text-muted py-5">No transactions yet. Complete an order to see earnings.</td>
+                <td colspan="6" class="text-center text-muted py-5">{{ __('No transactions yet. Complete an order to see earnings.') }}</td>
               </tr>
               @endforelse
             </tbody>
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     const btn = document.getElementById('payoutBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ' + @json(__('Processing...'));
 
     const formData = new FormData(this);
 
@@ -217,14 +217,13 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(r => r.json())
     .then(data => {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: data.success ? 'success' : 'error',
-          title: data.success ? 'Payout Requested' : 'Request Failed',
-          text: data.message,
-          timer: 2000,
-          showConfirmButton: !data.success
-        }).then(() => { if (data.success) location.reload(); });
+      if (typeof window.AKNotify !== 'undefined') {
+        if (data.success) {
+          AKNotify.success(data.message, @json(__('Success')));
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          AKNotify.error(data.message, @json(__('Error')));
+        }
       } else {
         alert(data.message);
         if (data.success) location.reload();
@@ -232,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!data.success) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bx bx-money-withdraw me-1"></i> Request Payout';
+        btn.innerHTML = '<i class="bx bx-money-withdraw me-1"></i> ' + @json(__('Request Payout'));
       }
     });
   });

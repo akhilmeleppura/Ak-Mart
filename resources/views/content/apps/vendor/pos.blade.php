@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'POS Quick Sale Terminal — AK-Mart')
+@section('title', __('POS Quick Sale Terminal') . ' — AK-Mart')
 
 @section('vendor-style')
 <style>
@@ -215,17 +215,44 @@
 let cart = [];
 let heldSales = [];
 
+const i18n = {
+    cartEmpty: @json(__('Cart is empty.<br>Scan barcode or click items to add.')),
+    stockLimit: @json(__('Stock Limit Reached')),
+    outOfStock: @json(__('Out of Stock')),
+    outOfStockMsg: @json(__('This product is out of stock.')),
+    subtotal: @json(__('Subtotal')),
+    discount: @json(__('Discount')),
+    tax: @json(__('Tax')),
+    total: @json(__('TOTAL:')),
+    cashier: @json(__('Cashier')),
+    customer: @json(__('Customer')),
+    paymentMethod: @json(__('Payment Method:')),
+    thankYou: @json(__('Thank you for shopping at AK-Mart!<br>Visit us again.')),
+    completeSaleTitle: @json(__('Complete POS Sale?')),
+    confirmSaleBtn: @json(__('Yes, Complete Sale')),
+    saleHeldTitle: @json(__('Sale Held')),
+    saleHeldMsg: @json(__('Current sale saved to held orders.')),
+    noHeldSales: @json(__('No held sales in queue.')),
+    notice: @json(__('Notice')),
+    error: @json(__('Error'))
+};
+
 function addToCart(id, name, price, maxStock) {
     const existing = cart.find(i => i.id === id);
     if (existing) {
         if (existing.qty < maxStock) {
             existing.qty++;
         } else {
-            Swal.fire({ icon: 'warning', title: 'Stock Limit Reached', text: `Only ${maxStock} units in stock.`, timer: 1200, showConfirmButton: false });
+            if (typeof window.AKNotify !== 'undefined') {
+                AKNotify.warning(i18n.stockLimit, i18n.notice);
+            }
         }
     } else {
         if (maxStock <= 0) {
-            return Swal.fire({ icon: 'error', title: 'Out of Stock', text: 'This product is out of stock.', timer: 1200, showConfirmButton: false });
+            if (typeof window.AKNotify !== 'undefined') {
+                AKNotify.error(i18n.outOfStockMsg, i18n.outOfStock);
+            }
+            return;
         }
         cart.push({ id, name, price: parseFloat(price), qty: 1, maxStock });
     }
@@ -241,7 +268,9 @@ function updateQty(index, delta) {
             cart[index].qty = newQty;
             renderCart();
         } else {
-            Swal.fire({ icon: 'warning', title: 'Stock Limit', text: `Maximum available is ${cart[index].maxStock}.`, timer: 1200, showConfirmButton: false });
+            if (typeof window.AKNotify !== 'undefined') {
+                AKNotify.warning(i18n.stockLimit, i18n.notice);
+            }
         }
     }
 }
@@ -265,7 +294,7 @@ function renderCart() {
         list.innerHTML = `
             <li class="list-group-item text-center py-5 text-muted border-0">
                 <i class="bx bx-cart fs-1 opacity-25 d-block mb-2"></i>
-                Cart is empty.<br>Scan barcode or click items to add.
+                ${i18n.cartEmpty}
             </li>
         `;
     } else {
@@ -276,7 +305,7 @@ function renderCart() {
                 <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
                     <div class="me-2 text-truncate" style="max-width: 140px;">
                         <span class="small fw-bold text-heading d-block text-truncate">${item.name}</span>
-                        <small class="text-muted">$${item.price.toFixed(2)} ea</small>
+                        <small class="text-muted">$${item.price.toFixed(2)}</small>
                     </div>
                     <div class="d-flex align-items-center gap-1">
                         <button class="btn btn-outline-secondary btn-xs qty-btn" onclick="updateQty(${index}, -1)">-</button>
@@ -304,7 +333,10 @@ function renderCart() {
 
 function checkout(method) {
     if (cart.length === 0) {
-        return Swal.fire({ icon: 'warning', title: 'Cart is empty', text: 'Please add items before checking out.' });
+        if (typeof window.AKNotify !== 'undefined') {
+            AKNotify.warning(i18n.cartEmpty.replace('<br>', ' '), i18n.notice);
+        }
+        return;
     }
 
     const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
@@ -315,43 +347,37 @@ function checkout(method) {
     const total = afterDiscount + taxAmount;
     const customerId = document.getElementById('pos-customer-select').value || null;
 
-    Swal.fire({
-        title: 'Complete POS Sale?',
-        text: `Total: $${total.toFixed(2)} via ${method.toUpperCase()}`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Complete Sale'
-    }).then((res) => {
-        if (res.isConfirmed) {
-            fetch('{{ route("app-vendor-pos-checkout") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    items: cart,
-                    subtotal: subtotal,
-                    discount_amount: discountVal,
-                    tax_amount: taxAmount,
-                    total: total,
-                    payment_method: method,
-                    customer_id: customerId
-                })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showReceipt(data.receipt);
-                    clearCart();
-                } else {
-                    Swal.fire('Error', data.message || 'Checkout failed', 'error');
-                }
-            })
-            .catch(err => {
-                Swal.fire('Error', 'Server connection error', 'error');
-            });
+    fetch('{{ route("app-vendor-pos-checkout") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            items: cart,
+            subtotal: subtotal,
+            discount_amount: discountVal,
+            tax_amount: taxAmount,
+            total: total,
+            payment_method: method,
+            customer_id: customerId
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showReceipt(data.receipt);
+            clearCart();
+        } else {
+            if (typeof window.AKNotify !== 'undefined') {
+                AKNotify.error(data.message || 'Checkout failed', i18n.error);
+            }
+        }
+    })
+    .catch(err => {
+        if (typeof window.AKNotify !== 'undefined') {
+            AKNotify.error('Server connection error', i18n.error);
         }
     });
 }
@@ -368,24 +394,24 @@ function showReceipt(rc) {
             <small class="text-muted">Smart Retail In-Store Receipt</small>
             <div class="small fw-semibold text-primary mt-1">#${rc.order_number}</div>
             <div class="small text-muted">${rc.date}</div>
-            <div class="small text-muted">Cashier: ${rc.cashier} • Customer: ${rc.customer}</div>
+            <div class="small text-muted">${i18n.cashier}: ${rc.cashier} • ${i18n.customer}: ${rc.customer}</div>
         </div>
         <hr class="my-2">
         ${itemsHtml}
         <hr class="my-2">
-        <div class="d-flex justify-content-between small"><span>Subtotal:</span><span>$${rc.subtotal}</span></div>
-        <div class="d-flex justify-content-between small text-danger"><span>Discount:</span><span>-$${rc.discount}</span></div>
-        <div class="d-flex justify-content-between small"><span>Tax:</span><span>$${rc.tax}</span></div>
+        <div class="d-flex justify-content-between small"><span>${i18n.subtotal}:</span><span>$${rc.subtotal}</span></div>
+        <div class="d-flex justify-content-between small text-danger"><span>${i18n.discount}:</span><span>-$${rc.discount}</span></div>
+        <div class="d-flex justify-content-between small"><span>${i18n.tax}:</span><span>$${rc.tax}</span></div>
         <div class="d-flex justify-content-between fw-bold fs-6 border-top pt-2 mt-1">
-            <span>TOTAL:</span>
+            <span>${i18n.total}</span>
             <span class="text-primary">$${rc.total}</span>
         </div>
         <div class="d-flex justify-content-between small text-muted mt-1">
-            <span>Payment Method:</span>
+            <span>${i18n.paymentMethod}</span>
             <span>${rc.payment_method}</span>
         </div>
         <div class="text-center mt-3 pt-2 border-top small text-muted">
-            Thank you for shopping at AK-Mart!<br>Visit us again.
+            ${i18n.thankYou}
         </div>
     `;
 
@@ -395,15 +421,27 @@ function showReceipt(rc) {
 }
 
 function holdCurrentSale() {
-    if (cart.length === 0) return Swal.fire('Notice', 'Cart is empty, nothing to hold.', 'info');
+    if (cart.length === 0) {
+        if (typeof window.AKNotify !== 'undefined') {
+            AKNotify.info(i18n.noHeldSales, i18n.notice);
+        }
+        return;
+    }
     heldSales.push([...cart]);
     clearCart();
     document.getElementById('held-count').innerText = heldSales.length;
-    Swal.fire({ icon: 'success', title: 'Sale Held', text: 'Current sale saved to held orders.', timer: 1200, showConfirmButton: false });
+    if (typeof window.AKNotify !== 'undefined') {
+        AKNotify.success(i18n.saleHeldMsg, i18n.saleHeldTitle);
+    }
 }
 
 function resumeHeldSale() {
-    if (heldSales.length === 0) return Swal.fire('Notice', 'No held sales in queue.', 'info');
+    if (heldSales.length === 0) {
+        if (typeof window.AKNotify !== 'undefined') {
+            AKNotify.info(i18n.noHeldSales, i18n.notice);
+        }
+        return;
+    }
     cart = heldSales.pop();
     document.getElementById('held-count').innerText = heldSales.length;
     renderCart();
@@ -422,7 +460,6 @@ function filterCategory(catId) {
     });
 }
 
-// Live Barcode Input Listener
 document.getElementById('barcode-search').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         const val = this.value.trim();
@@ -435,7 +472,9 @@ document.getElementById('barcode-search').addEventListener('keypress', function(
             if (data.success) {
                 addToCart(data.product.id, data.product.name, data.product.price, data.product.qty);
             } else {
-                Swal.fire({ icon: 'warning', title: 'Not Found', text: `Product "${val}" not recognized.`, timer: 1200, showConfirmButton: false });
+                if (typeof window.AKNotify !== 'undefined') {
+                    AKNotify.warning(`Product "${val}" not recognized.`, i18n.notice);
+                }
             }
         });
     }

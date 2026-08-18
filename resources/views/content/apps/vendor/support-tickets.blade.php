@@ -1,26 +1,26 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Support Tickets - Vendor')
+@section('title', __('Support Tickets') . ' - ' . __('Vendor'))
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Customer Support Tickets</h5>
+                <h5 class="card-title mb-0">{{ __('Customer Support Tickets') }}</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>Ticket ID</th>
-                                <th>Subject</th>
-                                <th>Customer</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Last Update</th>
-                                <th>Actions</th>
+                                <th>{{ __('Ticket ID') }}</th>
+                                <th>{{ __('Subject') }}</th>
+                                <th>{{ __('Customer') }}</th>
+                                <th>{{ __('Priority') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Last Update') }}</th>
+                                <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +58,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-6 text-muted">No support tickets found.</td>
+                                    <td colspan="7" class="text-center py-6 text-muted">{{ __('No support tickets found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

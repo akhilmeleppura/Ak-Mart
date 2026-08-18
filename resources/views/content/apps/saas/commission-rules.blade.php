@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Commission Rules - Super Admin')
+@section('title', __('Commission Rules') . ' — AK-Mart')
 
 @section('vendor-style')
 @vite([
@@ -27,15 +27,15 @@
     <div class="card mb-6">
       <div class="card-header d-flex justify-content-between align-items-center border-bottom pb-4">
         <div>
-          <h5 class="card-title mb-1">Commission Rules</h5>
-          <p class="text-muted mb-0 small">Define platform fees applied to vendor sales.</p>
+          <h5 class="card-title mb-1">{{ __('Commission Rules') }}</h5>
+          <p class="text-muted mb-0 small">{{ __('Define platform fees applied to vendor sales.') }}</p>
         </div>
         <div class="d-flex align-items-center gap-3">
             <div class="w-px-250">
-                <input type="text" class="form-control date-picker" placeholder="Filter by Date Range" id="dateRange" />
+                <input type="text" class="form-control date-picker" placeholder="{{ __('Filter by Date Range') }}" id="dateRange" />
             </div>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRuleModal">
-              <i class="bx bx-plus me-1"></i> Add Rule
+              <i class="bx bx-plus me-1"></i> {{ __('Add Rule') }}
             </button>
         </div>
       </div>
@@ -44,12 +44,12 @@
           <thead>
             <tr>
               <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Value</th>
-              <th>Scope</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{{ __('Name') }}</th>
+              <th>{{ __('Type') }}</th>
+              <th>{{ __('Value') }}</th>
+              <th>{{ __('Scope') }}</th>
+              <th>{{ __('Status') }}</th>
+              <th>{{ __('Actions') }}</th>
             </tr>
           </thead>
         </table>
@@ -64,11 +64,11 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center border-bottom pb-4">
         <div>
-          <h5 class="card-title mb-1">Volume-Based Tiers (Advanced)</h5>
-          <p class="text-muted mb-0 small">Override base commission rules when a vendor's monthly sales hit thresholds.</p>
+          <h5 class="card-title mb-1">{{ __('Volume-Based Tiers (Advanced)') }}</h5>
+          <p class="text-muted mb-0 small">{{ __('Override base commission rules when a vendor\'s monthly sales hit thresholds.') }}</p>
         </div>
         <button type="button" class="btn btn-label-primary" data-bs-toggle="modal" data-bs-target="#addTierModal">
-          <i class="bx bx-layer-plus me-1"></i> Add Tier
+          <i class="bx bx-layer-plus me-1"></i> {{ __('Add Tier') }}
         </button>
       </div>
       <div class="card-body p-0">
@@ -76,11 +76,11 @@
           <table class="table table-hover align-middle">
             <thead class="table-light">
               <tr>
-                <th>Min Monthly Sales</th>
-                <th>Max Monthly Sales</th>
-                <th>Applied Percentage</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{{ __('Min Monthly Sales') }}</th>
+                <th>{{ __('Max Monthly Sales') }}</th>
+                <th>{{ __('Applied Percentage') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -89,7 +89,7 @@
                 <td><strong>${{ number_format($tier->min_amount, 2) }}</strong></td>
                 <td>{{ $tier->max_amount ? '$' . number_format($tier->max_amount, 2) : '∞' }}</td>
                 <td><span class="badge bg-label-success">{{ $tier->percentage }}%</span></td>
-                <td><span class="badge bg-label-primary">Active</span></td>
+                <td><span class="badge bg-label-primary">{{ __('Active') }}</span></td>
                 <td>
                   <button class="btn btn-sm btn-icon btn-label-danger btn-delete-tier" data-id="{{ $tier->id }}">
                     <i class="bx bx-trash"></i>
@@ -98,7 +98,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="5" class="text-center text-muted py-6">No volume tiers defined.</td>
+                <td colspan="5" class="text-center text-muted py-6">{{ __('No volume tiers defined.') }}</td>
               </tr>
               @endforelse
             </tbody>
@@ -114,7 +114,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Commission Tier</h5>
+        <h5 class="modal-title">{{ __('Add Commission Tier') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="addTierForm">
@@ -122,22 +122,22 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Min Sales Amount ($)</label>
+              <label class="form-label">{{ __('Min Sales Amount ($)') }}</label>
               <input type="number" name="min_amount" class="form-control" placeholder="0" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Max Sales Amount ($)</label>
-              <input type="number" name="max_amount" class="form-control" placeholder="Optional">
+              <label class="form-label">{{ __('Max Sales Amount ($)') }}</label>
+              <input type="number" name="max_amount" class="form-control" placeholder="{{ __('Optional') }}">
             </div>
             <div class="col-12">
-              <label class="form-label">Reward Commission (%)</label>
+              <label class="form-label">{{ __('Reward Commission (%)') }}</label>
               <input type="number" name="percentage" class="form-control" step="0.01" placeholder="e.g. 3.5" required>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Tier</button>
+          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ __('Save Tier') }}</button>
         </div>
       </form>
     </div>
@@ -149,40 +149,40 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Commission Rule</h5>
+        <h5 class="modal-title">{{ __('Add Commission Rule') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="addRuleForm">
         @csrf
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">Rule Name</label>
+            <label class="form-label">{{ __('Rule Name') }}</label>
             <input type="text" name="name" class="form-control" placeholder="e.g., Global 10% Fee" required>
           </div>
           <div class="row mb-3">
             <div class="col">
-              <label class="form-label">Type</label>
+              <label class="form-label">{{ __('Type') }}</label>
               <select name="type" class="form-select" required>
-                <option value="percentage">Percentage (%)</option>
-                <option value="flat">Flat Amount ($)</option>
+                <option value="percentage">{{ __('Percentage (%)') }}</option>
+                <option value="flat">{{ __('Flat Amount ($)') }}</option>
               </select>
             </div>
             <div class="col">
-              <label class="form-label">Value</label>
+              <label class="form-label">{{ __('Value') }}</label>
               <input type="number" name="value" class="form-control" step="0.01" min="0" placeholder="10.00" required>
             </div>
           </div>
           <div class="mb-3">
-            <label class="form-label">Scope</label>
+            <label class="form-label">{{ __('Scope') }}</label>
             <select name="scope" class="form-select" id="scopeSelect">
-              <option value="global">Global (All Vendors)</option>
-              <option value="category">Specific Category</option>
+              <option value="global">{{ __('Global (All Vendors)') }}</option>
+              <option value="category">{{ __('Specific Category') }}</option>
             </select>
           </div>
           <div class="mb-3 d-none" id="categoryField">
-            <label class="form-label">Category</label>
+            <label class="form-label">{{ __('Category') }}</label>
             <select name="category_id" class="form-select">
-              <option value="">Select Category</option>
+              <option value="">{{ __('Select Category') }}</option>
               @foreach($categories as $cat)
               <option value="{{ $cat->id }}">{{ $cat->name }}</option>
               @endforeach
@@ -191,8 +191,8 @@
           <input type="hidden" name="is_global" id="isGlobalInput" value="1">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Rule</button>
+          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ __('Save Rule') }}</button>
         </div>
       </form>
     </div>
@@ -250,28 +250,29 @@ document.addEventListener('DOMContentLoaded', function (e) {
         {
           targets: 4,
           render: function (data, type, full) {
-            if (data) return '<span class="badge bg-label-warning">Global</span>';
+            if (data) return '<span class="badge bg-label-warning">' + @json(__('Global')) + '</span>';
             if (full['branch']) return `<span class="badge bg-label-primary">Vendor: ${full['branch'].name}</span>`;
             if (full['category']) return `<span class="badge bg-label-secondary">Category: ${full['category'].name}</span>`;
-            return '<span class="badge bg-label-dark">Custom</span>';
+            return '<span class="badge bg-label-dark">' + @json(__('Custom')) + '</span>';
           }
         },
         {
           targets: 5,
           render: function (data) {
             const status = data ? 'success' : 'danger';
-            const label = data ? 'Active' : 'Inactive';
+            const label = data ? @json(__('Active')) : @json(__('Inactive'));
             return `<span class="badge bg-label-${status}">${label}</span>`;
           }
         },
         {
           targets: -1,
-          title: 'Actions',
+          title: @json(__('Actions')),
           searchable: false,
           orderable: false,
-          render: function (data) {
+          render: function (data, type, full) {
             return `
               <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-icon toggle-status" data-id="${data}"><i class="bx ${full['is_active'] ? 'bx-block' : 'bx-check'}"></i></button>
                 <button class="btn btn-sm btn-icon delete-record text-danger" data-id="${data}"><i class="bx bx-trash"></i></button>
               </div>`;
           }
@@ -283,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             features: [
                 {
                     search: {
-                        placeholder: 'Search Commission'
+                        placeholder: @json(__('Search Rule'))
                     }
                 }
             ]
@@ -295,12 +296,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
                         {
                             extend: 'collection',
                             className: 'btn btn-label-secondary dropdown-toggle',
-                            text: '<i class="bx bx-export me-1"></i> Export',
+                            text: '<i class="bx bx-export me-1"></i> ' + @json(__('Export')),
                             buttons: [
-                                { extend: 'print', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4, 5] } },
-                                { extend: 'csv', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4, 5] } },
-                                { extend: 'excel', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4, 5] } },
-                                { extend: 'pdf', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4, 5] } }
+                                { extend: 'print', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4] } },
+                                { extend: 'csv', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4] } },
+                                { extend: 'excel', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4] } },
+                                { extend: 'pdf', className: 'dropdown-item', exportOptions: { columns: [1, 2, 3, 4] } }
                             ]
                         }
                     ]
@@ -310,27 +311,155 @@ document.addEventListener('DOMContentLoaded', function (e) {
       }
     });
 
+    // Toggle Scope
+    $('#scopeSelect').on('change', function () {
+      if ($(this).val() === 'category') {
+        $('#categoryField').removeClass('d-none');
+        $('#isGlobalInput').val('0');
+      } else {
+        $('#categoryField').addClass('d-none');
+        $('#isGlobalInput').val('1');
+      }
+    });
+
+    // Submit Add Rule Form
+    $('#addRuleForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: `${baseUrl}app/saas/commission-rules`,
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function (res) {
+          $('#addRuleModal').modal('hide');
+          $('#addRuleForm')[0].reset();
+          dt_commissions.ajax.reload();
+          if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                icon: 'success',
+                title: @json(__('Saved!')),
+                text: res.message,
+                customClass: { confirmButton: 'btn btn-success' }
+              });
+          }
+        },
+        error: function (xhr) {
+          if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                icon: 'error',
+                title: @json(__('Error')),
+                text: xhr.responseJSON ? xhr.responseJSON.message : @json(__('Failed to save rule.')),
+                customClass: { confirmButton: 'btn btn-danger' }
+              });
+          }
+        }
+      });
+    });
+
+    // Submit Add Tier Form
+    $('#addTierForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: `${baseUrl}app/saas/commission-tiers`,
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function (res) {
+          $('#addTierModal').modal('hide');
+          $('#addTierForm')[0].reset();
+          location.reload();
+        },
+        error: function (xhr) {
+          if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                icon: 'error',
+                title: @json(__('Error')),
+                text: xhr.responseJSON ? xhr.responseJSON.message : @json(__('Failed to save tier.')),
+                customClass: { confirmButton: 'btn btn-danger' }
+              });
+          }
+        }
+      });
+    });
+
+    // Delete Tier
+    $(document).on('click', '.btn-delete-tier', function () {
+      const id = $(this).data('id');
+      if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: @json(__('Are you sure?')),
+            text: @json(__("You won't be able to revert this!")),
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: @json(__('Yes, delete it!')),
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/saas/commission-tiers/${id}`,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function (res) {
+                  location.reload();
+                }
+              });
+            }
+          });
+      }
+    });
+
+    // Toggle Status
+    $(document).on('click', '.toggle-status', function () {
+      const id = $(this).data('id');
+      $.post(`${baseUrl}app/saas/commission-rules/toggle/${id}`, { _token: '{{ csrf_token() }}' }, function (res) {
+        dt_commissions.ajax.reload();
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              icon: 'success',
+              title: @json(__('Updated!')),
+              text: @json(__('Rule status updated successfully.')),
+              customClass: { confirmButton: 'btn btn-success' }
+            });
+        }
+      });
+    });
+
     // Delete
     $(document).on('click', '.delete-record', function () {
       const id = $(this).data('id');
-      Swal.fire({
-        title: 'Delete this rule?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        customClass: { confirmButton: 'btn btn-primary me-3', cancelButton: 'btn btn-label-secondary' }
-      }).then((result) => {
-        if (result.value) {
-          $.ajax({
-            url: `${baseUrl}app/saas/commission/${id}`,
-            type: 'DELETE',
-            data: { _token: '{{ csrf_token() }}' },
-            success: function () {
-              dt_commissions.ajax.reload();
+      if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: @json(__('Are you sure?')),
+            text: @json(__("You won't be able to revert this!")),
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: @json(__('Yes, delete it!')),
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.ajax({
+                url: `${baseUrl}app/saas/commission-rules/${id}`,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function (res) {
+                  dt_commissions.ajax.reload();
+                  Swal.fire({
+                    icon: 'success',
+                    title: @json(__('Deleted!')),
+                    text: @json(__('Rule has been deleted.')),
+                    customClass: { confirmButton: 'btn btn-success' }
+                  });
+                }
+              });
             }
           });
-        }
-      });
+      }
     });
 
     // Flatpickr
@@ -344,73 +473,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
       }
     });
   }
-
-  // Tier Search/Filter Logic (Simpler)
-  $('.btn-delete-tier').on('click', function() {
-      const id = $(this).data('id');
-      Swal.fire({
-        title: 'Delete this tier?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        customClass: {
-          confirmButton: 'btn btn-primary me-3',
-          cancelButton: 'btn btn-label-secondary'
-        },
-        buttonsStyling: false
-      }).then(function (result) {
-        if (result.value) {
-          $.ajax({
-            url: `${baseUrl}app/saas/commission/tier/${id}`,
-            type: 'DELETE',
-            data: { _token: '{{ csrf_token() }}' },
-            success: function() { 
-              Swal.fire({
-                icon: 'success',
-                title: 'Deleted!',
-                text: 'Tier has been deleted.',
-                customClass: { confirmButton: 'btn btn-success' }
-              }).then(() => {
-                location.reload(); 
-              });
-            }
-          });
-        }
-      });
-  });
-
-  const scopeSelect = document.getElementById('scopeSelect');
-  const categoryField = document.getElementById('categoryField');
-  const isGlobalInput = document.getElementById('isGlobalInput');
-
-  if(scopeSelect){
-      scopeSelect.addEventListener('change', function () {
-        if (this.value === 'global') {
-          categoryField.classList.add('d-none');
-          isGlobalInput.value = '1';
-        } else {
-          categoryField.classList.remove('d-none');
-          isGlobalInput.value = '0';
-        }
-      });
-  }
-
-  $('#addRuleForm').on('submit', function(e) {
-      e.preventDefault();
-      $.post('{{ route("app-saas-commission-store") }}', $(this).serialize(), function() {
-          $('#addRuleModal').modal('hide');
-          if(typeof dt_commissions !== 'undefined') dt_commissions.ajax.reload();
-          else location.reload();
-      });
-  });
-
-  $('#addTierForm').on('submit', function(e) {
-      e.preventDefault();
-      $.post('{{ route("app-saas-commission-tier-store") }}', $(this).serialize(), function() {
-          location.reload();
-      });
-  });
 });
 </script>
 @endsection

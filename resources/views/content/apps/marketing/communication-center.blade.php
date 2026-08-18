@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('layouts/layoutMaster')
 
-@section('title', 'Unified Communication Center - Email & WhatsApp')
+@section('title', __('Unified Communication Center') . ' — AK-Mart')
 
 @section('content')
 <div class="row g-6 mb-6">
@@ -14,11 +14,11 @@ $configData = Helper::appClasses();
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading fw-medium">Emails Dispatched</span>
+            <span class="text-heading fw-medium">{{ __('Emails Dispatched') }}</span>
             <div class="d-flex align-items-center my-1">
               <h4 class="mb-0 me-2">{{ number_format($stats['total_emails'] ?? 0) }}</h4>
             </div>
-            <small class="text-muted">SMTP & Transactional</small>
+            <small class="text-muted">{{ __('SMTP & Transactional') }}</small>
           </div>
           <span class="badge bg-label-primary rounded p-2">
             <i class="icon-base bx bx-envelope fs-4"></i>
@@ -33,11 +33,11 @@ $configData = Helper::appClasses();
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading fw-medium">WhatsApp Cloud API</span>
+            <span class="text-heading fw-medium">{{ __('WhatsApp Cloud API') }}</span>
             <div class="d-flex align-items-center my-1">
               <h4 class="mb-0 me-2 text-success">{{ number_format($stats['total_whatsapp'] ?? 0) }}</h4>
             </div>
-            <small class="text-muted">Official Meta Cloud API</small>
+            <small class="text-muted">{{ __('Official Meta Cloud API') }}</small>
           </div>
           <span class="badge bg-label-success rounded p-2">
             <i class="icon-base bx bxl-whatsapp fs-4"></i>
@@ -52,11 +52,11 @@ $configData = Helper::appClasses();
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading fw-medium">Delivered Messages</span>
+            <span class="text-heading fw-medium">{{ __('Delivered Messages') }}</span>
             <div class="d-flex align-items-center my-1">
               <h4 class="mb-0 me-2 text-primary">{{ number_format($stats['total_delivered'] ?? 0) }}</h4>
             </div>
-            <small class="text-muted">High Delivery Rate</small>
+            <small class="text-muted">{{ __('High Delivery Rate') }}</small>
           </div>
           <span class="badge bg-label-info rounded p-2">
             <i class="icon-base bx bx-check-double fs-4"></i>
@@ -71,11 +71,11 @@ $configData = Helper::appClasses();
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading fw-medium">Failed Dispatches</span>
+            <span class="text-heading fw-medium">{{ __('Failed Dispatches') }}</span>
             <div class="d-flex align-items-center my-1">
               <h4 class="mb-0 me-2 text-danger">{{ number_format($stats['total_failed'] ?? 0) }}</h4>
             </div>
-            <small class="text-muted">Zero Order Rollback</small>
+            <small class="text-muted">{{ __('Zero Order Rollback') }}</small>
           </div>
           <span class="badge bg-label-danger rounded p-2">
             <i class="icon-base bx bx-error-circle fs-4"></i>
@@ -105,22 +105,22 @@ $configData = Helper::appClasses();
   <ul class="nav nav-pills mb-4 gap-2" role="tablist">
     <li class="nav-item">
       <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-logs">
-        <i class="icon-base bx bx-list-ul me-1"></i> Live Logs & Activity
+        <i class="icon-base bx bx-list-ul me-1"></i> {{ __('Live Logs & Activity') }}
       </button>
     </li>
     <li class="nav-item">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-compose">
-        <i class="icon-base bx bx-paper-plane me-1"></i> Quick Dispatch
+        <i class="icon-base bx bx-paper-plane me-1"></i> {{ __('Quick Dispatch') }}
       </button>
     </li>
     <li class="nav-item">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-templates">
-        <i class="icon-base bx bx-layout me-1"></i> Message Templates
+        <i class="icon-base bx bx-layout me-1"></i> {{ __('Message Templates') }}
       </button>
     </li>
     <li class="nav-item">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-campaigns">
-        <i class="icon-base bx bx-broadcast me-1"></i> Marketing Campaigns
+        <i class="icon-base bx bx-broadcast me-1"></i> {{ __('Marketing Campaigns') }}
       </button>
     </li>
   </ul>
@@ -130,19 +130,19 @@ $configData = Helper::appClasses();
     <div class="tab-pane fade show active" id="tab-logs">
       <div class="card shadow-sm border">
         <div class="card-header border-bottom d-flex justify-content-between align-items-center py-3">
-          <h5 class="card-title mb-0">Unified Communication Logs</h5>
-          <span class="badge bg-label-primary">Real-Time</span>
+          <h5 class="card-title mb-0">{{ __('Unified Communication Logs') }}</h5>
+          <span class="badge bg-label-primary">{{ __('Real-Time') }}</span>
         </div>
         <div class="table-responsive text-nowrap">
           <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th>Channel</th>
-                <th>Recipient</th>
-                <th>Template / Subject</th>
-                <th>Status</th>
-                <th>Provider</th>
-                <th>Sent At</th>
+                <th>{{ __('Channel') }}</th>
+                <th>{{ __('Recipient') }}</th>
+                <th>{{ __('Template / Subject') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Provider') }}</th>
+                <th>{{ __('Sent At') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -167,11 +167,11 @@ $configData = Helper::appClasses();
                   </td>
                   <td>
                     @if($log->status === 'delivered' || $log->status === 'sent')
-                      <span class="badge bg-success">Sent</span>
+                      <span class="badge bg-success">{{ __('Sent') }}</span>
                     @elseif($log->status === 'skipped')
-                      <span class="badge bg-secondary">Opted Out</span>
+                      <span class="badge bg-secondary">{{ __('Opted Out') }}</span>
                     @else
-                      <span class="badge bg-danger">Failed</span>
+                      <span class="badge bg-danger">{{ __('Failed') }}</span>
                     @endif
                   </td>
                   <td><code>{{ $log->provider }}</code></td>
@@ -179,7 +179,7 @@ $configData = Helper::appClasses();
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center py-5 text-muted">No communication logs recorded yet. Send your first message below!</td>
+                  <td colspan="6" class="text-center py-5 text-muted">{{ __('No communication logs recorded yet. Send your first message below!') }}</td>
                 </tr>
               @endforelse
             </tbody>
@@ -192,40 +192,40 @@ $configData = Helper::appClasses();
     <div class="tab-pane fade" id="tab-compose">
       <div class="card shadow-sm border">
         <div class="card-header border-bottom py-3">
-          <h5 class="card-title mb-0">Dispatch Notification Message</h5>
+          <h5 class="card-title mb-0">{{ __('Dispatch Notification Message') }}</h5>
         </div>
         <div class="card-body p-4">
           <form action="{{ route('app-communication-send') }}" method="POST">
             @csrf
             <div class="row g-4">
               <div class="col-md-4">
-                <label class="form-label">Communication Channel</label>
+                <label class="form-label">{{ __('Communication Channel') }}</label>
                 <select name="channel" class="form-select" required>
-                  <option value="email">Email (SMTP / SES / Resend)</option>
-                  <option value="whatsapp">WhatsApp (Official Meta Cloud API)</option>
-                  <option value="in_app">In-App Notification Hub</option>
+                  <option value="email">{{ __('Email (SMTP / SES / Resend)') }}</option>
+                  <option value="whatsapp">{{ __('WhatsApp (Official Meta Cloud API)') }}</option>
+                  <option value="in_app">{{ __('In-App Notification Hub') }}</option>
                 </select>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Recipient (Email / +91 Phone)</label>
+                <label class="form-label">{{ __('Recipient (Email / +91 Phone)') }}</label>
                 <input type="text" name="recipient" class="form-control" placeholder="user@example.com or 9876543210" required>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Template Event</label>
+                <label class="form-label">{{ __('Template Event') }}</label>
                 <select name="template_code" class="form-select" required>
-                  <option value="order_confirmation">Order Confirmed</option>
-                  <option value="order_shipped">Order Shipped</option>
-                  <option value="abandoned_cart">Abandoned Cart Recovery</option>
-                  <option value="return_approved">Return Approved</option>
+                  <option value="order_confirmation">{{ __('Order Confirmed') }}</option>
+                  <option value="order_shipped">{{ __('Order Shipped') }}</option>
+                  <option value="abandoned_cart">{{ __('Abandoned Cart Recovery') }}</option>
+                  <option value="return_approved">{{ __('Return Approved') }}</option>
                 </select>
               </div>
               <div class="col-12">
-                <label class="form-label">Custom Message Body (Optional Fallback)</label>
-                <textarea name="custom_message" class="form-control" rows="3" placeholder="Leave empty to use default template text..."></textarea>
+                <label class="form-label">{{ __('Custom Message Body (Optional Fallback)') }}</label>
+                <textarea name="custom_message" class="form-control" rows="3" placeholder="{{ __('Leave empty to use default template text...') }}"></textarea>
               </div>
               <div class="col-12 text-end">
                 <button type="submit" class="btn btn-primary">
-                  <i class="icon-base bx bx-send me-1"></i> Send Dispatch
+                  <i class="icon-base bx bx-send me-1"></i> {{ __('Send Dispatch') }}
                 </button>
               </div>
             </div>
@@ -238,9 +238,9 @@ $configData = Helper::appClasses();
     <div class="tab-pane fade" id="tab-templates">
       <div class="card shadow-sm border">
         <div class="card-header border-bottom d-flex justify-content-between align-items-center py-3">
-          <h5 class="card-title mb-0">Pre-Approved Notification Templates</h5>
+          <h5 class="card-title mb-0">{{ __('Pre-Approved Notification Templates') }}</h5>
           <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newTemplateForm">
-            <i class="icon-base bx bx-plus me-1"></i> New Template
+            <i class="icon-base bx bx-plus me-1"></i> {{ __('New Template') }}
           </button>
         </div>
         <div class="collapse p-4 border-bottom bg-light" id="newTemplateForm">
@@ -248,30 +248,30 @@ $configData = Helper::appClasses();
             @csrf
             <div class="row g-3">
               <div class="col-md-3">
-                <label class="form-label">Template Code</label>
+                <label class="form-label">{{ __('Template Code') }}</label>
                 <input type="text" name="code" class="form-control" placeholder="e.g. flash_sale_alert" required>
               </div>
               <div class="col-md-3">
-                <label class="form-label">Display Name</label>
+                <label class="form-label">{{ __('Display Name') }}</label>
                 <input type="text" name="name" class="form-control" placeholder="Flash Sale Alert" required>
               </div>
               <div class="col-md-3">
-                <label class="form-label">Channel</label>
+                <label class="form-label">{{ __('Channel') }}</label>
                 <select name="channel" class="form-select" required>
                   <option value="email">Email</option>
                   <option value="whatsapp">WhatsApp</option>
                 </select>
               </div>
               <div class="col-md-3">
-                <label class="form-label">Subject</label>
-                <input type="text" name="subject" class="form-control" placeholder="Subject line">
+                <label class="form-label">{{ __('Subject') }}</label>
+                <input type="text" name="subject" class="form-control" placeholder="{{ __('Subject line') }}">
               </div>
               <div class="col-12">
-                <label class="form-label">Body with Variables (e.g. <code>&#123;&#123;customer_name&#125;&#125;</code>, <code>&#123;&#123;order_number&#125;&#125;</code>)</label>
+                <label class="form-label">{{ __('Body with Variables') }} (e.g. <code>&#123;&#123;customer_name&#125;&#125;</code>, <code>&#123;&#123;order_number&#125;&#125;</code>)</label>
                 <textarea name="body" class="form-control" rows="3" required></textarea>
               </div>
               <div class="col-12 text-end">
-                <button type="submit" class="btn btn-success">Save Template</button>
+                <button type="submit" class="btn btn-success">{{ __('Save Template') }}</button>
               </div>
             </div>
           </form>
@@ -284,7 +284,7 @@ $configData = Helper::appClasses();
                   <span class="badge bg-label-success">WhatsApp</span>
                   <strong>order_confirmation</strong>
                 </div>
-                <p class="small text-muted mb-0">🛒 <strong>{{ config('app.name') }} Order Confirmed!</strong><br>Hi &#123;&#123;customer_name&#125;&#125;, your order #&#123;&#123;order_number&#125;&#125; for ₹&#123;&#123;order_total&#125;&#125; has been placed successfully.</p>
+                <p class="small text-muted mb-0">🛒 <strong>{{ config('app.name') }} {{ __('Order Confirmed!') }}</strong><br>{{ __('Hi') }} &#123;&#123;customer_name&#125;&#125;, {{ __('your order') }} #&#123;&#123;order_number&#125;&#125; {{ __('for') }} ₹&#123;&#123;order_total&#125;&#125; {{ __('has been placed successfully.') }}</p>
               </div>
             </div>
             <div class="col-md-6">
@@ -293,7 +293,7 @@ $configData = Helper::appClasses();
                   <span class="badge bg-label-primary">Email</span>
                   <strong>order_shipped</strong>
                 </div>
-                <p class="small text-muted mb-0">Dear &#123;&#123;customer_name&#125;&#125;,<br>Your order #&#123;&#123;order_number&#125;&#125; has shipped via &#123;&#123;carrier&#125;&#125;. Tracking: &#123;&#123;tracking_number&#125;&#125;.</p>
+                <p class="small text-muted mb-0">{{ __('Dear') }} &#123;&#123;customer_name&#125;&#125;,<br>{{ __('Your order') }} #&#123;&#123;order_number&#125;&#125; {{ __('has shipped via') }} &#123;&#123;carrier&#125;&#125;. {{ __('Tracking:') }} &#123;&#123;tracking_number&#125;&#125;.</p>
               </div>
             </div>
           </div>
@@ -305,40 +305,40 @@ $configData = Helper::appClasses();
     <div class="tab-pane fade" id="tab-campaigns">
       <div class="card shadow-sm border">
         <div class="card-header border-bottom py-3">
-          <h5 class="card-title mb-0">Broadcast Marketing Campaign</h5>
+          <h5 class="card-title mb-0">{{ __('Broadcast Marketing Campaign') }}</h5>
         </div>
         <div class="card-body p-4">
           <form action="{{ route('app-communication-campaign-launch') }}" method="POST">
             @csrf
             <div class="row g-4">
               <div class="col-md-4">
-                <label class="form-label">Campaign Name</label>
+                <label class="form-label">{{ __('Campaign Name') }}</label>
                 <input type="text" name="name" class="form-control" placeholder="Summer Mega Sale" required>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Target Audience</label>
+                <label class="form-label">{{ __('Target Audience') }}</label>
                 <select name="audience_type" class="form-select" required>
-                  <option value="all">All Registered Customers</option>
-                  <option value="vip">VIP Customers (5+ Orders)</option>
-                  <option value="inactive">Inactive Customers (30+ Days)</option>
-                  <option value="abandoned">Abandoned Cart Users</option>
+                  <option value="all">{{ __('All Registered Customers') }}</option>
+                  <option value="vip">{{ __('VIP Customers (5+ Orders)') }}</option>
+                  <option value="inactive">{{ __('Inactive Customers (30+ Days)') }}</option>
+                  <option value="abandoned">{{ __('Abandoned Cart Users') }}</option>
                 </select>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Channel</label>
+                <label class="form-label">{{ __('Channel') }}</label>
                 <select name="channel" class="form-select" required>
-                  <option value="email">Email Broadcast</option>
-                  <option value="whatsapp">WhatsApp Business Broadcast</option>
-                  <option value="omnichannel">Omnichannel (Email + WhatsApp)</option>
+                  <option value="email">{{ __('Email Broadcast') }}</option>
+                  <option value="whatsapp">{{ __('WhatsApp Business Broadcast') }}</option>
+                  <option value="omnichannel">{{ __('Omnichannel (Email + WhatsApp)') }}</option>
                 </select>
               </div>
               <div class="col-12">
-                <label class="form-label">Message Content</label>
-                <textarea name="message_content" class="form-control" rows="3" placeholder="Get 20% off all catalog items this weekend only! Use code SUMMER20" required></textarea>
+                <label class="form-label">{{ __('Message Content') }}</label>
+                <textarea name="message_content" class="form-control" rows="3" placeholder="{{ __('Get 20% off all catalog items this weekend only! Use code SUMMER20') }}" required></textarea>
               </div>
               <div class="col-12 text-end">
-                <button type="submit" class="btn btn-primary" onclick="return confirm('Launch this marketing campaign to targeted recipients?');">
-                  <i class="icon-base bx bx-rocket me-1"></i> Launch Campaign
+                <button type="submit" class="btn btn-primary" onclick="return confirm('{{ __('Launch this marketing campaign to targeted recipients?') }}');">
+                  <i class="icon-base bx bx-rocket me-1"></i> {{ __('Launch Campaign') }}
                 </button>
               </div>
             </div>

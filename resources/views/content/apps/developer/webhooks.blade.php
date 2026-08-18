@@ -1,33 +1,33 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Developer Webhooks & APIs — AK-Mart')
+@section('title', __('Developer Webhooks') . ' — AK-Mart')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h4 class="fw-bold mb-1"><i class="bx bx-code-curly text-primary me-2"></i> Outbound Webhook Subscriptions</h4>
-        <p class="text-muted small mb-0">Subscribe external ERPs, CRM systems, and warehouse automation endpoints to real-time e-commerce events</p>
+        <h4 class="fw-bold mb-1"><i class="bx bx-code-curly text-primary me-2"></i> {{ __('Outbound Webhook Subscriptions') }}</h4>
+        <p class="text-muted small mb-0">{{ __('Subscribe external ERPs, CRM systems, and warehouse automation endpoints to real-time e-commerce events') }}</p>
     </div>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddWebhook">
-        <i class="bx bx-plus me-1"></i> Register Webhook Endpoint
+        <i class="bx bx-plus me-1"></i> {{ __('Register Webhook Endpoint') }}
     </button>
 </div>
 
 <!-- Webhook Subscriptions Table -->
 <div class="card shadow-sm border mb-4">
     <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Active Webhook Endpoints</h5>
+        <h5 class="card-title mb-0">{{ __('Active Webhook Endpoints') }}</h5>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Endpoint Name</th>
-                    <th>Target URL</th>
-                    <th>Subscribed Events</th>
-                    <th>Deliveries</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>{{ __('Endpoint Name') }}</th>
+                    <th>{{ __('Target URL') }}</th>
+                    <th>{{ __('Subscribed Events') }}</th>
+                    <th>{{ __('Deliveries') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,30 +40,30 @@
                                 <span class="badge bg-label-info">{{ $evt }}</span>
                             @endforeach
                         </td>
-                        <td><span class="badge bg-label-primary">{{ $sub->logs_count }} Dispatches</span></td>
+                        <td><span class="badge bg-label-primary">{{ $sub->logs_count }} {{ __('Dispatches') }}</span></td>
                         <td>
                             <span class="badge {{ $sub->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                {{ $sub->is_active ? 'Active' : 'Paused' }}
+                                {{ $sub->is_active ? __('Active') : __('Paused') }}
                             </span>
                         </td>
                         <td>
                             <form action="{{ route('app-developer-webhooks-ping', $sub->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-info" title="Send Test Ping">
-                                    <i class="bx bx-podcast"></i> Ping
+                                <button type="submit" class="btn btn-sm btn-outline-info" title="{{ __('Send Test Ping') }}">
+                                    <i class="bx bx-podcast"></i> {{ __('Ping') }}
                                 </button>
                             </form>
                             <form action="{{ route('app-developer-webhooks-toggle', $sub->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                    {{ $sub->is_active ? 'Pause' : 'Resume' }}
+                                    {{ $sub->is_active ? __('Pause') : __('Resume') }}
                                 </button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No webhook subscriptions registered. Click 'Register Webhook Endpoint' above.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">{{ __('No webhook subscriptions registered. Click \'Register Webhook Endpoint\' above.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -74,27 +74,27 @@
 <!-- Recent Delivery Logs -->
 <div class="card shadow-sm border">
     <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Recent Webhook Dispatch Logs</h5>
+        <h5 class="card-title mb-0">{{ __('Recent Webhook Dispatch Logs') }}</h5>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Event</th>
-                    <th>Endpoint</th>
-                    <th>Response Code</th>
-                    <th>Status</th>
-                    <th>Timestamp</th>
+                    <th>{{ __('Event') }}</th>
+                    <th>{{ __('Endpoint') }}</th>
+                    <th>{{ __('Response Code') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Timestamp') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($recentLogs as $log)
                     <tr>
                         <td><code>{{ $log->event }}</code></td>
-                        <td>{{ $log->subscription?->name ?? 'Endpoint' }}</td>
+                        <td>{{ $log->subscription?->name ?? __('Endpoint') }}</td>
                         <td>
                             <span class="badge {{ $log->response_status == 200 ? 'bg-success' : 'bg-danger' }}">
-                                {{ $log->response_status ?: 'Error' }}
+                                {{ $log->response_status ?: __('Error') }}
                             </span>
                         </td>
                         <td>
@@ -106,7 +106,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">No dispatch logs recorded yet.</td>
+                        <td colspan="5" class="text-center py-4 text-muted">{{ __('No dispatch logs recorded yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -121,20 +121,20 @@
             <form action="{{ route('app-developer-webhooks-store') }}" method="POST">
                 @csrf
                 <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold">Register Outbound Webhook</h5>
+                    <h5 class="modal-title fw-bold">{{ __('Register Outbound Webhook') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Endpoint Name <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">{{ __('Endpoint Name') }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" class="form-control" placeholder="e.g. ERP Warehouse Sync" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Target Webhook URL <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">{{ __('Target Webhook URL') }} <span class="text-danger">*</span></label>
                         <input type="url" name="target_url" class="form-control" placeholder="https://api.myerp.com/webhooks/orders" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Trigger Events</label>
+                        <label class="form-label fw-bold">{{ __('Trigger Events') }}</label>
                         <div class="row g-2">
                             <div class="col-6">
                                 <div class="form-check">
@@ -168,8 +168,8 @@
                     </div>
                 </div>
                 <div class="modal-footer border-top">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Subscribe Endpoint</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Subscribe Endpoint') }}</button>
                 </div>
             </form>
         </div>

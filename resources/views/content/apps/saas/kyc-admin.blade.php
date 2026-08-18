@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'KYC Applications - Super Admin')
+@section('title', __('KYC Applications') . ' — AK-Mart')
 
 @section('content')
 <div class="row">
@@ -26,20 +26,20 @@
     {{-- KYC List --}}
     <div class="card">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">KYC Applications — {{ ucwords(str_replace('_', ' ', $status)) }}</h5>
+        <h5 class="card-title mb-0">{{ __('KYC Applications') }} — {{ ucwords(str_replace('_', ' ', $status)) }}</h5>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th>Store</th>
-                <th>Business Name</th>
-                <th>Type</th>
-                <th>Document</th>
-                <th>Submitted</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{{ __('Store') }}</th>
+                <th>{{ __('Business Name') }}</th>
+                <th>{{ __('Type') }}</th>
+                <th>{{ __('Document') }}</th>
+                <th>{{ __('Submitted') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -55,19 +55,19 @@
                   <span class="badge bg-label-{{ $colors[$kyc->status] ?? 'secondary' }}">{{ ucwords(str_replace('_', ' ', $kyc->status)) }}</span>
                 </td>
                 <td>
-                  <a href="{{ route('app-saas-kyc-show', $kyc->id) }}" class="btn btn-sm btn-icon btn-label-primary" title="Review">
+                  <a href="{{ route('app-saas-kyc-show', $kyc->id) }}" class="btn btn-sm btn-icon btn-label-primary" title="{{ __('Review') }}">
                     <i class="bx bx-search"></i>
                   </a>
                   @if($kyc->status === 'pending')
-                  <button class="btn btn-sm btn-icon btn-label-info btn-mark-review" data-id="{{ $kyc->id }}" title="Mark Under Review">
+                  <button class="btn btn-sm btn-icon btn-label-info btn-mark-review" data-id="{{ $kyc->id }}" title="{{ __('Mark Under Review') }}">
                     <i class="bx bx-time"></i>
                   </button>
                   @endif
                   @if(in_array($kyc->status, ['pending', 'under_review']))
-                  <button class="btn btn-sm btn-icon btn-label-success btn-approve" data-id="{{ $kyc->id }}" title="Approve">
+                  <button class="btn btn-sm btn-icon btn-label-success btn-approve" data-id="{{ $kyc->id }}" title="{{ __('Approve') }}">
                     <i class="bx bx-check"></i>
                   </button>
-                  <button class="btn btn-sm btn-icon btn-label-danger btn-reject" data-id="{{ $kyc->id }}" title="Reject">
+                  <button class="btn btn-sm btn-icon btn-label-danger btn-reject" data-id="{{ $kyc->id }}" title="{{ __('Reject') }}">
                     <i class="bx bx-x"></i>
                   </button>
                   @endif
@@ -75,7 +75,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="7" class="text-center text-muted py-6">No KYC applications with status "{{ $status }}".</td>
+                <td colspan="7" class="text-center text-muted py-6">{{ __('No KYC applications with status') }} "{{ $status }}".</td>
               </tr>
               @endforelse
             </tbody>
@@ -94,16 +94,16 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reject KYC — Provide Reason</h5>
+        <h5 class="modal-title">{{ __('Reject KYC — Provide Reason') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <label class="form-label">Rejection Reason <span class="text-danger">*</span></label>
-        <textarea class="form-control" id="rejectReason" rows="4" placeholder="Explain why the documents are being rejected..."></textarea>
+        <label class="form-label">{{ __('Rejection Reason') }} <span class="text-danger">*</span></label>
+        <textarea class="form-control" id="rejectReason" rows="4" placeholder="{{ __('Explain why the documents are being rejected...') }}"></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmRejectBtn">Confirm Rejection</button>
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+        <button type="button" class="btn btn-danger" id="confirmRejectBtn">{{ __('Confirm Rejection') }}</button>
       </div>
     </div>
   </div>
@@ -157,12 +157,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (typeof Swal !== 'undefined') {
         Swal.fire({
-          title: 'Approve KYC Application?',
-          text: 'This will verify the vendor and unlock merchant payouts.',
+          title: @json(__('Approve KYC Application?')),
+          text: @json(__('This will verify the vendor and unlock merchant payouts.')),
           icon: 'question',
           showCancelButton: true,
-          confirmButtonText: 'Yes, approve',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: @json(__('Yes, approve')),
+          cancelButtonText: @json(__('Cancel')),
           customClass: { confirmButton: 'btn btn-success me-3', cancelButton: 'btn btn-label-secondary' },
           buttonsStyling: false
         }).then(res => { if (res.isConfirmed) doApprove(); });
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const reason = document.getElementById('rejectReason').value.trim();
     if (!reason || reason.length < 10) {
       if (typeof Swal !== 'undefined') {
-        Swal.fire({ icon: 'warning', text: 'Please provide a meaningful rejection reason (min 10 chars).' });
+        Swal.fire({ icon: 'warning', text: @json(__('Please provide a meaningful rejection reason (min 10 chars).')) });
       } else {
         alert('Please provide a meaningful rejection reason (min 10 chars).');
       }

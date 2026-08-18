@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Platform Analytics - Super Admin')
+@section('title', __('Platform Analytics') . ' — AK-Mart')
 
 @section('vendor-style')
 @vite(['resources/assets/vendor/libs/apex-charts/apex-charts.scss'])
@@ -15,11 +15,11 @@
 {{-- Page Header --}}
 <div class="d-flex align-items-center justify-content-between mb-6">
   <div>
-    <h4 class="mb-1">Platform Analytics</h4>
-    <p class="mb-0 text-muted">Real-time overview of your SaaS marketplace performance.</p>
+    <h4 class="mb-1">{{ __('Platform Analytics') }}</h4>
+    <p class="mb-0 text-muted">{{ __('Real-time overview of your SaaS marketplace performance.') }}</p>
   </div>
   <span class="badge bg-label-success fs-6 px-3 py-2">
-    <i class="bx bx-radio-circle-marked bx-flashing me-1"></i> Live Data
+    <i class="bx bx-radio-circle-marked bx-flashing me-1"></i> {{ __('Live Data') }}
   </span>
 </div>
 
@@ -36,9 +36,9 @@
             {{ $gmvGrowth >= 0 ? '+' : '' }}{{ $gmvGrowth }}% MoM
           </span>
         </div>
-        <h5 class="mb-1">Total GMV</h5>
+        <h5 class="mb-1">{{ __('Total GMV') }}</h5>
         <h3 class="text-primary mb-0">${{ number_format($totalGMV, 0) }}</h3>
-        <small class="text-muted">This month: ${{ number_format($thisMonthGMV, 0) }}</small>
+        <small class="text-muted">{{ __('This month:') }} ${{ number_format($thisMonthGMV, 0) }}</small>
       </div>
     </div>
   </div>
@@ -51,9 +51,9 @@
           <div class="badge rounded-pill bg-label-success p-2"><i class="bx bx-trending-up bx-sm"></i></div>
           <span class="badge bg-label-info rounded-pill">ARR ${{ number_format($arr, 0) }}</span>
         </div>
-        <h5 class="mb-1">MRR</h5>
+        <h5 class="mb-1">{{ __('MRR') }}</h5>
         <h3 class="text-success mb-0">${{ number_format($mrr, 0) }}</h3>
-        <small class="text-muted">Monthly Recurring Revenue</small>
+        <small class="text-muted">{{ __('Monthly Recurring Revenue') }}</small>
       </div>
     </div>
   </div>
@@ -64,11 +64,11 @@
       <div class="card-body">
         <div class="d-flex justify-content-between mb-3">
           <div class="badge rounded-pill bg-label-warning p-2"><i class="bx bx-percentage bx-sm"></i></div>
-          <span class="badge bg-label-warning rounded-pill">This month: ${{ number_format($feesThisMonth, 0) }}</span>
+          <span class="badge bg-label-warning rounded-pill">{{ __('This month:') }} ${{ number_format($feesThisMonth, 0) }}</span>
         </div>
-        <h5 class="mb-1">Platform Fees</h5>
+        <h5 class="mb-1">{{ __('Platform Fees') }}</h5>
         <h3 class="text-warning mb-0">${{ number_format($totalPlatformFees, 0) }}</h3>
-        <small class="text-muted">Total commission collected</small>
+        <small class="text-muted">{{ __('Total commission collected') }}</small>
       </div>
     </div>
   </div>
@@ -82,12 +82,12 @@
             <i class="bx bx-user-x bx-sm"></i>
           </div>
           <span class="badge bg-label-{{ $churnRate > 5 ? 'danger' : 'success' }} rounded-pill">
-            {{ $churnRate > 5 ? 'High' : 'Healthy' }}
+            {{ $churnRate > 5 ? __('High') : __('Healthy') }}
           </span>
         </div>
-        <h5 class="mb-1">Churn Rate</h5>
+        <h5 class="mb-1">{{ __('Churn Rate') }}</h5>
         <h3 class="text-{{ $churnRate > 5 ? 'danger' : 'success' }} mb-0">{{ $churnRate }}%</h3>
-        <small class="text-muted">Canceled this month</small>
+        <small class="text-muted">{{ __('Canceled this month') }}</small>
       </div>
     </div>
   </div>
@@ -100,7 +100,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-primary p-2 me-3"><i class="bx bx-buildings bx-md"></i></div>
         <div>
-          <small class="text-muted d-block">Total Stores</small>
+          <small class="text-muted d-block">{{ __('Total Stores') }}</small>
           <h3 class="mb-0">{{ $totalStores }}</h3>
         </div>
       </div>
@@ -111,7 +111,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-success p-2 me-3"><i class="bx bx-check-circle bx-md"></i></div>
         <div>
-          <small class="text-muted d-block">Active Stores</small>
+          <small class="text-muted d-block">{{ __('Active Stores') }}</small>
           <h3 class="mb-0 text-success">{{ $activeStores }}</h3>
         </div>
       </div>
@@ -122,7 +122,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-info p-2 me-3"><i class="bx bx-time bx-md"></i></div>
         <div>
-          <small class="text-muted d-block">On Trial</small>
+          <small class="text-muted d-block">{{ __('On Trial') }}</small>
           <h3 class="mb-0 text-info">{{ $trialStores }}</h3>
         </div>
       </div>
@@ -133,8 +133,8 @@
       <div class="card-body d-flex align-items-center">
         <div class="badge rounded-pill bg-label-secondary p-2 me-3"><i class="bx bx-group bx-md"></i></div>
         <div>
-          <small class="text-muted d-block">Total Users</small>
-          <h3 class="mb-0">{{ $totalUsers }} <small class="text-success fs-6">+{{ $newUsersThisMonth }} this month</small></h3>
+          <small class="text-muted d-block">{{ __('Total Users') }}</small>
+          <h3 class="mb-0">{{ $totalUsers }} <small class="text-success fs-6">+{{ $newUsersThisMonth }} {{ __('this month') }}</small></h3>
         </div>
       </div>
     </div>
@@ -147,7 +147,7 @@
   <div class="col-lg-8 mb-4">
     <div class="card h-100">
       <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">Revenue Overview (Last 6 Months)</h5>
+        <h5 class="card-title mb-0">{{ __('Revenue Overview (Last 6 Months)') }}</h5>
       </div>
       <div class="card-body">
         <div id="revenueChart"></div>
@@ -159,7 +159,7 @@
   <div class="col-lg-4 mb-4">
     <div class="card h-100">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Subscription Plan Mix</h5>
+        <h5 class="card-title mb-0">{{ __('Subscription Plan Mix') }}</h5>
       </div>
       <div class="card-body">
         <div id="planChart"></div>
@@ -167,11 +167,11 @@
           @foreach($planDistribution as $plan)
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span>{{ $plan['name'] }}</span>
-            <span class="badge bg-label-primary">{{ $plan['count'] }} stores</span>
+            <span class="badge bg-label-primary">{{ $plan['count'] }} {{ __('stores') }}</span>
           </div>
           @endforeach
           @if($planDistribution->isEmpty())
-          <p class="text-center text-muted">No active subscriptions yet.</p>
+          <p class="text-center text-muted">{{ __('No active subscriptions yet.') }}</p>
           @endif
         </div>
       </div>
@@ -185,7 +185,7 @@
   <div class="col-lg-5 mb-4">
     <div class="card h-100">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Store Growth (Last 6 Months)</h5>
+        <h5 class="card-title mb-0">{{ __('Store Growth (Last 6 Months)') }}</h5>
       </div>
       <div class="card-body">
         <div id="storeGrowthChart"></div>
@@ -197,17 +197,17 @@
   <div class="col-lg-7 mb-4">
     <div class="card h-100">
       <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">Recent Subscriptions</h5>
+        <h5 class="card-title mb-0">{{ __('Recent Subscriptions') }}</h5>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th>Store</th>
-                <th>Plan</th>
-                <th>Status</th>
-                <th>Period End</th>
+                <th>{{ __('Store') }}</th>
+                <th>{{ __('Plan') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Period End') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -222,7 +222,7 @@
                 <td>{{ $sub->current_period_end ? $sub->current_period_end->format('M d, Y') : ($sub->trial_ends_at ? $sub->trial_ends_at->format('M d, Y') : '—') }}</td>
               </tr>
               @empty
-              <tr><td colspan="4" class="text-center text-muted py-5">No subscriptions yet.</td></tr>
+              <tr><td colspan="4" class="text-center text-muted py-5">{{ __('No subscriptions yet.') }}</td></tr>
               @endforelse
             </tbody>
           </table>
@@ -246,8 +246,8 @@ document.addEventListener('DOMContentLoaded', function () {
   new ApexCharts(document.querySelector('#revenueChart'), {
     chart: { type: 'area', height: 260, toolbar: { show: false }, sparkline: { enabled: false } },
     series: [
-      { name: 'Gross GMV ($)', data: gmvData },
-      { name: 'Platform Fees ($)', data: feesData }
+      { name: @json(__('Gross GMV ($)')), data: gmvData },
+      { name: @json(__('Platform Fees ($)')), data: feesData }
     ],
     colors: ['#7367f0', '#28c76f'],
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
       tooltip: { theme: isDark ? 'dark' : 'light' }
     }).render();
   } else {
-    document.querySelector('#planChart').innerHTML = '<p class="text-center text-muted pt-4">No active subscriptions.</p>';
+    document.querySelector('#planChart').innerHTML = '<p class="text-center text-muted pt-4">' + @json(__('No active subscriptions.')) + '</p>';
   }
 
   // ── Store Growth Bar ───────────────────────────────────────────
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   new ApexCharts(document.querySelector('#storeGrowthChart'), {
     chart: { type: 'bar', height: 250, toolbar: { show: false } },
-    series: [{ name: 'New Stores', data: storeGrowthData }],
+    series: [{ name: @json(__('New Stores')), data: storeGrowthData }],
     colors: ['#ff9f43'],
     plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
     dataLabels: { enabled: false },

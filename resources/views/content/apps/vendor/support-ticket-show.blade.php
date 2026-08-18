@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Ticket #' . $ticket->id)
+@section('title', __('Ticket') . ' #' . $ticket->id)
 
 @section('content')
 <div class="row">
@@ -13,7 +13,7 @@
                     </a>
                     <div>
                         <h5 class="card-title mb-0">{{ $ticket->subject }}</h5>
-                        <small class="text-muted">Ticket #{{ $ticket->id }} — Customer: {{ $ticket->user->name }}</small>
+                        <small class="text-muted">{{ __('Ticket') }} #{{ $ticket->id }} — {{ __('Customer:') }} {{ $ticket->user->name }}</small>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
@@ -47,14 +47,14 @@
                     <form action="{{ route('app-vendor-support-reply', $ticket->id) }}" method="POST">
                         @csrf
                         <div class="input-group">
-                            <textarea name="message" class="form-control" rows="1" placeholder="Type your reply..." required></textarea>
+                            <textarea name="message" class="form-control" rows="1" placeholder="{{ __('Type your reply...') }}" required></textarea>
                             <button class="btn btn-primary" type="submit">
                                 <i class="bx bx-send"></i>
                             </button>
                         </div>
                     </form>
                 @else
-                    <div class="alert alert-secondary text-center mb-0">This ticket is closed and cannot be replied to.</div>
+                    <div class="alert alert-secondary text-center mb-0">{{ __('This ticket is closed and cannot be replied to.') }}</div>
                 @endif
             </div>
         </div>

@@ -1,20 +1,20 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'POS Shift Registers & Cash Reconciliation — AK-Mart')
+@section('title', __('POS Shift Register') . ' — AK-Mart')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h4 class="fw-bold mb-1"><i class="bx bx-calculator text-primary me-2"></i> POS Cash Drawer & Shift Reconciliation</h4>
-        <p class="text-muted small mb-0">Manage cashier shifts, track expected cash drawer totals, and record closing variance reconciliations</p>
+        <h4 class="fw-bold mb-1"><i class="bx bx-calculator text-primary me-2"></i> {{ __('POS Cash Drawer & Shift Reconciliation') }}</h4>
+        <p class="text-muted small mb-0">{{ __('Manage cashier shifts, track expected cash drawer totals, and record closing variance reconciliations') }}</p>
     </div>
     @if(!$activeSession)
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalOpenShift">
-            <i class="bx bx-play-circle me-1"></i> Open Cash Drawer Shift
+            <i class="bx bx-play-circle me-1"></i> {{ __('Open Cash Drawer Shift') }}
         </button>
     @else
         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCloseShift">
-            <i class="bx bx-stop-circle me-1"></i> Close Active Shift (#{{ $activeSession->id }})
+            <i class="bx bx-stop-circle me-1"></i> {{ __('Close Active Shift') }} (#{{ $activeSession->id }})
         </button>
     @endif
 </div>
@@ -24,11 +24,11 @@
     <div class="alert alert-primary d-flex align-items-center mb-4 border" role="alert">
         <i class="bx bx-info-circle fs-3 me-3"></i>
         <div class="flex-grow-1">
-            <h6 class="alert-heading fw-bold mb-1">Active Register Session #{{ $activeSession->id }} Open</h6>
-            <span>Opened at {{ $activeSession->opened_at->format('d M Y, H:i') }} with <strong>${{ number_format($activeSession->opening_amount, 2) }}</strong> opening cash float. Cashier: <strong>{{ $activeSession->user?->name }}</strong></span>
+            <h6 class="alert-heading fw-bold mb-1">{{ __('Active Register Session') }} #{{ $activeSession->id }} {{ __('Open') }}</h6>
+            <span>{{ __('Opened at') }} {{ $activeSession->opened_at->format('d M Y, H:i') }} {{ __('with') }} <strong>${{ number_format($activeSession->opening_amount, 2) }}</strong> {{ __('opening cash float. Cashier:') }} <strong>{{ $activeSession->user?->name }}</strong></span>
         </div>
         <button class="btn btn-sm btn-danger ms-3" data-bs-toggle="modal" data-bs-target="#modalCloseShift">
-            Close Shift & Reconcile
+            {{ __('Close Shift & Reconcile') }}
         </button>
     </div>
 @endif
@@ -36,21 +36,21 @@
 <!-- Sessions Table -->
 <div class="card shadow-sm border">
     <div class="card-header border-bottom">
-        <h5 class="card-title mb-0">POS Register Shifts Ledger</h5>
+        <h5 class="card-title mb-0">{{ __('POS Register Shifts Ledger') }}</h5>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Shift #</th>
-                    <th>Cashier</th>
-                    <th>Opening Float</th>
-                    <th>Cash Sales</th>
-                    <th>Card / Digital</th>
-                    <th>Closing Cash Counted</th>
-                    <th>Difference</th>
-                    <th>Status</th>
-                    <th>Shift Time</th>
+                    <th>{{ __('Shift #') }}</th>
+                    <th>{{ __('Cashier') }}</th>
+                    <th>{{ __('Opening Float') }}</th>
+                    <th>{{ __('Cash Sales') }}</th>
+                    <th>{{ __('Card / Digital') }}</th>
+                    <th>{{ __('Closing Cash Counted') }}</th>
+                    <th>{{ __('Difference') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Shift Time') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@
                                     {{ $s->difference > 0 ? '+' : '' }}${{ number_format($s->difference, 2) }}
                                 </span>
                             @else
-                                <span class="text-muted small">In Progress</span>
+                                <span class="text-muted small">{{ __('In Progress') }}</span>
                             @endif
                         </td>
                         <td>
@@ -77,12 +77,12 @@
                             </span>
                         </td>
                         <td>
-                            <small>{{ $s->opened_at->format('d M, H:i') }} — {{ $s->closed_at ? $s->closed_at->format('H:i') : 'Active' }}</small>
+                            <small>{{ $s->opened_at->format('d M, H:i') }} — {{ $s->closed_at ? $s->closed_at->format('H:i') : __('Active') }}</small>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center py-4 text-muted">No POS shifts recorded. Click 'Open Cash Drawer Shift' above.</td>
+                        <td colspan="9" class="text-center py-4 text-muted">{{ __('No POS shifts recorded. Click \'Open Cash Drawer Shift\' above.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -100,19 +100,19 @@
             <form action="{{ route('app-pos-register-open') }}" method="POST">
                 @csrf
                 <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold"><i class="bx bx-play-circle text-primary me-1"></i> Open Register Shift</h5>
+                    <h5 class="modal-title fw-bold"><i class="bx bx-play-circle text-primary me-1"></i> {{ __('Open Register Shift') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Opening Cash Float ($) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">{{ __('Opening Cash Float ($)') }} <span class="text-danger">*</span></label>
                         <input type="number" step="0.01" name="opening_amount" class="form-control" value="100.00" min="0" required>
-                        <small class="text-muted">Initial cash balance inside physical drawer</small>
+                        <small class="text-muted">{{ __('Initial cash balance inside physical drawer') }}</small>
                     </div>
                 </div>
                 <div class="modal-footer border-top">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Start Shift</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Start Shift') }}</button>
                 </div>
             </form>
         </div>
@@ -128,26 +128,26 @@
                 @csrf
                 <input type="hidden" name="session_id" value="{{ $activeSession->id }}">
                 <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold text-danger"><i class="bx bx-stop-circle me-1"></i> Close POS Shift & Reconcile</h5>
+                    <h5 class="modal-title fw-bold text-danger"><i class="bx bx-stop-circle me-1"></i> {{ __('Close POS Shift & Reconcile') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="p-3 bg-light rounded mb-3">
-                        <p class="mb-1 small">Opening Float: <strong>${{ number_format($activeSession->opening_amount, 2) }}</strong></p>
-                        <p class="mb-0 small">Cash Sales: <strong>${{ number_format($activeSession->cash_sales, 2) }}</strong></p>
+                        <p class="mb-1 small">{{ __('Opening Float:') }} <strong>${{ number_format($activeSession->opening_amount, 2) }}</strong></p>
+                        <p class="mb-0 small">{{ __('Cash Sales:') }} <strong>${{ number_format($activeSession->cash_sales, 2) }}</strong></p>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Actual Counted Physical Cash ($) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">{{ __('Actual Counted Physical Cash ($)') }} <span class="text-danger">*</span></label>
                         <input type="number" step="0.01" name="closing_amount" class="form-control" placeholder="0.00" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Reconciliation Notes</label>
-                        <textarea name="notes" class="form-control" rows="2" placeholder="Explain any discrepancy or cash drop"></textarea>
+                        <label class="form-label fw-bold">{{ __('Reconciliation Notes') }}</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="{{ __('Explain any discrepancy or cash drop') }}"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Close & Reconcile Shift</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ __('Close & Reconcile Shift') }}</button>
                 </div>
             </form>
         </div>
