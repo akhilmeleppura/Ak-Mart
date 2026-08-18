@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
         $middleware->web(LocaleMiddleware::class);
         $middleware->alias([
             'branch.access' => \App\Http\Middleware\EnsureBranchAccess::class,
