@@ -23,6 +23,7 @@
 
 <!-- app JS -->
 @vite(['resources/js/app.js', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.js'])
+<script src="{{ asset('assets/js/ak-notifications.js') }}"></script>
 <!-- END: app JS-->
 
 <script>
@@ -42,50 +43,40 @@
 
   window.addEventListener('DOMContentLoaded', function() {
     @if (session('success'))
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        icon: 'success',
-        title: window.__('Success') || 'Success',
-        text: "{{ session('success') }}",
-        timer: 3000,
-        showConfirmButton: false,
-        toast: true,
-        position: 'top-end'
-      });
+    if (window.AKNotify) {
+      window.AKNotify.success("{{ session('success') }}");
     }
     @endif
 
     @if (session('error'))
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        icon: 'error',
-        title: window.__('Error') || 'Error',
-        text: "{{ session('error') }}",
-        timer: 3000,
-        showConfirmButton: false,
-        toast: true,
-        position: 'top-end'
-      });
+    if (window.AKNotify) {
+      window.AKNotify.error("{{ session('error') }}");
     }
     @endif
 
-    // Automatic window.alert bridge to SweetAlert2
+    @if (session('warning'))
+    if (window.AKNotify) {
+      window.AKNotify.warning("{{ session('warning') }}");
+    }
+    @endif
+
+    @if (session('info'))
+    if (window.AKNotify) {
+      window.AKNotify.info("{{ session('info') }}");
+    }
+    @endif
+
+    // Automatic window.alert bridge to AKNotify
     window.alert = function(msg) {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: 'info',
-          title: 'Notification',
-          text: msg,
-          customClass: { confirmButton: 'btn btn-primary' },
-          buttonsStyling: false
-        });
+      if (window.AKNotify) {
+        window.AKNotify.info(msg);
       }
     };
 
-    // Global SweetAlert2 Form & Delete Interceptor
+    // Global AKNotify Form & Delete Interceptor
     document.addEventListener('submit', function(e) {
       const form = e.target;
-      if (form.dataset.swalConfirmed === 'true') {
+      if (form.dataset.akConfirmed === 'true') {
         return true;
       }
 
@@ -100,28 +91,22 @@
         const m = onsubmitAttr.match(/confirm\(['"](.*?)['"]\)/);
         if (m && m[1]) msg = m[1];
       } else if (isDelete) {
-        msg = 'Are you sure you want to delete this item? This action cannot be undone.';
+        msg = window.__('Are you sure you want to delete this item? This action cannot be undone.') || 'Are you sure you want to delete this item? This action cannot be undone.';
       }
 
-      if (msg && typeof Swal !== 'undefined') {
+      if (msg && window.AKNotify) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        Swal.fire({
-          title: 'Are you sure?',
-          text: msg,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, proceed!',
-          cancelButtonText: 'Cancel',
-          customClass: {
-            confirmButton: 'btn btn-danger me-3',
-            cancelButton: 'btn btn-label-secondary'
-          },
-          buttonsStyling: false
+        window.AKNotify.confirm({
+          title: window.__('Are you sure?') || 'Are you sure?',
+          message: msg,
+          type: isDelete ? 'danger' : 'warning',
+          confirmText: window.__('Yes, proceed!') || 'Yes, proceed!',
+          cancelText: window.__('Cancel') || 'Cancel'
         }).then(function(res) {
           if (res.isConfirmed) {
-            form.dataset.swalConfirmed = 'true';
+            form.dataset.akConfirmed = 'true';
             form.removeAttribute('onsubmit');
             form.submit();
           }
@@ -130,7 +115,7 @@
       }
     }, true);
 
-    // Global SweetAlert2 Button & Link Click Interceptor
+    // Global AKNotify Button & Link Click Interceptor
     document.addEventListener('click', function(e) {
       const btn = e.target.closest('button, a');
       if (!btn) return;
@@ -139,7 +124,7 @@
       const dataConfirm = btn.getAttribute('data-confirm');
 
       if ((onclickAttr && onclickAttr.includes('confirm(')) || dataConfirm) {
-        if (btn.dataset.swalConfirmed === 'true') return true;
+        if (btn.dataset.akConfirmed === 'true') return true;
 
         let msg = dataConfirm;
         if (!msg && onclickAttr) {
@@ -147,25 +132,19 @@
           if (m && m[1]) msg = m[1];
         }
 
-        if (msg && typeof Swal !== 'undefined') {
+        if (msg && window.AKNotify) {
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          Swal.fire({
-            title: 'Confirmation',
-            text: msg,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, proceed!',
-            cancelButtonText: 'Cancel',
-            customClass: {
-              confirmButton: 'btn btn-primary me-3',
-              cancelButton: 'btn btn-label-secondary'
-            },
-            buttonsStyling: false
+          window.AKNotify.confirm({
+            title: window.__('Confirmation') || 'Confirmation',
+            message: msg,
+            type: 'info',
+            confirmText: window.__('Yes, proceed!') || 'Yes, proceed!',
+            cancelText: window.__('Cancel') || 'Cancel'
           }).then(function(res) {
             if (res.isConfirmed) {
-              btn.dataset.swalConfirmed = 'true';
+              btn.dataset.akConfirmed = 'true';
               btn.removeAttribute('onclick');
               if (btn.tagName === 'BUTTON' && btn.type === 'submit' && btn.form) {
                 btn.form.submit();

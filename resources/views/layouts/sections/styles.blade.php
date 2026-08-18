@@ -28,7 +28,6 @@
 
 <!-- app CSS -->
 @vite(['resources/css/app.css', 'resources/assets/vendor/libs/animate-css/animate.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'])
+<link rel="stylesheet" href="{{ asset('assets/css/ak-notifications.css') }}" />
 <!-- END: app CSS-->
-@livewireStyles
-
 @livewireStyles

@@ -14,13 +14,14 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesPermissionsSeeder::class,
             BranchSeeder::class,
+            WarehouseSeeder::class,
             SuperAdminSeeder::class,
-            EcommerceSeeder::class,
+            CustomerSeeder::class,
             SupplierAndPurchaseSeeder::class,
-            OrderSeeder::class,
+            EcommerceSeeder::class,
             SubscriptionPlanSeeder::class,
             PaymentOptionSeeder::class,
-            DemoSeeder::class,
+            NotificationSeeder::class,
             AdvancedCommerceSeeder::class,
             NextGenCommerceSeeder::class,
         ]);

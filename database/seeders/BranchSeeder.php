@@ -4,19 +4,40 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Branch\Branch;
-use App\Models\Product;
-use App\Models\Order;
-use App\Models\Category;
 
 class BranchSeeder extends Seeder
 {
     public function run()
     {
-        $b1 = Branch::create(['name' => 'Main Branch', 'address' => 'Downtown']);
-        $b2 = Branch::create(['name' => 'Sub Branch', 'address' => 'Uptown']);
+        $branches = [
+            [
+                'id' => 1,
+                'name' => 'Main Flagship Branch (New York)',
+                'code' => 'BR-NY-01',
+                'address' => '742 Broadway Ave, Manhattan, New York, NY 10003',
+            ],
+            [
+                'id' => 2,
+                'name' => 'City Center Branch (London)',
+                'code' => 'BR-LON-02',
+                'address' => '142 Oxford Street, Westminster, London W1D 1LL',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Express Mini-Mart (Dubai Mall)',
+                'code' => 'BR-DXB-03',
+                'address' => 'Unit G-45, Downtown Financial Center, Dubai, UAE',
+            ],
+            [
+                'id' => 4,
+                'name' => 'Logistics & Fulfillment Hub (Kochi)',
+                'code' => 'BR-KOC-04',
+                'address' => 'Infopark Expressway, Kakkanad, Kochi, Kerala 682042',
+            ],
+        ];
 
-        Product::query()->update(['branch_id' => $b1->id]);
-        Order::query()->update(['branch_id' => $b1->id]);
-        Category::query()->update(['branch_id' => $b1->id]);
+        foreach ($branches as $branch) {
+            Branch::updateOrCreate(['id' => $branch['id']], $branch);
+        }
     }
 }
