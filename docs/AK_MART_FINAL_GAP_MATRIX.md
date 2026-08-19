@@ -27,14 +27,16 @@
 | **Product Compare (Side-by-Side Specs)** | ✅ Working | ✅ DB Ready | ✅ Session List | ✅ Attributes Matrix | ✅ Compare View | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Save For Later (In Cart)** | ✅ Working | N/A | ✅ Working | ✅ Session DB | ✅ Cart Shelf | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Buy Again (1-Click Reorder Screen)** | ✅ Working | N/A | ✅ Aggregated | ✅ Order History | ✅ 1-Click Reorder | ✅ Working | ✅ 6 Langs | ✅ Auth Guard | **WORKING** | P1 Core |
-| **Recently Viewed Products Carousel** | ❌ Missing | N/A | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Recently Viewed Products Carousel** | ✅ Working | N/A | ✅ Session List | ✅ Product Tracking | ✅ PDP & Home Carousel | ✅ Working | ✅ 6 Langs | ✅ Fast Load | **WORKING** | P1 Core |
 | **Out-of-Stock: Back-in-Stock Alerts** | ✅ Working | ✅ DB Ready | ✅ Subscriptions | ✅ Notifications Table | ✅ Modal & Toast | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
 | **Price Drop Notification Watcher** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P3 Enhanc. |
 | **Cart & Stock Validation** | ✅ Working | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Invariant | **WORKING** | P0 Critical |
 | **Storefront Coupon Discount Code Apply** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ Coupon Table | ✅ Cart & Checkout UI | ✅ Working | ✅ 6 Langs | ✅ Usage Count | **WORKING** | P1 Core |
+| **Storefront Delivery Slot Selection** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ DeliverySlot Table | ✅ Checkout Slot Selector | ✅ Working | ✅ 6 Langs | ✅ Order Persistence | **WORKING** | P1 Core |
+| **Customer Store Credit & Loyalty Deduction** | ✅ Working | ✅ DB Models | ✅ Atomic Debit | ✅ StoreCredit DB | ✅ Checkout Wallet Toggle | ✅ Working | ✅ 6 Langs | ✅ Ledger Audit | **WORKING** | P1 Core |
 | **Storefront Checkout & Atomic Stock Deduction** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ LockForUpdate | **WORKING** | P0 Critical |
 | **Public Order Tracking Timeline** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Public Key | **WORKING** | P1 Core |
-| **Customer Order Return / Exchange Portal** | ❌ Missing in Store | ⚠️ Admin Orders | ⚠️ Manual Only | ⚠️ Orders Status | ❌ Missing in Store | ❌ Missing | ❌ Missing | N/A | **PARTIAL** | P1 Core |
+| **Customer Order Return / Exchange Portal** | ✅ Working | ✅ Admin Orders | ✅ Return Model | ✅ OrderReturns DB | ✅ Self-Service Portal | ✅ Working | ✅ 6 Langs | ✅ Auth Guard | **WORKING** | P1 Core |
 | **Merchandising Board (Featured/Deals/Trends)** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ AJAX CSRF | **WORKING** | P1 Core |
 | **Multi-Branch Inventory Allocation & Transfers** | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Movement Log | **WORKING** | P0 Critical |
 | **POS Terminal & Multi-Payment Split** | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ⚠️ Desktop/Tab | ✅ 6 Langs | ✅ Cash Drawer | **WORKING** | P0 Critical |
