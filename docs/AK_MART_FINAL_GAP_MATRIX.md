@@ -25,10 +25,10 @@
 | **Product Q&A (Ask a Question)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
 | **Interactive Wishlist with Move-to-Cart** | ✅ Working | ⚠️ Orders Only | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Product Compare (Side-by-Side Specs)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
-| **Save For Later (In Cart)** | ❌ Missing | N/A | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
-| **Buy Again (1-Click Reorder Screen)** | ❌ Missing | N/A | ⚠️ Queryable | ✅ Order History | ❌ Missing UI | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Save For Later (In Cart)** | ✅ Working | N/A | ✅ Working | ✅ Session DB | ✅ Cart Shelf | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
+| **Buy Again (1-Click Reorder Screen)** | ✅ Working | N/A | ✅ Aggregated | ✅ Order History | ✅ 1-Click Reorder | ✅ Working | ✅ 6 Langs | ✅ Auth Guard | **WORKING** | P1 Core |
 | **Recently Viewed Products Carousel** | ❌ Missing | N/A | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
-| **Out-of-Stock: Back-in-Stock Alerts** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Out-of-Stock: Back-in-Stock Alerts** | ✅ Working | ✅ DB Ready | ✅ Subscriptions | ✅ Notifications Table | ✅ Modal & Toast | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
 | **Price Drop Notification Watcher** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P3 Enhanc. |
 | **Cart & Stock Validation** | ✅ Working | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Invariant | **WORKING** | P0 Critical |
 | **Storefront Coupon Discount Code Apply** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ Coupon Table | ✅ Cart & Checkout UI | ✅ Working | ✅ 6 Langs | ✅ Usage Count | **WORKING** | P1 Core |
