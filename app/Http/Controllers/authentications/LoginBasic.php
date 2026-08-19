@@ -32,7 +32,7 @@ class LoginBasic extends Controller
             return $this->handleDirectOtpLogin($request);
         }
 
-        // --- Mode 2: Password + OTP Login ---
+        // --- Mode 2: Standard Email/Username + Password Login (Direct & Fast) ---
         $credentials = $request->validate([
             'email'    => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -40,7 +40,7 @@ class LoginBasic extends Controller
 
         $fieldType = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
-        // Verify credentials manually
+        // Verify credentials
         $user = User::where($fieldType, $credentials['email'])->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
@@ -49,12 +49,7 @@ class LoginBasic extends Controller
             ])->onlyInput('email');
         }
 
-        // --- OTP Flow ---
-        if (config('otp.login_enabled', true)) {
-            return $this->initiateOtpFlow($request, $user);
-        }
-
-        // --- Direct Login (OTP disabled) ---
+        // Direct Login via Password (Fast & Secure)
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 

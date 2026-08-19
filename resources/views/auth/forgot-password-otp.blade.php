@@ -1,6 +1,7 @@
 @php
     $pageConfigs = ['myLayout' => 'blank'];
     $step = $step ?? 'request';
+    $channel = $channel ?? 'email';
 @endphp
 
 @extends('layouts/blankLayout')
@@ -24,7 +25,7 @@
         max-width: 460px;
         margin: 24px auto;
     }
-    .brand { text-align: center; margin-bottom: 32px; }
+    .brand { text-align: center; margin-bottom: 28px; }
     .brand h1 {
         font-size: 26px; font-weight: 800;
         background: linear-gradient(135deg, #696cff, #9155fd);
@@ -32,30 +33,60 @@
     }
     .brand p { color: #888; font-size: 13px; margin-top: 4px; }
 
-    .step-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #696cff20, #9155fd20); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px; }
-    .auth-title { font-size: 22px; font-weight: 700; color: #1a1a2e; text-align: center; margin-bottom: 8px; }
-    .auth-subtitle { color: #666; font-size: 14px; text-align: center; margin-bottom: 28px; line-height: 1.6; }
+    .step-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #696cff20, #9155fd20); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+    .auth-title { font-size: 22px; font-weight: 700; color: #1a1a2e; text-align: center; margin-bottom: 6px; }
+    .auth-subtitle { color: #666; font-size: 13.5px; text-align: center; margin-bottom: 22px; line-height: 1.5; }
 
-    .form-group { margin-bottom: 20px; }
-    .form-label { font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 8px; }
+    .channel-nav {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 12px;
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 20px;
+    }
+    .channel-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .channel-btn.active {
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px; }
     .form-control {
         width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px;
-        font-size: 15px; outline: none; transition: all 0.2s; background: #fafafa; color: #333;
+        font-size: 14.5px; outline: none; transition: all 0.2s; background: #fafafa; color: #333;
     }
     .form-control:focus { border-color: var(--primary); background: #f0efff; box-shadow: 0 0 0 4px rgba(105,108,255,0.1); }
     .form-control.is-invalid { border-color: #e74c3c; }
 
     .btn-primary-full {
-        width: 100%; padding: 14px; background: linear-gradient(135deg, #696cff, #9155fd);
-        color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
+        width: 100%; padding: 13px; background: linear-gradient(135deg, #696cff, #9155fd);
+        color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
         cursor: pointer; transition: all 0.2s;
     }
     .btn-primary-full:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(105,108,255,0.4); }
     .btn-primary-full:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .otp-inputs { display: flex; gap: 12px; justify-content: center; margin-bottom: 8px; }
+    .otp-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
     .otp-input {
-        width: 52px; height: 60px; text-align: center; font-size: 24px; font-weight: 700;
+        width: 50px; height: 58px; text-align: center; font-size: 24px; font-weight: 700;
         border: 2px solid #e0e0e0; border-radius: 12px; outline: none; transition: all 0.2s;
         color: #333; background: #fafafa; font-family: 'Courier New', monospace;
     }
@@ -66,10 +97,10 @@
     .timer-badge { display: inline-block; background: #f0efff; color: var(--primary); border-radius: 20px; padding: 4px 14px; font-size: 14px; font-weight: 600; }
     .timer-badge.urgent { background: #fff0f0; color: #e74c3c; }
 
-    .alert-error { background: #fff5f5; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; color: #b91c1c; font-size: 13px; margin-bottom: 16px; text-align: center; }
-    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; color: #166534; font-size: 13px; margin-bottom: 16px; text-align: center; }
+    .alert-error { background: #fff5f5; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 14px; color: #b91c1c; font-size: 13px; margin-bottom: 16px; text-align: center; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; color: #166534; font-size: 13px; margin-bottom: 16px; text-align: center; }
 
-    .progress-steps { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+    .progress-steps { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
     .step-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: all 0.3s; }
     .step-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
     .step-dot.done { background: #22c55e; }
@@ -79,7 +110,7 @@
     .back-link a:hover { color: var(--primary); }
 
     .resend-section { text-align: center; margin-top: 16px; }
-    .btn-resend { background: none; border: none; color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: all 0.2s; }
+    .btn-resend { background: none; border: none; color: var(--primary); font-size: 13.5px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; }
     .btn-resend:hover { background: #f0efff; }
     .btn-resend:disabled { color: #aaa; cursor: not-allowed; }
 
@@ -125,29 +156,58 @@
     @endif
 
     {{-- ========================================================= --}}
-    {{-- STEP 1: Enter Email                                        --}}
+    {{-- STEP 1: Choose Option (Email vs Mobile Number)              --}}
     {{-- ========================================================= --}}
     @if ($step === 'request')
-        <div class="step-icon">📧</div>
+        <div class="step-icon" id="headerIcon">📧</div>
         <h2 class="auth-title">{{ __('Forgot Password?') }}</h2>
-        <p class="auth-subtitle">{{ __("Enter your email address and we'll send you a reset code.") }}</p>
+        <p class="auth-subtitle" id="headerSubtitle">{{ __("Select how you'd like to receive your 6-digit reset code.") }}</p>
+
+        <!-- 2 Clear Options: Email or Mobile -->
+        <div class="channel-nav">
+            <button type="button" class="channel-btn {{ $channel === 'email' ? 'active' : '' }}" id="btnChanEmail" onclick="setChannel('email')">
+                <span>📧 {{ __('Reset via Email') }}</span>
+            </button>
+            <button type="button" class="channel-btn {{ $channel === 'phone' ? 'active' : '' }}" id="btnChanPhone" onclick="setChannel('phone')">
+                <span>📱 {{ __('Reset via Mobile') }}</span>
+            </button>
+        </div>
 
         <form action="{{ route('auth.forgot-password-otp.send') }}" method="POST">
             @csrf
-            <div class="form-group">
+            <input type="hidden" name="channel" id="channelInput" value="{{ $channel }}">
+
+            <!-- Email Input Field -->
+            <div class="form-group" id="emailFieldGroup" style="{{ $channel === 'phone' ? 'display:none;' : '' }}">
                 <label class="form-label" for="email">{{ __('Email Address') }}</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
                     class="form-control @error('email') is-invalid @enderror"
-                    placeholder="{{ __('your@email.com') }}"
+                    placeholder="admin@ak-mart.com"
                     value="{{ old('email') }}"
-                    required
-                    autofocus
+                    {{ $channel === 'email' ? 'required autofocus' : '' }}
                 >
             </div>
-            <button type="submit" class="btn-primary-full">{{ __('Send Reset Code') }}</button>
+
+            <!-- Mobile Phone Input Field -->
+            <div class="form-group" id="phoneFieldGroup" style="{{ $channel === 'email' ? 'display:none;' : '' }}">
+                <label class="form-label" for="phone">{{ __('Registered Mobile Number') }}</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    class="form-control @error('phone') is-invalid @enderror"
+                    placeholder="e.g. +91 9876543210"
+                    value="{{ old('phone') }}"
+                    {{ $channel === 'phone' ? 'required autofocus' : '' }}
+                >
+            </div>
+
+            <button type="submit" class="btn-primary-full" id="btnSubmitReset">
+                {{ $channel === 'phone' ? __('Send Code to Mobile') : __('Send Code to Email') }}
+            </button>
         </form>
 
         <div class="back-link">
@@ -161,7 +221,7 @@
         <div class="step-icon">🔐</div>
         <h2 class="auth-title">{{ __('Enter Reset Code') }}</h2>
         <p class="auth-subtitle">
-            {{ __('We sent a code to') }}<br>
+            {{ __('We sent a 6-digit code to') }}<br>
             <strong>{{ $identifier ?? '' }}</strong>
         </p>
 
@@ -190,7 +250,7 @@
             @endif
 
             <button type="submit" class="btn-primary-full" id="btnResetVerify" disabled>
-                {{ __('Verify Code') }}
+                {{ __('Verify Reset Code') }}
             </button>
         </form>
 
@@ -206,7 +266,7 @@
         </div>
 
         <div class="back-link">
-            <a href="{{ route('auth.forgot-password-otp.request') }}">← {{ __('Change Email') }}</a>
+            <a href="{{ route('auth.forgot-password-otp.request') }}">← {{ __('Change Reset Option') }}</a>
         </div>
 
     {{-- ========================================================= --}}
@@ -246,7 +306,7 @@
                     required
                 >
             </div>
-            <button type="submit" class="btn-primary-full">{{ __('Reset Password') }}</button>
+            <button type="submit" class="btn-primary-full">{{ __('Reset Password & Sign In') }}</button>
         </form>
     @endif
 </div>
@@ -254,6 +314,42 @@
 
 @section('page-script')
 <script>
+function setChannel(channel) {
+    const btnEmail = document.getElementById('btnChanEmail');
+    const btnPhone = document.getElementById('btnChanPhone');
+    const emailGroup = document.getElementById('emailFieldGroup');
+    const phoneGroup = document.getElementById('phoneFieldGroup');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const channelInput = document.getElementById('channelInput');
+    const btnSubmit = document.getElementById('btnSubmitReset');
+    const headerIcon = document.getElementById('headerIcon');
+
+    if (channel === 'phone') {
+        btnPhone.classList.add('active');
+        btnEmail.classList.remove('active');
+        emailGroup.style.display = 'none';
+        phoneGroup.style.display = 'block';
+        emailInput.removeAttribute('required');
+        phoneInput.setAttribute('required', 'required');
+        channelInput.value = 'phone';
+        btnSubmit.textContent = @json(__('Send Code to Mobile'));
+        if (headerIcon) headerIcon.textContent = '📱';
+        phoneInput.focus();
+    } else {
+        btnEmail.classList.add('active');
+        btnPhone.classList.remove('active');
+        emailGroup.style.display = 'block';
+        phoneGroup.style.display = 'none';
+        phoneInput.removeAttribute('required');
+        emailInput.setAttribute('required', 'required');
+        channelInput.value = 'email';
+        btnSubmit.textContent = @json(__('Send Code to Email'));
+        if (headerIcon) headerIcon.textContent = '📧';
+        emailInput.focus();
+    }
+}
+
 (function() {
     const OTP_LENGTH = {{ config('otp.length', 6) }};
 

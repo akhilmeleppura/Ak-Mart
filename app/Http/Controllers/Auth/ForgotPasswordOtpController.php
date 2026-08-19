@@ -17,52 +17,67 @@ class ForgotPasswordOtpController extends Controller
     public function __construct(private OtpService $otpService) {}
 
     // -----------------------------------------------------------------
-    // Step 1: Show forgot-password form (enter email)
+    // Step 1: Show forgot-password form (with 2 options: Email / Mobile)
     // GET /auth/forgot-password/otp
     // -----------------------------------------------------------------
 
-    public function showRequestForm()
+    public function showRequestForm(Request $request)
     {
         $pageConfigs = ['myLayout' => 'blank'];
+        $channel = $request->query('channel', 'email');
 
         return view('auth.forgot-password-otp', [
             'pageConfigs' => $pageConfigs,
             'step'        => 'request',
+            'channel'     => $channel,
         ]);
     }
 
     // -----------------------------------------------------------------
-    // Step 1 Submit: Send OTP
+    // Step 1 Submit: Send OTP via Email or Mobile
     // POST /auth/forgot-password/otp/send
     // -----------------------------------------------------------------
 
     public function sendOtp(Request $request)
     {
-        $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-        ]);
+        $channel = $request->input('channel', 'email');
 
-        $email = strtolower(trim($request->input('email')));
+        if ($channel === 'phone') {
+            $request->validate([
+                'phone' => ['required', 'string', 'min:7', 'max:20'],
+            ]);
+            $rawIdentifier = trim($request->input('phone'));
+            $user = User::where('phone', $rawIdentifier)
+                ->orWhere('phone', 'LIKE', "%{$rawIdentifier}%")
+                ->first();
+            $identifier = $rawIdentifier;
+        } else {
+            $request->validate([
+                'email' => ['required', 'email', 'max:255'],
+            ]);
+            $rawIdentifier = strtolower(trim($request->input('email')));
+            $user = User::where('email', $rawIdentifier)->first();
+            $identifier = $rawIdentifier;
+        }
 
         // Rate limit
         $rateLimitKey = 'pw-reset-otp:' . $request->ip();
         if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
             throw ValidationException::withMessages([
-                'email' => [__('Too many password reset attempts. Please wait before trying again.')],
+                $channel === 'phone' ? 'phone' : 'email' => [__('Too many password reset attempts. Please wait before trying again.')],
             ]);
         }
         RateLimiter::hit($rateLimitKey, 60);
 
-        // Generic response — do not reveal whether email exists
-        $user = User::where('email', $email)->first();
-
         if ($user) {
             if (! config('otp.password_reset_enabled', true)) {
-                return back()->withErrors(['email' => __('Password reset via OTP is currently disabled.')]);
+                return back()->withErrors([
+                    $channel === 'phone' ? 'phone' : 'email' => __('Password reset via OTP is currently disabled.')
+                ]);
             }
 
             ['otp' => $plainOtp] = $this->otpService->createOtp(
-                $email,
+                $identifier,
                 'PASSWORD_RESET',
                 $user,
                 null,
@@ -70,15 +85,16 @@ class ForgotPasswordOtpController extends Controller
                 $request->userAgent()
             );
 
-            $this->otpService->sendOtp($plainOtp, $email, 'PASSWORD_RESET', $user);
+            // Send via email or sms/whatsapp
+            $this->otpService->sendOtp($plainOtp, $identifier, 'PASSWORD_RESET', $user);
         }
 
-        // Always store identifier in session and redirect to verify step
-        // (whether user exists or not — generic response)
-        $request->session()->put('pw_reset_identifier', $email);
+        // Store identifier in session
+        $request->session()->put('pw_reset_identifier', $identifier);
+        $request->session()->put('pw_reset_channel', $channel);
 
         return redirect()->route('auth.forgot-password-otp.verify-form')
-            ->with('status', __('If an account exists for :email, a reset code has been sent.', ['email' => $email]));
+            ->with('status', __('A 6-digit reset code has been sent to :identifier', ['identifier' => $identifier]));
     }
 
     // -----------------------------------------------------------------
@@ -93,6 +109,7 @@ class ForgotPasswordOtpController extends Controller
         }
 
         $identifier = $request->session()->get('pw_reset_identifier');
+        $channel    = $request->session()->get('pw_reset_channel', 'email');
         $record     = $this->otpService->getActiveRecord($identifier, 'PASSWORD_RESET');
 
         $pageConfigs = ['myLayout' => 'blank'];
@@ -100,6 +117,7 @@ class ForgotPasswordOtpController extends Controller
         return view('auth.forgot-password-otp', [
             'pageConfigs' => $pageConfigs,
             'step'        => 'verify',
+            'channel'     => $channel,
             'identifier'  => $identifier,
             'expiresAt'   => $record?->expires_at,
             'canResend'   => $record?->canResend(config('otp.resend_cooldown', 60)) ?? false,
@@ -149,10 +167,10 @@ class ForgotPasswordOtpController extends Controller
         // OTP verified — grant short-lived reset authorization
         $resetToken = Str::random(64);
         $request->session()->put('pw_reset_authorized', [
-            'identifier'  => $identifier,
-            'token'       => $resetToken,
+            'identifier'    => $identifier,
+            'token'         => $resetToken,
             'authorized_at' => now()->toISOString(),
-            'expires_at'  => now()->addMinutes(config('otp.reset_auth_expiry', 10))->toISOString(),
+            'expires_at'    => now()->addMinutes(config('otp.reset_auth_expiry', 10))->toISOString(),
         ]);
 
         return redirect()->route('auth.password-reset-otp.form');
@@ -201,7 +219,10 @@ class ForgotPasswordOtpController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = User::where('email', $auth['identifier'])->first();
+        $identifier = $auth['identifier'];
+        $user = User::where('email', $identifier)
+            ->orWhere('phone', $identifier)
+            ->first();
 
         if (! $user) {
             return redirect()->route('auth.forgot-password-otp.request')
@@ -213,13 +234,13 @@ class ForgotPasswordOtpController extends Controller
         ]);
 
         // Invalidate all existing password reset OTPs for this user
-        $this->otpService->invalidateExistingOtps($auth['identifier'], 'PASSWORD_RESET');
+        $this->otpService->invalidateExistingOtps($identifier, 'PASSWORD_RESET');
 
         // Clear all reset session data
-        $request->session()->forget(['pw_reset_identifier', 'pw_reset_authorized']);
+        $request->session()->forget(['pw_reset_identifier', 'pw_reset_authorized', 'pw_reset_channel']);
 
         return redirect()->route('auth-login-basic')
-            ->with('success', __('Password reset successfully. You can now log in with your new password.'));
+            ->with('success', __('Password reset successfully. You can now sign in with your new password.'));
     }
 
     // -----------------------------------------------------------------
@@ -234,7 +255,7 @@ class ForgotPasswordOtpController extends Controller
         }
 
         $identifier = $request->session()->get('pw_reset_identifier');
-        $user       = User::where('email', $identifier)->first();
+        $user       = User::where('email', $identifier)->orWhere('phone', $identifier)->first();
 
         if (! $this->otpService->checkRateLimit($request->ip(), 'PASSWORD_RESET')) {
             return response()->json([
@@ -261,11 +282,11 @@ class ForgotPasswordOtpController extends Controller
         }
 
         return response()->json([
-            'success'     => true,
-            'message'     => __('Reset code resent.'),
-            'resend_count'=> $result['resend_count'],
-            'max_resends' => $result['max_resends'],
-            'cooldown'    => config('otp.resend_cooldown', 60),
+            'success'      => true,
+            'message'      => __('Reset code resent to :identifier', ['identifier' => $identifier]),
+            'resend_count' => $result['resend_count'],
+            'max_resends'  => $result['max_resends'],
+            'cooldown'     => config('otp.resend_cooldown', 60),
         ]);
     }
 
