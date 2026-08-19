@@ -65,15 +65,22 @@
 
             <!-- Quantity & Actions -->
             <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-                <div class="input-group" style="width: 150px;">
-                    <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyMinus" onclick="adjustQty(-1)">-</button>
-                    <input type="number" id="detailQty" class="form-control text-center fw-bold fs-5" value="1" min="1" max="{{ max(1, $availableStock) }}" oninput="updateRate()">
-                    <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyPlus" onclick="adjustQty(1)">+</button>
-                </div>
-                <button class="btn btn-primary btn-lg rounded-pill px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2" onclick="addDetailToCart({{ $product->id }})" {{ $availableStock <= 0 ? 'disabled' : '' }}>
-                    <i class="bx bx-cart-add fs-4"></i>
-                    <span id="btnCartText">{{ __('Add to Cart') }} • ${{ number_format($product->price, 2) }}</span>
-                </button>
+                @if($availableStock > 0)
+                    <div class="input-group" style="width: 150px;">
+                        <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyMinus" onclick="adjustQty(-1)">-</button>
+                        <input type="number" id="detailQty" class="form-control text-center fw-bold fs-5" value="1" min="1" max="{{ $availableStock }}" oninput="updateRate()">
+                        <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyPlus" onclick="adjustQty(1)">+</button>
+                    </div>
+                    <button class="btn btn-primary btn-lg rounded-pill px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2" onclick="addDetailToCart({{ $product->id }})">
+                        <i class="bx bx-cart-add fs-4"></i>
+                        <span id="btnCartText">{{ __('Add to Cart') }} • ${{ number_format($product->price, 2) }}</span>
+                    </button>
+                @else
+                    <button class="btn btn-warning btn-lg rounded-pill px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2 shadow-sm text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#backInStockModal">
+                        <i class="bx bx-bell fs-4"></i>
+                        <span>{{ __('Notify Me When Back in Stock') }}</span>
+                    </button>
+                @endif
             </div>
 
             <!-- Perks -->
@@ -267,6 +274,34 @@
         </form>
     </div>
 </div>
+
+<!-- Back in Stock Alert Modal -->
+<div class="modal fade" id="backInStockModal" tabindex="-1" aria-labelledby="backInStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" onsubmit="submitStockNotification(event, {{ $product->id }})">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="backInStockModalLabel"><i class="bx bx-bell text-warning me-2"></i> {{ __('Notify Me When Back in Stock') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">{{ __('Enter your email or phone number and we will send you an instant notification the moment :product is restocked.', ['product' => $product->name]) }}</p>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Email Address') }}</label>
+                    <input type="email" id="stockNotifyEmail" class="form-control" placeholder="name@example.com" value="{{ Auth::user()?->email ?? '' }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Or Mobile Number (SMS/WhatsApp)') }}</label>
+                    <input type="text" id="stockNotifyPhone" class="form-control" placeholder="+1 (555) 000-0000" value="{{ Auth::user()?->phone ?? '' }}">
+                </div>
+                <div id="stockNotifyFeedback" class="small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-warning text-dark fw-bold px-4">{{ __('Subscribe to Restock Alert') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -316,7 +351,7 @@ function updateRate() {
 }
 
 function addDetailToCart(productId) {
-    const qty = parseInt(document.getElementById('detailQty').value) || 1;
+    const qty = parseInt(document.getElementById('detailQty')?.value) || 1;
     fetch('{{ route("storefront.cart.add") }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -327,7 +362,7 @@ function addDetailToCart(productId) {
         if (data.success) {
             const badge = document.getElementById('cartBadge');
             if (badge) badge.textContent = data.totalItems;
-            alert(data.message);
+            showToast(data.message, 'success');
         }
     });
 }
@@ -345,7 +380,7 @@ function addBundleToCart(productIds) {
         const lastResult = results[results.length - 1];
         const badge = document.getElementById('cartBadge');
         if (badge && lastResult) badge.textContent = lastResult.totalItems;
-        alert('All bundle items added to your cart!');
+        showToast('All bundle items added to your cart!', 'success');
     });
 }
 
@@ -358,7 +393,7 @@ function toggleProductWishlist(productId, btn) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
+            showToast(data.message, 'primary');
         }
     });
 }
@@ -377,9 +412,41 @@ function submitReviewForm(e, productId) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            window.location.reload();
+            showToast(data.message, 'success');
+            setTimeout(() => window.location.reload(), 600);
         }
+    });
+}
+
+function submitStockNotification(e, productId) {
+    e.preventDefault();
+    const email = document.getElementById('stockNotifyEmail').value.trim();
+    const phone = document.getElementById('stockNotifyPhone').value.trim();
+    const feedback = document.getElementById('stockNotifyFeedback');
+
+    if (!email && !phone) {
+        feedback.innerHTML = '<span class="text-danger">{{ __("Please provide email or phone.") }}</span>';
+        return;
+    }
+
+    fetch(`/store/product/${productId}/notify-stock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ email: email, phone: phone })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            const modalEl = document.getElementById('backInStockModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        } else {
+            feedback.innerHTML = `<span class="text-danger">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        feedback.innerHTML = '<span class="text-danger">{{ __("An error occurred.") }}</span>';
     });
 }
 </script>

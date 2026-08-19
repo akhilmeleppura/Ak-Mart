@@ -131,6 +131,11 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/wishlist/toggle', [\App\Http\Controllers\Storefront\StorefrontController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::post('/coupon/apply', [\App\Http\Controllers\Storefront\StorefrontController::class, 'applyCoupon'])->name('coupon.apply');
     Route::post('/coupon/remove', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeCoupon'])->name('coupon.remove');
+    Route::post('/cart/save-for-later', [\App\Http\Controllers\Storefront\StorefrontController::class, 'saveForLater'])->name('cart.save_for_later');
+    Route::post('/cart/move-to-cart', [\App\Http\Controllers\Storefront\StorefrontController::class, 'moveToCartFromSaved'])->name('cart.move_to_cart');
+    Route::post('/cart/remove-saved', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeSaved'])->name('cart.remove_saved');
+    Route::get('/buy-again', [\App\Http\Controllers\Storefront\StorefrontController::class, 'buyAgain'])->name('buy_again');
+    Route::post('/product/{id}/notify-stock', [\App\Http\Controllers\Storefront\StorefrontController::class, 'subscribeStockNotification'])->name('product.notify_stock');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 });
 

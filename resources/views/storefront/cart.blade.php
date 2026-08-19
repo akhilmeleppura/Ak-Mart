@@ -51,8 +51,11 @@
                                             </div>
                                         </td>
                                         <td class="text-end fw-bold text-primary" id="rowTotal-{{ $id }}">${{ number_format($item['price'] * $item['qty'], 2) }}</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-link text-danger p-0" onclick="removeCartItem({{ $id }})"><i class="bx bx-trash fs-5"></i></button>
+                                        <td class="text-end text-nowrap">
+                                            <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 px-2.5 py-1 text-nowrap small" onclick="saveForLaterAjax({{ $id }})" title="{{ __('Save for Later') }}">
+                                                <i class="bx bx-bookmark align-middle"></i> {{ __('Save for Later') }}
+                                            </button>
+                                            <button class="btn btn-sm btn-link text-danger p-0" onclick="removeCartItem({{ $id }})" title="{{ __('Remove') }}"><i class="bx bx-trash fs-5"></i></button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -60,6 +63,48 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Saved for Later Shelf -->
+                @if(!empty($savedForLater) && count($savedForLater) > 0)
+                    <div class="card p-4 border shadow-xs rounded-4 mt-4">
+                        <h5 class="fw-bold mb-3"><i class="bx bx-bookmark-heart text-primary me-2"></i> {{ __('Saved for Later') }} ({{ count($savedForLater) }} {{ __('items') }})</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ __('Product') }}</th>
+                                        <th>{{ __('Price') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($savedForLater as $sId => $sItem)
+                                        <tr id="savedRow-{{ $sId }}">
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img src="{{ $sItem['image'] ? asset($sItem['image']) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $sItem['name'] }}" width="45" height="45" class="rounded object-fit-contain bg-light p-1">
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold">{{ $sItem['name'] }}</h6>
+                                                        <small class="text-muted">SKU: {{ $sItem['sku'] ?? 'N/A' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="fw-bold text-primary">${{ number_format($sItem['price'], 2) }}</td>
+                                            <td class="text-end text-nowrap">
+                                                <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 me-1 small" onclick="moveToCartFromSavedAjax({{ $sId }})">
+                                                    <i class="bx bx-cart-add me-1 align-middle"></i> {{ __('Move to Cart') }}
+                                                </button>
+                                                <button class="btn btn-sm btn-link text-danger p-0" onclick="removeSavedAjax({{ $sId }})" title="{{ __('Delete') }}">
+                                                    <i class="bx bx-trash fs-5"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- Order Summary Column -->
@@ -171,6 +216,51 @@ function updateCartAjax(productId, qty) {
     .then(data => {
         if (data.success) {
             window.location.reload();
+        }
+    });
+}
+
+function saveForLaterAjax(productId) {
+    fetch('{{ route("storefront.cart.save_for_later") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'primary');
+            setTimeout(() => window.location.reload(), 400);
+        }
+    });
+}
+
+function moveToCartFromSavedAjax(productId) {
+    fetch('{{ route("storefront.cart.move_to_cart") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => window.location.reload(), 400);
+        }
+    });
+}
+
+function removeSavedAjax(productId) {
+    fetch('{{ route("storefront.cart.remove_saved") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'secondary');
+            setTimeout(() => window.location.reload(), 400);
         }
     });
 }

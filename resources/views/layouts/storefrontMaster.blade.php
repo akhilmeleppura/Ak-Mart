@@ -153,6 +153,7 @@
             <div class="d-flex gap-4">
                 <a href="{{ route('storefront.home') }}" class="text-dark fw-semibold text-decoration-none">{{ __('Home') }}</a>
                 <a href="{{ route('storefront.shop') }}" class="text-dark fw-semibold text-decoration-none">{{ __('All Products') }}</a>
+                <a href="{{ route('storefront.buy_again') }}" class="text-primary fw-semibold text-decoration-none"><i class="bx bx-repeat me-1"></i>{{ __('Buy Again') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="text-muted text-decoration-none">{{ __('Groceries & Staples') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="text-muted text-decoration-none">{{ __('Beverages & Juices') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="text-muted text-decoration-none">{{ __('Dairy & Eggs') }}</a>

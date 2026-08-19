@@ -13,6 +13,7 @@ use App\Models\LoyaltyTransaction;
 use App\Models\StoreCredit;
 use App\Models\Coupon;
 use App\Models\Review;
+use App\Models\StockNotification;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -239,6 +240,7 @@ class StorefrontController extends Controller
     public function cart()
     {
         $cart = session()->get('cart', []);
+        $savedForLater = session()->get('saved_for_later', []);
         $subtotal = 0;
         foreach ($cart as $item) {
             $subtotal += $item['price'] * $item['qty'];
@@ -256,7 +258,72 @@ class StorefrontController extends Controller
         }
         $finalTotal = max(0, $subtotal - $couponDiscount);
 
-        return view('storefront.cart', compact('cart', 'subtotal', 'coupon', 'couponDiscount', 'finalTotal'));
+        return view('storefront.cart', compact('cart', 'savedForLater', 'subtotal', 'coupon', 'couponDiscount', 'finalTotal'));
+    }
+
+    /**
+     * Save Item for Later (Move from Cart to Saved)
+     */
+    public function saveForLater(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $cart = session()->get('cart', []);
+        $saved = session()->get('saved_for_later', []);
+
+        if (isset($cart[$productId])) {
+            $saved[$productId] = $cart[$productId];
+            unset($cart[$productId]);
+            session()->put('cart', $cart);
+            session()->put('saved_for_later', $saved);
+        }
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Item moved to Save for Later!',
+            'cartCount'  => count($cart),
+            'savedCount' => count($saved),
+        ]);
+    }
+
+    /**
+     * Move Item from Saved list back to Cart
+     */
+    public function moveToCartFromSaved(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $cart = session()->get('cart', []);
+        $saved = session()->get('saved_for_later', []);
+
+        if (isset($saved[$productId])) {
+            $cart[$productId] = $saved[$productId];
+            unset($saved[$productId]);
+            session()->put('cart', $cart);
+            session()->put('saved_for_later', $saved);
+        }
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Item moved back to your cart!',
+            'cartCount'  => count($cart),
+            'savedCount' => count($saved),
+        ]);
+    }
+
+    /**
+     * Remove Item from Saved list
+     */
+    public function removeSaved(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $saved = session()->get('saved_for_later', []);
+        unset($saved[$productId]);
+        session()->put('saved_for_later', $saved);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Item removed from saved list.',
+            'savedCount' => count($saved),
+        ]);
     }
 
     /**
@@ -650,6 +717,81 @@ class StorefrontController extends Controller
         $wishlistIds = session()->get('wishlist', []);
         $products = Product::whereIn('id', $wishlistIds)->with('category')->get();
         return view('storefront.wishlist', compact('products'));
+    }
+
+    /**
+     * Buy Again - 1-Click Grocery Reorder Hub
+     */
+    public function buyAgain(Request $request)
+    {
+        $user = Auth::user();
+        if ($user) {
+            $orderIds = Order::where('user_id', $user->id)->pluck('id');
+            $itemStats = OrderItem::whereIn('order_id', $orderIds)
+                ->select('product_id', DB::raw('SUM(qty) as total_qty'), DB::raw('MAX(created_at) as last_ordered'))
+                ->groupBy('product_id')
+                ->get()
+                ->keyBy('product_id');
+
+            $products = Product::whereIn('id', $itemStats->keys())
+                ->where('is_active', true)
+                ->get()
+                ->map(function ($p) use ($itemStats) {
+                    $p->purchase_qty = $itemStats[$p->id]->total_qty ?? 1;
+                    $p->last_ordered = $itemStats[$p->id]->last_ordered ?? null;
+                    return $p;
+                });
+
+            // Supplement with top recurring essentials if few past orders
+            if ($products->count() < 6) {
+                $fallback = Product::where('is_active', true)
+                    ->whereNotIn('id', $products->pluck('id'))
+                    ->where(function ($q) {
+                        $q->where('is_best_seller', true)->orWhere('is_trending', true);
+                    })
+                    ->take(8 - $products->count())
+                    ->get();
+                $products = $products->merge($fallback);
+            }
+            $isGuest = false;
+        } else {
+            $products = Product::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('is_best_seller', true)->orWhere('is_trending', true)->orWhere('deal_of_the_day', true);
+                })
+                ->take(12)
+                ->get();
+            $isGuest = true;
+        }
+
+        return view('storefront.buy-again', compact('products', 'isGuest'));
+    }
+
+    /**
+     * Back in Stock Alert Subscription
+     */
+    public function subscribeStockNotification(Request $request, $productId)
+    {
+        $request->validate([
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        if (!$request->email && !$request->phone) {
+            return response()->json(['success' => false, 'message' => 'Please provide an email address or mobile number.'], 422);
+        }
+
+        StockNotification::create([
+            'product_id' => $productId,
+            'user_id'    => Auth::id(),
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'You are on the priority alert list! We will notify you immediately once this item is back in stock.',
+        ]);
     }
 }
 
