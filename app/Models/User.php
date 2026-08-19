@@ -115,4 +115,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class);
     }
+
+    public function otpVerifications()
+    {
+        return $this->hasMany(OtpVerification::class);
+    }
 }
+

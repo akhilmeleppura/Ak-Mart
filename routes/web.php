@@ -115,8 +115,42 @@ Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index
 Route::get('/sitemap.xml', [\App\Http\Controllers\apps\SaaS\SeoController::class, 'sitemap'])->name('app-saas-sitemap');
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang-swap');
 
-// Authenticated Routes
+// -----------------------------------------------------------------------
+// OTP Authentication Routes (session-based, no auth guard needed)
+// -----------------------------------------------------------------------
+Route::prefix('auth')->name('auth.')->group(function () {
+    // Login OTP
+    Route::get('/otp',         [\App\Http\Controllers\Auth\OtpController::class, 'show'])   ->name('otp.show');
+    Route::post('/otp',        [\App\Http\Controllers\Auth\OtpController::class, 'verify']) ->name('otp.verify');
+    Route::post('/otp/resend', [\App\Http\Controllers\Auth\OtpController::class, 'resend'])->name('otp.resend');
+
+    // Forgot Password via OTP
+    Route::get('/forgot-password/otp',         [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showRequestForm'])->name('forgot-password-otp.request');
+    Route::post('/forgot-password/otp/send',   [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'sendOtp'])       ->name('forgot-password-otp.send');
+    Route::get('/forgot-password/otp/verify',  [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showVerifyForm'])->name('forgot-password-otp.verify-form');
+    Route::post('/forgot-password/otp/verify', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'verifyOtp'])     ->name('forgot-password-otp.verify');
+    Route::post('/forgot-password/otp/resend', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'resendOtp'])     ->name('forgot-password-otp.resend');
+
+    // Password Reset (after OTP verified)
+    Route::get('/password/reset-otp',  [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showResetForm'])  ->name('password-reset-otp.form');
+    Route::post('/password/reset-otp', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'resetPassword'])  ->name('password-reset-otp.submit');
+});
+
+
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+    // -------------------------------------------------------------------
+    // Searchable Select AJAX Endpoints (Select2 Server-Side Search)
+    // -------------------------------------------------------------------
+    Route::prefix('api/select')->name('api.select.')->group(function () {
+        Route::get('/products',   [\App\Http\Controllers\api\SelectSearchController::class, 'products'])  ->name('products');
+        Route::get('/customers',  [\App\Http\Controllers\api\SelectSearchController::class, 'customers']) ->name('customers');
+        Route::get('/branches',   [\App\Http\Controllers\api\SelectSearchController::class, 'branches'])  ->name('branches');
+        Route::get('/suppliers',  [\App\Http\Controllers\api\SelectSearchController::class, 'suppliers']) ->name('suppliers');
+        Route::get('/categories', [\App\Http\Controllers\api\SelectSearchController::class, 'categories'])->name('categories');
+        Route::get('/users',      [\App\Http\Controllers\api\SelectSearchController::class, 'users'])     ->name('users');
+        Route::get('/roles',      [\App\Http\Controllers\api\SelectSearchController::class, 'roles'])     ->name('roles');
+    });
 
     // Route::get('/', [EcommerceDashboard::class, 'index'])->name('dashboard-analytics'); // removed duplicate root route
     Route::get('/dashboard/analytics', [EcommerceDashboard::class, 'index'])->name('dashboard-analytics');

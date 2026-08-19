@@ -314,7 +314,7 @@
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label for="password" class="form-label fw-semibold mb-0">{{ __('Password') }}</label>
-                <a href="{{ url('auth/forgot-password-basic') }}" class="small text-primary text-decoration-none">{{ __('Forgot password?') }}</a>
+                <a href="{{ route('auth.forgot-password-otp.request') }}" class="small text-primary text-decoration-none">{{ __('Forgot password?') }}</a>
               </div>
               <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-lock-alt fs-5"></i></span>

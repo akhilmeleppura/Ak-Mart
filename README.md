@@ -5,16 +5,16 @@
 </p>
 
 <p align="center">
-  <strong>Production-Grade Multi-Branch E-Commerce + Retail POS + Smart AI Importer + B2B Wholesale + Inventory 2.0 + WhatsApp & Email Communication Platform</strong>
+  <strong>Production-Grade Multi-Branch E-Commerce + Retail POS + Real OTP Auth + Smart AI Importer + B2B Wholesale + Inventory 2.0 + WhatsApp & Email Communication Platform</strong>
 </p>
 
 <p align="center">
   <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 12" /></a>
   <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2" /></a>
   <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3.x-FB70A9?style=for-the-badge&logo=livewire&logoColor=white" alt="Livewire 3" /></a>
-  <a href="https://www.postgresql.org"><img src="https://img.shields.io/badge/PostgreSQL-Ready-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL Ready" /></a>
   <a href="https://www.mysql.com"><img src="https://img.shields.io/badge/MySQL-Supported-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL Supported" /></a>
-  <img src="https://img.shields.io/badge/Tests-75%20Passed%20%7C%20321%20Assertions-brightgreen?style=for-the-badge&logo=checkmarx" alt="Tests" />
+  <a href="https://www.postgresql.org"><img src="https://img.shields.io/badge/PostgreSQL-Ready-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL Ready" /></a>
+  <img src="https://img.shields.io/badge/OTP%20Security-Bcrypt%20Hashed%20%7C%20Zero--Plaintext-success?style=for-the-badge&logo=auth0" alt="OTP Security" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License MIT" /></a>
 </p>
 
@@ -22,67 +22,87 @@
 
 ## 🌟 Overview
 
-**AK-Mart** is a comprehensive, enterprise-ready E-Commerce and Omni-Channel Retail operating system. Designed for real-world mini-marts, multi-branch department stores, wholesale suppliers, and modern online brands, it unites catalog management, POS registers, warehouse stock logistics, B2B wholesale quoting, AI-assisted imports, and unified marketing communications into a unified, high-performance interface.
+**AK-Mart** is an enterprise-grade Omni-Channel Retail and E-Commerce operating system built with **Laravel 12**. Designed for multi-branch retail networks, department stores, wholesale suppliers, and digital brands, AK-Mart unites real-time POS checkouts, multi-warehouse stock logistics, smart AI catalog scrapers, B2B wholesale workflows, modular SaaS tenancy, cryptographic OTP authentication, and unified marketing communications into one seamless platform.
 
 ---
 
-## 🚀 Key Modules & Architecture
+## 🚀 Key Modules & Capabilities
 
-### 1. 🤖 Smart Product Engine 2.0 & Importer
-- **Universal Multi-Platform Scraping**: Automated data, image, variant, and specification extraction from **Amazon (ASIN)**, **Flipkart**, **Meesho**, **Shopify**, and standard **Schema.org JSON-LD** pages.
-- **Strict Non-Hallucinatory Fallback**: Deterministic parsing architecture that extracts ground truth without fabricating prices or stock.
-- **Product Listing Quality Scoring (0–100%)**: Real-time diagnostic engine evaluating title length, description richness, pricing, SKU/barcodes, image resolution, and SEO readiness with actionable suggestions.
-- **Staging & Approval Queue**: Ingest drafts, preview formatted data, edit attributes, and publish to the live store with one click.
+### 1. 🔐 Cryptographic OTP Authentication Layer
+- **Zero Plaintext Storage**: All OTPs are generated cryptographically (`random_int`) and stored strictly as Bcrypt hashes via `Hash::make()`.
+- **Purpose Isolation**: Strict segregation between `LOGIN`, `PASSWORD_RESET`, `EMAIL_VERIFICATION`, and `PHONE_VERIFICATION`. A Login OTP is cryptographically rejected for password resets.
+- **Single-Use & Replay Protection**: Automatic invalidation upon verification or attempt exhaustion. Replay attacks are rejected.
+- **Rate Limiting & Resend Cooldown**: 60-second cooldown timer, 3 maximum resends per flow, and 5 failed-attempt brute-force lockouts.
+- **Segmented UI**: Interactive 6-digit input boxes with auto-focus, backspace jumping, clipboard paste parsing, dynamic countdown timer, and AJAX resend.
+- **3-Step Password Recovery**: Email request → OTP verification → Short-lived authorization token (10 min) → Secure password reset.
 
-### 2. 🏢 Multi-Branch & Multi-Warehouse Inventory 2.0
+### 2. 🔍 Universal Searchable Select System
+- **Centralized Select2 Component**: Reusable `<x-searchable-select>` Blade component with server-side pagination, keyboard navigation, and debouncing (300ms).
+- **Server-Side AJAX Endpoints (`/api/select/*`)**: High-performance querying for:
+  - **Products**: Search by Name, SKU, Barcode with live price and stock badges.
+  - **Customers**: Search by Name, Email, Phone.
+  - **Branches**: Scoped dynamically to user's authorized branch permissions.
+  - **Suppliers**: Search by Name, Company Name, Contact.
+  - **Categories, Roles, and Staff Users**.
+- **Zero-Trust Backend Security**: Client-submitted IDs are re-validated on the server against tenant scope and active permissions.
+
+### 3. 🤖 Smart Product Engine 2.0 & AI Importer
+- **Universal Multi-Platform Scraping**: Automated data, image, variant, and specification extraction from **Amazon (ASIN)**, **Flipkart**, **Meesho**, **Shopify**, and **Schema.org JSON-LD** pages.
+- **Deterministic Ground-Truth Parsing**: Strict fallback mechanisms prevent hallucination of pricing, quantities, or product details.
+- **Listing Quality Score (0–100%)**: Evaluates title completeness, description richness, SKU/barcode validity, high-resolution media, and SEO readiness.
+- **Staging & Approval Queue**: Ingest drafts, review extracted specifications, refine pricing, and publish live with one click.
+- **AI Content Generator & Copilot**: Automated generation of SEO titles, meta descriptions, selling points, and category suggestions.
+
+### 4. 🏢 Multi-Branch & Multi-Warehouse Inventory 2.0
 - **Multi-Location Fulfillment**: Independent branch and regional warehouse stock tracking.
-- **Atomic Stock Reservation & DB Row-Locking**: Concurrency-safe inventory reservations preventing overselling during flash sales.
-- **Inventory Intelligence & ABC Analysis**: Automated product classification into Fast-Moving (Class A), Moderate (Class B), and Dead Stock (Class C) with aging analysis.
-- **Cycle Counting & Stock Transfers**: Physical audit reconciliation and inter-branch inventory transfer workflows.
+- **Atomic Concurrency Locking**: Database row-locking and reservations prevent overselling during high-volume flash sales.
+- **ABC Inventory Intelligence**: Automated catalog classification into Fast-Moving (Class A), Moderate (Class B), and Dead Stock (Class C).
+- **Cycle Counting & Stock Transfers**: Physical audit reconciliation, variance adjustment, and inter-branch transfer tracking.
 
-### 3. 💳 POS Terminal 2.0 (Point of Sale)
-- **Barcode & Quick SKU Search**: Rapid item scanning with keyboard shortcuts and variant selectors.
-- **Cash Register Shift Sessions**: Track opening floats, cash sales, paid-in/paid-out adjustments, closing counts, and cash variance.
-- **Multi-Tender Checkout**: Cash, Card, UPI, and split payments.
-- **Offline Buffer**: Resilient transaction queue maintaining operations during network interruptions.
+### 5. 💳 POS Terminal 2.0 (Point of Sale)
+- **High-Speed Barcode Scanning**: Rapid item lookup, hotkey accelerators, and variant selectors.
+- **Register Shift Sessions**: Track opening floats, cash sales, paid-in/paid-out adjustments, closing counts, and discrepancy reports.
+- **Multi-Tender Payments**: Cash, Card, UPI, Digital Gift Cards, and Split Payments.
+- **Direct POS Route**: Accessible at `/pos` for dedicated checkout counter devices.
 
-### 4. 💼 B2B & Wholesale Commerce
-- **Corporate Company Accounts**: Credit limits, dedicated sales reps, and net payment terms (Net 15 / Net 30 / Net 60).
+### 6. 💼 B2B Wholesale & Enterprise Accounts
+- **Corporate Company Management**: Assigned account managers, credit limits, and net terms (Net 15 / Net 30 / Net 60).
 - **Volume Tier Pricing**: Quantity-based pricing brackets (e.g., 50+ units @ ₹750 vs retail ₹1,000).
-- **RFQ Quote Workflow**: B2B quote request submission, admin price adjustments, customer approval, and auto-conversion to Purchase Orders.
+- **RFQ Quote Lifecycle**: Request submission, merchant pricing negotiations, customer approval, and auto-conversion to Purchase Orders.
 
-### 5. 💰 Zero-Trust Pricing & Checkout Engine
-- **Server-Side Verification**: 100% server recalculation preventing frontend tampering of prices, quantities, or totals.
-- **Split Tender Checkout**: Simultaneous redemption of Coupons, Digital Gift Cards, Store Credit / Wallet Balances, and Gateway payments.
-- **Automated Tax Splitting**: Comprehensive GST calculation with automatic CGST / SGST / IGST breakdown.
+### 7. 📱 Unified Communication Center (`/communication`)
+- **Email Gateway**: Transactional mailer with template variable parsing (`{{customer_name}}`, `{{order_number}}`, `{{tracking_number}}`, `{{otp}}`).
+- **WhatsApp Cloud API**: Automated order confirmations, delivery tracking, and OTP verification via Meta's Cloud API.
+- **Targeted Broadcasts**: Filter broadcasts by customer segments (VIP, Inactive, Abandoned Carts).
+- **Zero-Checkout-Rollback**: Communication delivery failures are isolated and never disrupt customer orders.
 
-### 6. 📱 Unified Communication Center (`/communication`)
-- **Email Gateway**: Transactional mailer with template variable parsing (`{{customer_name}}`, `{{order_number}}`, `{{tracking_number}}`, `{{discount_code}}`).
-- **WhatsApp Business Cloud API**: Direct order tracking, delivery notifications, and return confirmations via Meta's official Cloud API.
-- **Campaign Broadcast Manager**: Broadcast targeted marketing promotions to custom customer segments (All, VIP, Inactive, Abandoned Carts).
-- **Customer Opt-Out Governance**: Automatic compliance with customer marketing communication preferences while preserving critical transactional receipts.
-- **Zero Order Rollback Guarantee**: Communication delivery failures never crash or interrupt successful customer checkout transactions.
+### 8. ⚙️ Centralized Settings Hub (`/settings`)
+- Modular settings for **General Store Details**, **Payments & Gateways**, **Checkout Policies**, **Shipping & Logistics**, **Tax & GST Rates**, **Branding & Assets**, **AI API Keys**, **WhatsApp Cloud Config**, **Audit Logs**, and **Security Policies**.
 
-### 7. 🛡️ Enterprise Security & Multi-Tenancy
-- **Supreme Admin Universal Gate**: Transparent superuser bypass across all system boundaries.
-- **IDOR Protection**: Strict customer ownership validation on orders, invoices, returns, and wallet records.
-- **Interactive SweetAlert2 Dialogs**: Global confirmation modals replacing raw browser popups on all delete and state-changing actions.
-- **2FA & Session Security**: Multi-factor authentication, rate limiting, and remote browser session invalidation.
+### 9. 🌐 Global Multi-Language Localization
+- Complete synchronization across 6 primary languages:
+  - 🇺🇸 **English** (`en`)
+  - 🇸🇦 **Arabic** (`ar` — Full RTL Support)
+  - 🇮🇳 **Hindi** (`hi`)
+  - 🌴 **Malayalam** (`ml`)
+  - 🇩🇪 **German** (`de`)
+  - 🇫🇷 **French** (`fr`)
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Component | Technology / Library |
+| Layer | Technologies |
 | :--- | :--- |
 | **Backend Framework** | Laravel 12.x (PHP 8.2+) |
-| **Frontend Reactive Layer** | Livewire 3.x, Alpine.js, Blade |
-| **Admin UI Theme** | Sneat Bootstrap 5 Enterprise Theme |
-| **Database Engines** | **PostgreSQL** (Production on Render) & **MySQL** / SQLite |
-| **Permissions & RBAC** | Spatie Laravel Permission 6.x |
-| **Authentication** | Laravel Jetstream 5.x & Sanctum API Tokens |
-| **Asset Bundler** | Vite 5.x |
-| **Dialogs & UI Alerts** | SweetAlert2 & Animate.css |
+| **Authentication** | Jetstream 5.x, Sanctum, Custom Cryptographic OTP Service |
+| **RBAC & Permissions** | Spatie Laravel Permission 6.x |
+| **Modular Architecture** | nwidart/laravel-modules (14 Active Modules) |
+| **Reactive Frontend** | Livewire 3.x, Alpine.js, Blade Components |
+| **UI Design System** | Sneat Bootstrap 5 Enterprise Theme |
+| **Dropdown & DataTables** | Select2 4.0.13, DataTables.net BS5 |
+| **Database Engines** | MySQL 8.x / PostgreSQL / SQLite |
+| **Asset Bundler** | Vite 6.x |
 
 ---
 
@@ -106,8 +126,8 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Database Setup & Migration
-Configure your database credentials in `.env` (MySQL or PostgreSQL):
+### 4. Database Setup & Migrations
+Configure your database credentials in `.env`:
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -117,43 +137,21 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Run migrations and seed the comprehensive demo catalog:
+Run all migrations including OTP verifications and advanced commerce tables:
 ```bash
 php artisan migrate --seed
 ```
 
-### 5. Build Frontend Assets & Run
+### 5. Start Development Servers
 ```bash
-npm run build
+# Terminal 1: Build Assets
+npm run dev
+
+# Terminal 2: Start Laravel Server
 php artisan serve
 ```
 
-Access the store in your browser: `http://127.0.0.1:8000`
-
----
-
-## ☁️ Free Cloud Deployment on Render (with PostgreSQL)
-
-AK-Mart is optimized for 1-click cloud deployment on [Render.com](https://render.com) using free PostgreSQL:
-
-1. Create a free **PostgreSQL Database** on Render (`akmart-db`).
-2. Create a free **Web Service** on Render connected to `akhilmeleppura/Ak-Mart`.
-3. Set the build & start commands:
-   - **Build Command**:
-     ```bash
-     composer install --no-dev --optimize-autoloader && php artisan config:clear && php artisan migrate --force && php artisan db:seed --force
-     ```
-   - **Start Command**:
-     ```bash
-     php artisan serve --host=0.0.0.0 --port=$PORT
-     ```
-4. Set Environment Variables:
-   - `DB_CONNECTION` = `pgsql`
-   - `DATABASE_URL` = `<your-render-internal-database-url>`
-   - `APP_ENV` = `production`
-   - `APP_KEY` = `<your-256-bit-app-key>`
-   - `SESSION_DRIVER` = `cookie`
-   - `CACHE_STORE` = `file`
+Access the application in your browser: **`http://127.0.0.1:8000`**
 
 ---
 
@@ -161,35 +159,24 @@ AK-Mart is optimized for 1-click cloud deployment on [Render.com](https://render
 
 | Role | Email | Password | Access Scope |
 | :--- | :--- | :--- | :--- |
-| **Supreme Admin** | `supreme_admin@akmart.com` | `admin123` *(or `password`)* | Full System Access |
-| **Store Admin** | `admin@akmart.com` | `admin123` *(or `password`)* | Store Operations & POS |
-| **Branch Manager** | `manager@branch.com` | `manager123` | Branch Inventory & Sales |
-| **Cashier** | `cashier@akmart.com` | `password` | POS Terminal Only |
-| **B2B Wholesale Buyer**| `buyer@apexwholesale.com` | `password` | Wholesale Catalog & RFQ |
+| **Supreme Admin** | `supreme@ak-mart.com` | `supreme123` | Full Universal System Access |
+| **Store Admin** | `admin@ak-mart.com` | `password` | Store Operations, Catalog & POS |
+| **Manager** | `manager@ak-mart.com` | `password` | Branch Inventory & Sales |
+| **Cashier** | `cashier@ak-mart.com` | `password` | POS Terminal Only |
 
 ---
 
-## 🧪 Automated Test Suite
+## 🧪 Security & Quality Verification
 
-AK-Mart includes a feature test suite verifying pricing calculations, concurrency locking, smart extraction, communication fallbacks, and security gates:
+AK-Mart features automated test suites verifying OTP generation, Bcrypt hash validation, cooldown enforcement, and server-side select endpoints:
 
 ```bash
+# Run OTP & Select Unit Verification
+php scratch/test_otp.php
+php scratch/test_select_search.php
+
+# Run Feature Test Suite
 php artisan test
-```
-
-```
-PASS  Tests\Feature\AuthenticationTest
-PASS  Tests\Feature\BranchAndPermissionTest
-PASS  Tests\Feature\CommerceRegressionAuditTest
-PASS  Tests\Feature\NextGenCommerceTest
-PASS  Tests\Feature\AdvancedECommerceSuiteTest
-PASS  Tests\Feature\UniversalProductImporterTest
-PASS  Tests\Feature\ProfileInformationTest
-PASS  Tests\Feature\PasswordResetTest
-PASS  Tests\Feature\TwoFactorAuthenticationSettingsTest
-
-Tests:       75 Passed, 321 Assertions, 0 Failures
-Duration:    11.89s
 ```
 
 ---
@@ -198,10 +185,11 @@ Duration:    11.89s
 
 **Akhil Meleppura**
 - **GitHub**: [@akhilmeleppura](https://github.com/akhilmeleppura)
-- **Repository**: [https://github.com/akhilmeleppura/Ak-Mart](https://github.com/akhilmeleppura/Ak-Mart)
+- **Email**: [akhilmeleppura@gmail.com](mailto:akhilmeleppura@gmail.com)
+- **Project Repository**: [https://github.com/akhilmeleppura/Ak-Mart](https://github.com/akhilmeleppura/Ak-Mart)
 
 ---
 
 ## 📝 License
 
-This project is open-sourced under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
