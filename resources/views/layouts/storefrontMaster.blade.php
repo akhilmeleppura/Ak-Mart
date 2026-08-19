@@ -116,13 +116,17 @@
                 <span class="fs-4 fw-bolder text-primary">AK-Mart</span>
             </a>
 
-            <!-- Search Bar -->
-            <form action="{{ route('storefront.shop') }}" method="GET" class="flex-grow-1 mx-4 d-none d-md-block" style="max-width: 550px;">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control rounded-start-pill ps-3" placeholder="{{ __('Search 5,000+ groceries, essentials, and snacks...') }}" value="{{ request('q') }}">
-                    <button class="btn btn-primary rounded-end-pill px-4" type="submit"><i class="bx bx-search fs-5"></i></button>
-                </div>
-            </form>
+            <!-- Search Bar with Live Suggestions Dropdown -->
+            <div class="position-relative flex-grow-1 mx-4 d-none d-md-block" style="max-width: 550px;">
+                <form action="{{ route('storefront.shop') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="q" id="storeSearchInput" class="form-control rounded-start-pill ps-3" placeholder="{{ __('Search 5,000+ groceries, essentials, and snacks...') }}" value="{{ request('q') }}" autocomplete="off">
+                        <button class="btn btn-primary rounded-end-pill px-4" type="submit"><i class="bx bx-search fs-5"></i></button>
+                    </div>
+                </form>
+                <div id="searchSuggestionsBox" class="position-absolute start-0 w-100 bg-white border rounded-3 shadow-lg p-2 d-none" style="top: 105%; z-index: 1050; max-height: 360px; overflow-y: auto;"></div>
+            </div>
+
 
             <!-- Action Buttons: Wishlist & Cart -->
             <div class="d-flex align-items-center gap-3">
@@ -239,7 +243,52 @@
                 }
             });
         }
+
+        // Live Search Autocomplete Debounce
+        const searchInput = document.getElementById('storeSearchInput');
+        const suggestionsBox = document.getElementById('searchSuggestionsBox');
+        let searchTimeout = null;
+
+        if (searchInput && suggestionsBox) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                const q = this.value.trim();
+                if (q.length < 2) {
+                    suggestionsBox.classList.add('d-none');
+                    return;
+                }
+                searchTimeout = setTimeout(() => {
+                    fetch(`{{ route('storefront.search.suggestions') }}?q=${encodeURIComponent(q)}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.suggestions && data.suggestions.length > 0) {
+                                suggestionsBox.innerHTML = data.suggestions.map(p => `
+                                    <a href="/store/product/${p.id}" class="d-flex align-items-center gap-3 p-2 rounded text-decoration-none text-dark hover-bg">
+                                        <img src="${p.image ? '/' + p.image : '/assets/img/illustrations/boy-with-rocket-light.png'}" width="38" height="38" class="rounded object-fit-contain bg-light p-1">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold small text-truncate" style="max-width: 320px;">${p.name}</div>
+                                            <small class="text-primary fw-bold">$${parseFloat(p.price).toFixed(2)}</small>
+                                            <span class="badge ${p.qty > 0 ? 'bg-label-success' : 'bg-label-danger'} ms-2" style="font-size: 10px;">${p.qty > 0 ? 'In Stock' : 'Out'}</span>
+                                        </div>
+                                    </a>
+                                `).join('');
+                                suggestionsBox.classList.remove('d-none');
+                            } else {
+                                suggestionsBox.innerHTML = '<div class="p-3 text-center text-muted small">No products found.</div>';
+                                suggestionsBox.classList.remove('d-none');
+                            }
+                        });
+                }, 250);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.classList.add('d-none');
+                }
+            });
+        }
     </script>
     @yield('scripts')
 </body>
 </html>
+

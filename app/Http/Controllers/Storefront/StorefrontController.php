@@ -8,8 +8,6 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CmsBanner;
-use App\Models\Coupon;
-use App\Models\Review;
 use App\Models\StockMovement;
 use App\Models\LoyaltyTransaction;
 use App\Models\StoreCredit;
@@ -22,16 +20,77 @@ use Illuminate\Support\Str;
 class StorefrontController extends Controller
 {
     /**
-     * Storefront Homepage
+     * Storefront Homepage with Dynamic CMS Sliders & Merchandising Blocks
      */
     public function index()
     {
-        $banners = CmsBanner::where('is_active', true)->where('position', 'home_hero')->orderBy('sort_order')->get();
-        $categories = Category::where('is_active', true)->withCount('products')->take(8)->get();
-        $featuredProducts = Product::where('is_active', true)->latest()->take(8)->get();
-        $bestSellers = Product::where('is_active', true)->where('qty', '>', 0)->orderByDesc('price')->take(4)->get();
+        $heroSliders = CmsBanner::where('is_active', true)
+            ->where('position', 'home_hero')
+            ->orderBy('sort_order')
+            ->get();
 
-        return view('storefront.home', compact('banners', 'categories', 'featuredProducts', 'bestSellers'));
+        $featuredCategories = Category::where('is_active', true)
+            ->withCount('products')
+            ->orderBy('sort_order')
+            ->take(8)
+            ->get();
+
+        $featuredProducts = Product::where('is_active', true)
+            ->where('is_featured', true)
+            ->take(8)
+            ->get();
+
+        // If no featured flag set, fallback to latest products
+        if ($featuredProducts->isEmpty()) {
+            $featuredProducts = Product::where('is_active', true)->latest()->take(8)->get();
+        }
+
+        $trendingProducts = Product::where('is_active', true)
+            ->where(fn($q) => $q->where('is_trending', true)->orWhere('qty', '>', 10))
+            ->take(4)
+            ->get();
+
+        $bestSellers = Product::where('is_active', true)
+            ->where(fn($q) => $q->where('is_best_seller', true)->orWhere('qty', '>', 5))
+            ->orderByDesc('price')
+            ->take(4)
+            ->get();
+
+        $dealsOfTheDay = Product::where('is_active', true)
+            ->where(fn($q) => $q->where('deal_of_the_day', true)->orWhereNotNull('compare_at_price'))
+            ->take(4)
+            ->get();
+
+        return view('storefront.home', compact(
+            'heroSliders',
+            'featuredCategories',
+            'featuredProducts',
+            'trendingProducts',
+            'bestSellers',
+            'dealsOfTheDay'
+        ));
+    }
+
+    /**
+     * Live Search Autocomplete Suggestions AJAX
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $q = trim($request->input('q', ''));
+        if (strlen($q) < 2) {
+            return response()->json(['suggestions' => []]);
+        }
+
+        $products = Product::where('is_active', true)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'LIKE', "%{$q}%")
+                      ->orWhere('sku', 'LIKE', "%{$q}%")
+                      ->orWhere('barcode', 'LIKE', "%{$q}%");
+            })
+            ->take(6)
+            ->get(['id', 'name', 'price', 'image', 'qty', 'sku']);
+
+        return response()->json(['suggestions' => $products]);
     }
 
     /**
@@ -54,6 +113,17 @@ class StorefrontController extends Controller
         // Category Filter
         if ($categoryId = $request->input('category')) {
             $query->where('category_id', $categoryId);
+        }
+
+        // Merchandising Collections
+        if ($collection = $request->input('collection')) {
+            match ($collection) {
+                'featured'   => $query->where('is_featured', true),
+                'trending'   => $query->where('is_trending', true),
+                'bestseller' => $query->where('is_best_seller', true),
+                'deals'      => $query->where('deal_of_the_day', true),
+                default      => null,
+            };
         }
 
         // Price Range

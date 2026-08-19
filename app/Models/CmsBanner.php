@@ -12,7 +12,10 @@ class CmsBanner extends Model
     protected $fillable = [
         'title',
         'subtitle',
+        'badge_text',
         'image',
+        'mobile_image',
+        'bg_color',
         'link_url',
         'button_text',
         'position',
@@ -24,4 +27,10 @@ class CmsBanner extends Model
         'is_active'  => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }
+

@@ -19,6 +19,10 @@ class Product extends Model
             'attributes' => 'array',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_trending' => 'boolean',
+            'is_best_seller' => 'boolean',
+            'is_new_arrival' => 'boolean',
+            'deal_of_the_day' => 'boolean',
             'price' => 'decimal:2',
             'compare_at_price' => 'decimal:2',
             'qty' => 'integer',
@@ -26,6 +30,32 @@ class Product extends Model
             'max_stock' => 'integer',
         ];
     }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function scopeTrending($query)
+    {
+        return $query->where('is_trending', true);
+    }
+
+    public function scopeBestSeller($query)
+    {
+        return $query->where('is_best_seller', true);
+    }
+
+    public function scopeNewArrivals($query)
+    {
+        return $query->where('is_new_arrival', true);
+    }
+
+    public function scopeDealOfTheDay($query)
+    {
+        return $query->where('deal_of_the_day', true);
+    }
+
 
     public function category()
     {

@@ -117,6 +117,7 @@ Route::get('/dashboard', [EcommerceDashboard::class, 'index'])->name('dashboard'
 Route::prefix('store')->name('storefront.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Storefront\StorefrontController::class, 'index'])->name('home');
     Route::get('/shop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'shop'])->name('shop');
+    Route::get('/search-suggestions', [\App\Http\Controllers\Storefront\StorefrontController::class, 'searchSuggestions'])->name('search.suggestions');
     Route::get('/product/{id}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'product'])->name('product');
     Route::get('/cart', [\App\Http\Controllers\Storefront\StorefrontController::class, 'cart'])->name('cart');
     Route::post('/cart/add', [\App\Http\Controllers\Storefront\StorefrontController::class, 'addToCart'])->name('cart.add');
@@ -143,7 +144,7 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('customer/portal')->name
 });
 
 // -----------------------------------------------------------------------
-// Product Attributes (EAV) & Accounting Exports (Admin)
+// Product Attributes (EAV), Store Management & Accounting Exports (Admin)
 // -----------------------------------------------------------------------
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/products/attributes', [\App\Http\Controllers\apps\ProductAttributeController::class, 'index'])->name('app-attributes');
@@ -151,11 +152,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/products/attributes/{attribute}/value', [\App\Http\Controllers\apps\ProductAttributeController::class, 'storeValue'])->name('app-attributes-value-store');
     Route::delete('/products/attributes/{id}', [\App\Http\Controllers\apps\ProductAttributeController::class, 'destroy'])->name('app-attributes-destroy');
 
+    // Hero Sliders & Product Merchandising Board
+    Route::get('/store-management/sliders', [\App\Http\Controllers\apps\StoreBuilderController::class, 'sliders'])->name('app-sliders');
+    Route::post('/store-management/sliders', [\App\Http\Controllers\apps\StoreBuilderController::class, 'storeSlider'])->name('app-sliders-store');
+    Route::delete('/store-management/sliders/{id}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'destroySlider'])->name('app-sliders-destroy');
+    Route::get('/store-management/merchandising', [\App\Http\Controllers\apps\StoreBuilderController::class, 'merchandising'])->name('app-merchandising');
+    Route::post('/store-management/merchandising/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleMerchandising'])->name('app-merchandising-toggle');
+
     Route::get('/finance/accounting-export', [\App\Http\Controllers\apps\AccountingExportController::class, 'index'])->name('app-accounting-export');
     Route::get('/finance/accounting-export/sales', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportSales'])->name('app-accounting-export-sales');
     Route::get('/finance/accounting-export/expenses', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportExpenses'])->name('app-accounting-export-expenses');
     Route::get('/finance/accounting-export/gst', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportGst'])->name('app-accounting-export-gst');
 });
+
 
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');

@@ -9,12 +9,25 @@ class Category extends Model
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use \App\Traits\BelongsToBranch;
 
-    protected $guarded = [];
+    protected function casts(): array
+    {
+        return [
+            'is_active'   => 'boolean',
+            'is_featured' => 'boolean',
+            'sort_order'  => 'integer',
+        ];
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
 
     public function products()
     {
         return $this->hasMany(Product::class);
     }
+
 
     public function parent()
     {

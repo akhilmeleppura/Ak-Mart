@@ -59,6 +59,18 @@
       "target": "_blank"
     },
     {
+      "url": "store-management/sliders",
+      "name": "Hero Sliders & Banners",
+      "icon": "menu-icon icon-base bx bx-carousel",
+      "slug": "app-sliders"
+    },
+    {
+      "url": "store-management/merchandising",
+      "name": "Merchandising Board",
+      "icon": "menu-icon icon-base bx bx-star",
+      "slug": "app-merchandising"
+    },
+    {
       "name": "Products & Catalog",
       "icon": "menu-icon icon-base bx bx-package",
       "slug": "app-ecommerce-product",
