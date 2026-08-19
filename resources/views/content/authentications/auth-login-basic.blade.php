@@ -61,12 +61,12 @@
     /* Card Container with Glass Border */
     .ak-login-card {
       width: 100%;
-      max-width: 1050px;
+      max-width: 1080px;
       border-radius: 1.5rem;
       overflow: hidden;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.96);
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
       position: relative;
       z-index: 2;
@@ -176,6 +176,53 @@
     .btn-shine:hover::after {
       left: 100%;
     }
+
+    /* Modern Mode Switcher Pills */
+    .ak-mode-nav {
+      background: #F1F5F9;
+      border-radius: 12px;
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .ak-mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #64748B;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .ak-mode-btn.active {
+      background: #FFFFFF;
+      color: #2563EB;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    .ak-mode-btn:hover:not(.active) {
+      color: #1E293B;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Security Feature Badges */
+    .security-chip {
+      font-size: 11px;
+      padding: 4px 8px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+    }
   </style>
 @endsection
 
@@ -233,19 +280,19 @@
             </div>
           </div>
 
-          <!-- Animated Stat Card 3: Stock Alert Monitor -->
+          <!-- Animated Stat Card 3: Cryptographic OTP Security -->
           <div class="ak-stat-card ak-float-3">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-3">
                 <div class="avatar avatar-sm bg-white bg-opacity-20 rounded-3 d-flex align-items-center justify-content-center">
-                  <i class="bx bx-package text-white fs-4"></i>
+                  <i class="bx bx-shield-quarter text-white fs-4"></i>
                 </div>
                 <div>
-                  <span class="text-white-50 small d-block">{{ __('Inventory Monitor') }}</span>
-                  <span class="fw-bold fs-6 text-white">{{ __('All Stock Synced') }}</span>
+                  <span class="text-white-50 small d-block">{{ __('Auth Security') }}</span>
+                  <span class="fw-bold fs-6 text-white">{{ __('Bcrypt OTP Protected') }}</span>
                 </div>
               </div>
-              <span class="badge bg-info text-white">{{ __('Automated') }}</span>
+              <span class="badge bg-warning text-dark fw-semibold"><i class="bx bx-check-shield me-1"></i>{{ __('Active') }}</span>
             </div>
           </div>
         </div>
@@ -256,7 +303,7 @@
         </div>
       </div>
 
-      <!-- Right Column: Login Form & Interactive Demo Quick Fill -->
+      <!-- Right Column: Login Form & Dual-Mode OTP Authentication -->
       <div class="col-lg-6 ak-login-right d-flex flex-column justify-content-between">
         <div>
           <div class="d-lg-none text-center mb-4">
@@ -264,29 +311,44 @@
             <div class="app-brand-text fs-3 text-heading fw-bold mt-2">AK-Mart</div>
           </div>
 
-          <div class="mb-4">
-            <h3 class="fw-bold mb-1 text-heading">{{ __('Welcome Back') }} 👋</h3>
-            <p class="text-muted">{{ __('Sign in to your AK-Mart store management console') }}</p>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="fw-bold mb-1 text-heading">{{ __('Welcome Back') }} 👋</h3>
+              <span class="security-chip"><i class="bx bx-lock-alt"></i> {{ __('OTP Secured') }}</span>
+            </div>
+            <p class="text-muted small mb-0">{{ __('Sign in to your AK-Mart store management console') }}</p>
           </div>
 
-          <!-- Quick Fill Demo Accounts with Supreme Admin Access -->
-          <div class="mb-4 p-3 bg-light rounded-3 border">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ __('Quick 1-Click Access:') }}</small>
-              <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.7rem;"><i class="bx bxs-crown me-1"></i>{{ __('Supreme Access') }}</span>
+          <!-- Dual Mode Switcher: Passwordless OTP vs Password + OTP -->
+          <div class="ak-mode-nav">
+            <button type="button" class="ak-mode-btn active" id="modeOtpBtn" onclick="switchLoginMode('otp')">
+              <i class="bx bx-mobile-alt fs-5"></i>
+              <span>{{ __('Instant OTP Sign In') }}</span>
+            </button>
+            <button type="button" class="ak-mode-btn" id="modePasswordBtn" onclick="switchLoginMode('password')">
+              <i class="bx bx-key fs-5"></i>
+              <span>{{ __('Password + OTP') }}</span>
+            </button>
+          </div>
+
+          <!-- Quick Fill Demo Accounts -->
+          <div class="mb-3 p-2.5 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between align-items-center mb-1.5">
+              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Quick 1-Click Access:') }}</small>
+              <span class="badge bg-warning text-dark fw-bold px-2 py-0.5" style="font-size: 0.68rem;"><i class="bx bxs-crown me-1"></i>{{ __('Demo') }}</span>
             </div>
-            <div class="d-flex flex-wrap gap-2">
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('supreme@ak-mart.com', 'supreme123')" style="border-color: #F59E0B !important; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%) !important;">
-                <i class="bx bxs-crown text-warning me-1.5 fs-6"></i> <strong class="text-dark">{{ __('Supreme Admin') }}</strong>
+            <div class="d-flex flex-wrap gap-1.5">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('supreme@ak-mart.com', 'supreme123')" style="border-color: #F59E0B !important; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%) !important;">
+                <i class="bx bxs-crown text-warning me-1 fs-6"></i> <strong class="text-dark">{{ __('Supreme') }}</strong>
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('admin@ak-mart.com', 'password')">
-                <i class="bx bx-shield-quarter text-primary me-1.5 fs-6"></i> {{ __('AK-Mart Admin') }}
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('admin@ak-mart.com', 'password')">
+                <i class="bx bx-shield-quarter text-primary me-1 fs-6"></i> {{ __('Admin') }}
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('manager@ak-mart.com', 'password')">
-                <i class="bx bx-briefcase text-info me-1.5 fs-6"></i> {{ __('Manager') }}
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('manager@ak-mart.com', 'password')">
+                <i class="bx bx-briefcase text-info me-1 fs-6"></i> {{ __('Manager') }}
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-2 px-2.5" onclick="fillDemo('cashier@ak-mart.com', 'password')">
-                <i class="bx bx-terminal text-success me-1.5 fs-6"></i> {{ __('Cashier') }}
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('cashier@ak-mart.com', 'password')">
+                <i class="bx bx-terminal text-success me-1 fs-6"></i> {{ __('Cashier') }}
               </span>
             </div>
           </div>
@@ -301,24 +363,37 @@
             </div>
           @endif
 
+          @if (session('status'))
+            <div class="alert alert-info py-2 px-3 mb-3 small rounded-3">
+              {{ session('status') }}
+            </div>
+          @endif
+
           <form id="formAuthentication" action="{{ route('auth-login-basic-store') }}" method="POST">
             @csrf
+            <input type="hidden" name="login_mode" id="login_mode" value="otp">
+
+            {{-- Identifier Field (Email / Mobile / Username) --}}
             <div class="mb-3">
-              <label for="email" class="form-label fw-semibold">{{ __('Email or Username') }}</label>
+              <label for="email" class="form-label fw-semibold" id="emailLabel">{{ __('Email or Mobile') }}</label>
               <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-envelope fs-5"></i></span>
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-envelope fs-5" id="emailIcon"></i></span>
                 <input type="text" class="form-control border-start-0 ps-0" id="email" name="email" placeholder="admin@ak-mart.com" required autofocus value="admin@ak-mart.com" />
               </div>
+              <small class="text-muted mt-1 d-block" id="otpHelpText" style="font-size: 12px;">
+                <i class="bx bx-info-circle me-1"></i>{{ __('We will send a 6-digit secure code to verify your identity.') }}
+              </small>
             </div>
 
-            <div class="mb-3">
+            {{-- Password Field (Only shown in Password+OTP mode) --}}
+            <div class="mb-3" id="passwordGroup" style="display: none;">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label for="password" class="form-label fw-semibold mb-0">{{ __('Password') }}</label>
                 <a href="{{ route('auth.forgot-password-otp.request') }}" class="small text-primary text-decoration-none">{{ __('Forgot password?') }}</a>
               </div>
               <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bx bx-lock-alt fs-5"></i></span>
-                <input type="password" id="password" class="form-control border-start-0 border-end-0 ps-0" name="password" placeholder="••••••••" required value="password" />
+                <input type="password" id="password" class="form-control border-start-0 border-end-0 ps-0" name="password" placeholder="••••••••" value="password" />
                 <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword">
                   <i class="bx bx-hide" id="toggleIcon"></i>
                 </button>
@@ -328,15 +403,21 @@
             <div class="mb-4 d-flex justify-content-between align-items-center">
               <div class="form-check mb-0">
                 <input class="form-check-input" type="checkbox" id="remember-me" name="remember" checked />
-                <label class="form-check-label text-muted" for="remember-me">{{ __('Keep me signed in') }}</label>
+                <label class="form-check-label text-muted small" for="remember-me">{{ __('Keep me signed in on this device') }}</label>
               </div>
             </div>
 
             <button class="btn btn-ak-primary btn-shine w-100 py-3 fs-6 shadow-sm mb-3" type="submit" id="submitBtn">
-              <span>{{ __('Sign In to AK-Mart Console') }}</span>
-              <i class="bx bx-right-arrow-alt ms-1 fs-5 align-middle"></i>
+              <span id="submitBtnText">{{ __('Send Verification Code') }}</span>
+              <i class="bx bx-right-arrow-alt ms-1 fs-5 align-middle" id="submitBtnIcon"></i>
             </button>
           </form>
+
+          <div class="d-flex justify-content-center gap-3 text-muted" style="font-size: 11.5px;">
+            <span><i class="bx bx-check-circle text-success me-1"></i>{{ __('Single-Use OTP') }}</span>
+            <span><i class="bx bx-time-five text-info me-1"></i>{{ __('5-Min Expiry') }}</span>
+            <span><i class="bx bx-shield text-primary me-1"></i>{{ __('Bcrypt Hashed') }}</span>
+          </div>
         </div>
 
         <div class="text-center text-muted small pt-3 border-top">
@@ -348,6 +429,40 @@
 </div>
 
 <script>
+  function switchLoginMode(mode) {
+    const otpBtn = document.getElementById('modeOtpBtn');
+    const pwBtn = document.getElementById('modePasswordBtn');
+    const modeInput = document.getElementById('login_mode');
+    const pwGroup = document.getElementById('passwordGroup');
+    const pwInput = document.getElementById('password');
+    const submitBtnText = document.getElementById('submitBtnText');
+    const submitBtnIcon = document.getElementById('submitBtnIcon');
+    const otpHelpText = document.getElementById('otpHelpText');
+    const emailLabel = document.getElementById('emailLabel');
+
+    if (mode === 'otp') {
+      otpBtn.classList.add('active');
+      pwBtn.classList.remove('active');
+      modeInput.value = 'otp';
+      pwGroup.style.display = 'none';
+      pwInput.removeAttribute('required');
+      submitBtnText.textContent = @json(__('Send Verification Code'));
+      submitBtnIcon.className = 'bx bx-mobile-alt ms-1 fs-5 align-middle';
+      otpHelpText.style.display = 'block';
+      emailLabel.textContent = @json(__('Email or Mobile'));
+    } else {
+      pwBtn.classList.add('active');
+      otpBtn.classList.remove('active');
+      modeInput.value = 'password';
+      pwGroup.style.display = 'block';
+      pwInput.setAttribute('required', 'required');
+      submitBtnText.textContent = @json(__('Sign In with Password & OTP'));
+      submitBtnIcon.className = 'bx bx-right-arrow-alt ms-1 fs-5 align-middle';
+      otpHelpText.style.display = 'none';
+      emailLabel.textContent = @json(__('Email or Username'));
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
@@ -366,14 +481,15 @@
     if (form && submitBtn) {
       form.addEventListener('submit', function() {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ' + @json(__('Authenticating...'));
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ' + @json(__('Processing Verification...'));
       });
     }
   });
 
   function fillDemo(email, password) {
     document.getElementById('email').value = email;
-    document.getElementById('password').value = password;
+    const pwInput = document.getElementById('password');
+    if (pwInput) pwInput.value = password;
     
     // Quick highlight effect
     const emailInput = document.getElementById('email');

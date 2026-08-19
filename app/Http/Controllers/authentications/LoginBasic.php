@@ -25,6 +25,14 @@ class LoginBasic extends Controller
 
     public function store(Request $request)
     {
+        $loginMode = $request->input('login_mode', 'password');
+
+        // --- Mode 1: Direct Passwordless OTP Login ---
+        if ($loginMode === 'otp') {
+            return $this->handleDirectOtpLogin($request);
+        }
+
+        // --- Mode 2: Password + OTP Login ---
         $credentials = $request->validate([
             'email'    => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -32,7 +40,7 @@ class LoginBasic extends Controller
 
         $fieldType = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
-        // Verify credentials manually (without fully logging in yet when OTP is enabled)
+        // Verify credentials manually
         $user = User::where($fieldType, $credentials['email'])->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
@@ -51,6 +59,29 @@ class LoginBasic extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    /**
+     * Direct Passwordless OTP Login (Enter Email/Mobile -> Receive OTP -> Verify -> Login)
+     */
+    public function handleDirectOtpLogin(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'string'],
+        ]);
+
+        $identifier = trim($request->input('email'));
+        $fieldType  = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : (is_numeric($identifier) ? 'phone' : 'name');
+
+        $user = User::where($fieldType, $identifier)->first();
+
+        if (! $user) {
+            return back()->withErrors([
+                'email' => __('No account found matching this identifier.'),
+            ])->onlyInput('email');
+        }
+
+        return $this->initiateOtpFlow($request, $user);
     }
 
     public function logout(Request $request)
@@ -101,6 +132,7 @@ class LoginBasic extends Controller
             'otp_session_token'      => $record->session_token,
         ]);
 
-        return redirect()->route('auth.otp.show');
+        return redirect()->route('auth.otp.show')->with('status', __('A 6-digit verification code has been sent to :email', ['email' => $identifier]));
     }
 }
+
