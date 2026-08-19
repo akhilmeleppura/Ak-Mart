@@ -93,6 +93,20 @@
                         <span class="text-muted">{{ __('Subtotal') }}</span>
                         <strong>${{ number_format($subtotal, 2) }}</strong>
                     </div>
+
+                    @if(!empty($coupon))
+                        <div class="d-flex justify-content-between mb-2 text-success align-items-center">
+                            <span><i class="bx bxs-purchase-tag me-1"></i> {{ __('Coupon') }} (<strong>{{ $coupon['code'] }}</strong>)</span>
+                            <div>
+                                <span class="fw-bold">-${{ number_format($couponDiscount, 2) }}</span>
+                                <form action="{{ route('storefront.coupon.remove') }}" method="POST" class="d-inline ms-1">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="{{ __('Remove Coupon') }}"><i class="bx bx-x-circle align-middle"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">{{ __('Express Delivery') }}</span>
                         <span class="text-success fw-bold">{{ __('FREE') }}</span>
@@ -111,18 +125,55 @@
                         </div>
                     @endif
 
+                    @if(empty($coupon))
+                        <!-- Optional Coupon Box on Checkout -->
+                        <div class="mb-3">
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="checkoutCouponInput" class="form-control text-uppercase" placeholder="{{ __('Promo code (e.g. WELCOME10)') }}">
+                                <button class="btn btn-outline-primary" type="button" onclick="applyCheckoutCoupon()">{{ __('Apply') }}</button>
+                            </div>
+                        </div>
+                    @endif
+
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fs-5 fw-bold">{{ __('Total Amount') }}</span>
-                        <span class="fs-4 fw-bolder text-primary">${{ number_format($subtotal, 2) }}</span>
+                        <span class="fs-4 fw-bolder text-primary">${{ number_format($finalTotal, 2) }}</span>
                     </div>
 
                     <button class="btn btn-primary btn-lg rounded-pill w-100 fw-bold shadow-sm" type="submit">
-                        <i class="bx bx-lock-alt me-1"></i> {{ __('Place Order Now') }}
+                        <i class="bx bx-lock-alt me-1"></i> {{ __('Place Order Now') }} • ${{ number_format($finalTotal, 2) }}
                     </button>
                 </div>
             </div>
         </div>
     </form>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+function applyCheckoutCoupon() {
+    const code = document.getElementById('checkoutCouponInput').value.trim();
+    if (!code) return;
+
+    fetch('{{ route("storefront.coupon.apply") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => window.location.reload(), 600);
+        } else {
+            showToast(data.message || 'Invalid coupon', 'primary');
+        }
+    });
+}
+</script>
 @endsection

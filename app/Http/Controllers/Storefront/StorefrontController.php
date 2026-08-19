@@ -11,6 +11,8 @@ use App\Models\CmsBanner;
 use App\Models\StockMovement;
 use App\Models\LoyaltyTransaction;
 use App\Models\StoreCredit;
+use App\Models\Coupon;
+use App\Models\Review;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,6 +128,19 @@ class StorefrontController extends Controller
             };
         }
 
+        // Brand Filter (supports array or single string)
+        if ($brands = $request->input('brands')) {
+            $brandList = is_array($brands) ? $brands : explode(',', $brands);
+            $query->whereIn('brand', $brandList);
+        } elseif ($brand = $request->input('brand')) {
+            $query->where('brand', $brand);
+        }
+
+        // Rating Filter (e.g. 4 => 4 stars and above)
+        if ($minRating = $request->input('min_rating')) {
+            $query->where('rating_cache', '>=', (float)$minRating);
+        }
+
         // Price Range
         if ($minPrice = $request->input('min_price')) {
             $query->where('price', '>=', (float)$minPrice);
@@ -142,16 +157,19 @@ class StorefrontController extends Controller
         // Sorting
         $sort = $request->input('sort', 'latest');
         match ($sort) {
-            'price_low'  => $query->orderBy('price', 'asc'),
-            'price_high' => $query->orderBy('price', 'desc'),
-            'popular'    => $query->orderByDesc('qty'),
-            default      => $query->latest(),
+            'price_low'   => $query->orderBy('price', 'asc'),
+            'price_high'  => $query->orderBy('price', 'desc'),
+            'rating_high' => $query->orderByDesc('rating_cache'),
+            'name_asc'    => $query->orderBy('name', 'asc'),
+            'popular'     => $query->orderByDesc('qty'),
+            default       => $query->latest(),
         };
 
         $products = $query->paginate(12)->withQueryString();
         $categories = Category::where('is_active', true)->withCount('products')->get();
+        $availableBrands = Product::whereNotNull('brand')->where('brand', '!=', '')->distinct()->orderBy('brand')->pluck('brand');
 
-        return view('storefront.shop', compact('products', 'categories'));
+        return view('storefront.shop', compact('products', 'categories', 'availableBrands'));
     }
 
     /**
@@ -191,7 +209,27 @@ class StorefrontController extends Controller
 
         $availableStock = app(InventoryService::class)->getAvailableStock($product->id);
 
-        return view('storefront.product-detail', compact('product', 'relatedProducts', 'frequentlyBought', 'availableStock'));
+        // 5-Star Rating Breakdown Histogram
+        $reviews = $product->reviews;
+        $totalReviews = $reviews->count();
+        $ratingBreakdown = [
+            5 => $totalReviews ? round(($reviews->where('rating', 5)->count() / $totalReviews) * 100) : 0,
+            4 => $totalReviews ? round(($reviews->where('rating', 4)->count() / $totalReviews) * 100) : 0,
+            3 => $totalReviews ? round(($reviews->where('rating', 3)->count() / $totalReviews) * 100) : 0,
+            2 => $totalReviews ? round(($reviews->where('rating', 2)->count() / $totalReviews) * 100) : 0,
+            1 => $totalReviews ? round(($reviews->where('rating', 1)->count() / $totalReviews) * 100) : 0,
+        ];
+        $averageRating = $totalReviews ? round($reviews->avg('rating'), 1) : 5.0;
+
+        return view('storefront.product-detail', compact(
+            'product',
+            'relatedProducts',
+            'frequentlyBought',
+            'availableStock',
+            'ratingBreakdown',
+            'averageRating',
+            'totalReviews'
+        ));
     }
 
 
@@ -206,7 +244,96 @@ class StorefrontController extends Controller
             $subtotal += $item['price'] * $item['qty'];
         }
 
-        return view('storefront.cart', compact('cart', 'subtotal'));
+        // Coupon Handling
+        $coupon = session()->get('coupon');
+        $couponDiscount = 0;
+        if ($coupon) {
+            if ($coupon['type'] === 'percentage') {
+                $couponDiscount = round(($subtotal * $coupon['value']) / 100, 2);
+            } else {
+                $couponDiscount = min($subtotal, (float)$coupon['value']);
+            }
+        }
+        $finalTotal = max(0, $subtotal - $couponDiscount);
+
+        return view('storefront.cart', compact('cart', 'subtotal', 'coupon', 'couponDiscount', 'finalTotal'));
+    }
+
+    /**
+     * Apply Coupon Code AJAX
+     */
+    public function applyCoupon(Request $request)
+    {
+        $code = strtoupper(trim($request->input('code', '')));
+        if (!$code) {
+            return response()->json(['success' => false, 'message' => 'Please enter a coupon code.'], 422);
+        }
+
+        $coupon = Coupon::where('code', $code)->where('is_active', true)->first();
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid or inactive coupon code.'], 404);
+        }
+
+        if ($coupon->start_date && now()->lt($coupon->start_date)) {
+            return response()->json(['success' => false, 'message' => 'Coupon campaign has not started yet.'], 422);
+        }
+
+        if ($coupon->end_date && now()->gt($coupon->end_date)) {
+            return response()->json(['success' => false, 'message' => 'Coupon has expired.'], 422);
+        }
+
+        if ($coupon->usage_limit && $coupon->usage_count >= $coupon->usage_limit) {
+            return response()->json(['success' => false, 'message' => 'Coupon usage limit reached.'], 422);
+        }
+
+        $cart = session()->get('cart', []);
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += $item['price'] * $item['qty'];
+        }
+
+        if ($subtotal <= 0) {
+            return response()->json(['success' => false, 'message' => 'Your cart is empty.'], 422);
+        }
+
+        if ($coupon->min_spend && $subtotal < $coupon->min_spend) {
+            return response()->json(['success' => false, 'message' => "Minimum order amount of \${$coupon->min_spend} required for coupon {$coupon->code}."], 422);
+        }
+
+        $discount = 0;
+        if ($coupon->type === 'percentage') {
+            $discount = round(($subtotal * $coupon->value) / 100, 2);
+        } else {
+            $discount = min($subtotal, (float)$coupon->value);
+        }
+
+        session()->put('coupon', [
+            'code'     => $coupon->code,
+            'type'     => $coupon->type,
+            'value'    => (float)$coupon->value,
+            'discount' => $discount,
+        ]);
+
+        $newTotal = max(0, $subtotal - $discount);
+
+        return response()->json([
+            'success'        => true,
+            'message'        => "Coupon {$coupon->code} applied successfully! You saved $" . number_format($discount, 2),
+            'discount'       => number_format($discount, 2),
+            'discount_raw'   => $discount,
+            'subtotal'       => number_format($subtotal, 2),
+            'final_total'    => number_format($newTotal, 2),
+            'code'           => $coupon->code,
+        ]);
+    }
+
+    /**
+     * Remove Applied Coupon
+     */
+    public function removeCoupon()
+    {
+        session()->forget('coupon');
+        return redirect()->back()->with('success', 'Coupon removed successfully.');
     }
 
     /**
@@ -264,10 +391,25 @@ class StorefrontController extends Controller
             $subtotal += $item['price'] * $item['qty'];
         }
 
+        // Recalculate coupon discount if present
+        $coupon = session()->get('coupon');
+        $couponDiscount = 0;
+        if ($coupon) {
+            if ($coupon['type'] === 'percentage') {
+                $couponDiscount = round(($subtotal * $coupon['value']) / 100, 2);
+            } else {
+                $couponDiscount = min($subtotal, (float)$coupon['value']);
+            }
+            session()->put('coupon.discount', $couponDiscount);
+        }
+        $finalTotal = max(0, $subtotal - $couponDiscount);
+
         return response()->json([
-            'success'  => true,
-            'subtotal' => number_format($subtotal, 2),
-            'cart'     => $cart,
+            'success'        => true,
+            'subtotal'       => number_format($subtotal, 2),
+            'couponDiscount' => number_format($couponDiscount, 2),
+            'finalTotal'     => number_format($finalTotal, 2),
+            'cart'           => $cart,
         ]);
     }
 
@@ -290,7 +432,27 @@ class StorefrontController extends Controller
         $walletBalance = $user ? (StoreCredit::where('user_id', $user->id)->value('balance') ?: 0) : 0;
         $loyaltyPoints = $user ? LoyaltyTransaction::getCustomerBalance($user->id) : 0;
 
-        return view('storefront.checkout', compact('cart', 'subtotal', 'walletBalance', 'loyaltyPoints'));
+        // Coupon Handling
+        $coupon = session()->get('coupon');
+        $couponDiscount = 0;
+        if ($coupon) {
+            if ($coupon['type'] === 'percentage') {
+                $couponDiscount = round(($subtotal * $coupon['value']) / 100, 2);
+            } else {
+                $couponDiscount = min($subtotal, (float)$coupon['value']);
+            }
+        }
+        $finalTotal = max(0, $subtotal - $couponDiscount);
+
+        return view('storefront.checkout', compact(
+            'cart',
+            'subtotal',
+            'walletBalance',
+            'loyaltyPoints',
+            'coupon',
+            'couponDiscount',
+            'finalTotal'
+        ));
     }
 
     /**
@@ -317,13 +479,31 @@ class StorefrontController extends Controller
                 $subtotal += $item['price'] * $item['qty'];
             }
 
+            // Apply Coupon if valid
+            $coupon = session()->get('coupon');
+            $couponDiscount = 0;
+            if ($coupon) {
+                if ($coupon['type'] === 'percentage') {
+                    $couponDiscount = round(($subtotal * $coupon['value']) / 100, 2);
+                } else {
+                    $couponDiscount = min($subtotal, (float)$coupon['value']);
+                }
+
+                // Increment coupon usage
+                $couponModel = Coupon::where('code', $coupon['code'])->first();
+                if ($couponModel) {
+                    $couponModel->increment('usage_count');
+                }
+            }
+
+            $orderTotal = max(0, $subtotal - $couponDiscount);
             $orderNumber = 'ORD-' . strtoupper(Str::random(10));
             $user = Auth::user();
 
             $order = Order::create([
                 'order_number'     => $orderNumber,
                 'user_id'          => $user?->id,
-                'total_amount'     => $subtotal,
+                'total_amount'     => $orderTotal,
                 'payment_method'   => $request->payment_method,
                 'payment_status'   => $request->payment_method === 'cod' ? 'pending' : 'paid',
                 'order_status'     => 'pending',

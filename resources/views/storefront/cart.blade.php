@@ -64,12 +64,26 @@
 
             <!-- Order Summary Column -->
             <div class="col-lg-4">
-                <div class="card p-4 border shadow-xs rounded-4">
+                <div class="card p-4 border shadow-xs rounded-4 mb-3">
                     <h5 class="fw-bold mb-3">{{ __('Order Summary') }}</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">{{ __('Subtotal') }}</span>
                         <strong id="cartSubtotal">${{ number_format($subtotal, 2) }}</strong>
                     </div>
+
+                    @if(!empty($coupon))
+                        <div class="d-flex justify-content-between mb-2 text-success align-items-center">
+                            <span><i class="bx bxs-purchase-tag me-1"></i> {{ __('Coupon') }} (<strong>{{ $coupon['code'] }}</strong>)</span>
+                            <div>
+                                <span class="fw-bold">-${{ number_format($couponDiscount, 2) }}</span>
+                                <form action="{{ route('storefront.coupon.remove') }}" method="POST" class="d-inline ms-1">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="{{ __('Remove Coupon') }}"><i class="bx bx-x-circle align-middle"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">{{ __('Estimated Delivery') }}</span>
                         <span class="text-success fw-bold">{{ __('FREE') }}</span>
@@ -77,7 +91,17 @@
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fs-5 fw-bold">{{ __('Estimated Total') }}</span>
-                        <span class="fs-5 fw-bold text-primary" id="cartTotal">${{ number_format($subtotal, 2) }}</span>
+                        <span class="fs-5 fw-bold text-primary" id="cartTotal">${{ number_format($finalTotal, 2) }}</span>
+                    </div>
+
+                    <!-- Coupon Code Input Box -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold text-muted">{{ __('Have a promo code?') }}</label>
+                        <div class="input-group">
+                            <input type="text" id="couponCodeInput" class="form-control text-uppercase" placeholder="e.g. WELCOME10" value="{{ $coupon['code'] ?? '' }}">
+                            <button class="btn btn-outline-primary fw-semibold" type="button" onclick="applyCouponAjax()">{{ __('Apply') }}</button>
+                        </div>
+                        <div id="couponFeedback" class="small mt-1"></div>
                     </div>
 
                     <a href="{{ route('storefront.checkout') }}" class="btn btn-primary btn-lg rounded-pill w-100 fw-bold">
@@ -92,6 +116,37 @@
 
 @section('scripts')
 <script>
+function applyCouponAjax() {
+    const code = document.getElementById('couponCodeInput').value.trim();
+    const feedback = document.getElementById('couponFeedback');
+    if (!code) {
+        feedback.innerHTML = '<span class="text-danger small">{{ __("Please enter a code.") }}</span>';
+        return;
+    }
+
+    fetch('{{ route("storefront.coupon.apply") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(r => r.json().then(data => ({ status: r.status, body: data })))
+    .then(({ status, body }) => {
+        if (body.success) {
+            showToast(body.message, 'success');
+            setTimeout(() => window.location.reload(), 600);
+        } else {
+            feedback.innerHTML = `<span class="text-danger small">${body.message || 'Invalid coupon'}</span>`;
+            showToast(body.message || 'Invalid coupon', 'primary');
+        }
+    })
+    .catch(err => {
+        feedback.innerHTML = '<span class="text-danger small">{{ __("Error applying coupon.") }}</span>';
+    });
+}
+
 function changeQty(productId, delta) {
     const input = document.getElementById('cartQty-' + productId);
     let qty = parseInt(input.value) + delta;

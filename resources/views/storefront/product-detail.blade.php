@@ -133,12 +133,46 @@
     <div class="card p-4 border shadow-sm rounded-4 mb-5 bg-white">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
-                <h4 class="fw-bold mb-1"><i class="bx bxs-star text-warning me-2"></i> {{ __('Verified Customer Reviews') }} ({{ $product->reviews->count() }})</h4>
-                <p class="text-muted small mb-0">{{ __('Real verified shopper experiences and feedback') }}</p>
+                <h4 class="fw-bold mb-1"><i class="bx bxs-star text-warning me-2"></i> {{ __('Verified Customer Reviews') }} ({{ $totalReviews }})</h4>
+                <p class="text-muted small mb-0">{{ __('Real verified shopper experiences and rating distribution') }}</p>
             </div>
             <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#writeReviewModal">
                 <i class="bx bx-edit me-1"></i> {{ __('Write a Review') }}
             </button>
+        </div>
+
+        <!-- Rating Distribution Summary & Bars -->
+        <div class="row g-4 align-items-center mb-4 pb-4 border-bottom">
+            <div class="col-md-4 text-center border-end">
+                <div class="display-4 fw-bolder text-dark mb-1">{{ number_format($averageRating, 1) }}</div>
+                <div class="text-warning mb-2 fs-5">
+                    @for($s = 1; $s <= 5; $s++)
+                        @if($s <= floor($averageRating))
+                            <i class="bx bxs-star"></i>
+                        @elseif($s - $averageRating < 1)
+                            <i class="bx bxs-star-half"></i>
+                        @else
+                            <i class="bx bx-star text-muted"></i>
+                        @endif
+                    @endfor
+                </div>
+                <div class="text-muted small">{{ $totalReviews }} {{ __('verified customer ratings') }}</div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="d-flex flex-column gap-2">
+                    @foreach([5, 4, 3, 2, 1] as $star)
+                        @php $percent = $ratingBreakdown[$star] ?? 0; @endphp
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="small fw-semibold text-nowrap" style="width: 55px;">{{ $star }} {{ __('Star') }}</span>
+                            <div class="progress flex-grow-1" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="small text-muted text-end" style="width: 40px;">{{ $percent }}%</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
 
         <div class="row g-3">

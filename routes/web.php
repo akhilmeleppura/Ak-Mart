@@ -129,6 +129,8 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/product/{id}/review', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReview'])->name('review.submit');
     Route::get('/wishlist', [\App\Http\Controllers\Storefront\StorefrontController::class, 'wishlist'])->name('wishlist');
     Route::post('/wishlist/toggle', [\App\Http\Controllers\Storefront\StorefrontController::class, 'toggleWishlist'])->name('wishlist.toggle');
+    Route::post('/coupon/apply', [\App\Http\Controllers\Storefront\StorefrontController::class, 'applyCoupon'])->name('coupon.apply');
+    Route::post('/coupon/remove', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeCoupon'])->name('coupon.remove');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 });
 
