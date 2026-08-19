@@ -5,8 +5,13 @@ namespace App\Http\Controllers\apps;
 use App\Http\Controllers\Controller;
 use App\Models\WorkflowRule;
 use App\Models\SystemNotification;
+use App\Models\LoyaltyTransaction;
 use App\Models\AuditLog;
+use App\Models\User;
+use App\Services\CommunicationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class WorkflowAutomationController extends Controller
 {
@@ -34,6 +39,7 @@ class WorkflowAutomationController extends Controller
             'type'        => $request->input('action_type'),
             'message'     => $request->input('action_message', 'Automated workflow rule triggered.'),
             'target_role' => $request->input('target_role', 'Super Admin'),
+            'points'      => (int) $request->input('action_points', 50),
         ];
 
         WorkflowRule::create([
@@ -90,26 +96,54 @@ class WorkflowAutomationController extends Controller
             }
 
             if ($match) {
-                // Execute action
-                if (($actions['type'] ?? '') === 'notification' || ($actions['type'] ?? '') === 'create_stock_alert') {
-                    if (class_exists(SystemNotification::class)) {
-                        try {
-                            \Illuminate\Support\Facades\DB::table('notifications')->insert([
-                                'id'             => (string) \Illuminate\Support\Str::uuid(),
-                                'type'           => 'App\Notifications\WorkflowAlert',
-                                'notifiable_type'=> 'App\Models\User',
-                                'notifiable_id'  => auth()->id() ?? 1,
-                                'data'           => json_encode([
-                                    'title'   => "Workflow: {$rule->name}",
-                                    'message' => $actions['message'] ?? 'Automated condition met.',
-                                    'time'    => now()->diffForHumans(),
-                                ]),
-                                'created_at'     => now(),
-                                'updated_at'     => now(),
-                            ]);
-                        } catch (\Exception $e) {}
-                    }
+                $actionType = $actions['type'] ?? 'notification';
+
+                // Action 1: In-App System Notification
+                if ($actionType === 'notification' || $actionType === 'create_stock_alert') {
+                    try {
+                        DB::table('notifications')->insert([
+                            'id'             => (string) Str::uuid(),
+                            'type'           => 'App\Notifications\WorkflowAlert',
+                            'notifiable_type'=> 'App\Models\User',
+                            'notifiable_id'  => auth()->id() ?? 1,
+                            'data'           => json_encode([
+                                'title'   => "Workflow: {$rule->name}",
+                                'message' => $actions['message'] ?? 'Automated condition met.',
+                                'time'    => now()->diffForHumans(),
+                            ]),
+                            'created_at'     => now(),
+                            'updated_at'     => now(),
+                        ]);
+                    } catch (\Exception $e) {}
                 }
+
+                // Action 2: Award Loyalty Points
+                if ($actionType === 'award_loyalty' && isset($context['customer_id'])) {
+                    $pts = (int) ($actions['points'] ?? 50);
+                    LoyaltyTransaction::recordPoints(
+                        $context['customer_id'],
+                        $pts,
+                        'earned',
+                        $context['order_id'] ?? null,
+                        "Automation Reward: {$rule->name}"
+                    );
+                }
+
+                // Action 3: Log to Immutable Audit Trail
+                AuditLog::create([
+                    'user_id'        => auth()->id() ?? 1,
+                    'event'          => 'WORKFLOW_ACTION_EXECUTED',
+                    'auditable_type' => WorkflowRule::class,
+                    'auditable_id'   => $rule->id,
+                    'new_values'     => [
+                        'rule'    => $rule->name,
+                        'event'   => $eventName,
+                        'action'  => $actionType,
+                        'context' => $context,
+                    ],
+                    'ip_address'     => request()?->ip() ?: '127.0.0.1',
+                    'user_agent'     => 'AK-Mart Workflow Engine/1.0',
+                ]);
             }
         }
     }
