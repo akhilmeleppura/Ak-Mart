@@ -17,7 +17,8 @@ class StoreBuilderController extends Controller
     public function sliders()
     {
         $sliders = CmsBanner::where('position', 'home_hero')->orderBy('sort_order')->get();
-        return view('content.apps.store-management.sliders', compact('sliders'));
+        $categories = Category::where('is_active', true)->get();
+        return view('content.apps.store-management.sliders', compact('sliders', 'categories'));
     }
 
     /**
@@ -32,14 +33,18 @@ class StoreBuilderController extends Controller
             'button_text' => 'required|string|max:50',
             'link_url'    => 'nullable|string|max:255',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:3072',
-            'bg_color'    => 'nullable|string|max:50',
+            'bg_color'    => 'nullable|string|max:100',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
+            $dir = public_path('uploads/sliders');
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
             $fileName = 'slider_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/sliders'), $fileName);
+            $file->move($dir, $fileName);
             $imagePath = 'uploads/sliders/' . $fileName;
         }
 
@@ -57,6 +62,60 @@ class StoreBuilderController extends Controller
         ]);
 
         return back()->with('success', 'Hero Slider created successfully!');
+    }
+
+    /**
+     * Update Hero Slider
+     */
+    public function updateSlider(Request $request, $id)
+    {
+        $slider = CmsBanner::findOrFail($id);
+
+        $request->validate([
+            'title'       => 'required|string|max:255',
+            'subtitle'    => 'nullable|string|max:255',
+            'badge_text'  => 'nullable|string|max:100',
+            'button_text' => 'required|string|max:50',
+            'link_url'    => 'nullable|string|max:255',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:3072',
+            'bg_color'    => 'nullable|string|max:100',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $dir = public_path('uploads/sliders');
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $fileName = 'slider_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $fileName);
+            $slider->image = 'uploads/sliders/' . $fileName;
+        }
+
+        $slider->update([
+            'title'       => $request->title,
+            'subtitle'    => $request->subtitle,
+            'badge_text'  => $request->badge_text,
+            'button_text' => $request->button_text,
+            'link_url'    => $request->link_url,
+            'bg_color'    => $request->bg_color,
+            'is_active'   => $request->boolean('is_active', true),
+            'sort_order'  => (int)$request->input('sort_order', 0),
+        ]);
+
+        return back()->with('success', 'Hero Slider updated successfully!');
+    }
+
+    /**
+     * Toggle Slider Status (Active / Draft)
+     */
+    public function toggleSliderStatus($id)
+    {
+        $slider = CmsBanner::findOrFail($id);
+        $slider->is_active = !$slider->is_active;
+        $slider->save();
+
+        return back()->with('success', "Slider '{$slider->title}' status updated to " . ($slider->is_active ? 'Active' : 'Draft') . '.');
     }
 
     /**

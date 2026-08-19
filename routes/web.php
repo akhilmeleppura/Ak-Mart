@@ -155,9 +155,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Hero Sliders & Product Merchandising Board
     Route::get('/store-management/sliders', [\App\Http\Controllers\apps\StoreBuilderController::class, 'sliders'])->name('app-sliders');
     Route::post('/store-management/sliders', [\App\Http\Controllers\apps\StoreBuilderController::class, 'storeSlider'])->name('app-sliders-store');
+    Route::put('/store-management/sliders/{id}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'updateSlider'])->name('app-sliders-update');
+    Route::post('/store-management/sliders/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleSliderStatus'])->name('app-sliders-toggle');
     Route::delete('/store-management/sliders/{id}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'destroySlider'])->name('app-sliders-destroy');
     Route::get('/store-management/merchandising', [\App\Http\Controllers\apps\StoreBuilderController::class, 'merchandising'])->name('app-merchandising');
     Route::post('/store-management/merchandising/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleMerchandising'])->name('app-merchandising-toggle');
+
 
     Route::get('/finance/accounting-export', [\App\Http\Controllers\apps\AccountingExportController::class, 'index'])->name('app-accounting-export');
     Route::get('/finance/accounting-export/sales', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportSales'])->name('app-accounting-export-sales');
