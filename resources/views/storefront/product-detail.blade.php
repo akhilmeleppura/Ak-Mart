@@ -42,11 +42,12 @@
             </div>
 
             <!-- Price & Stock -->
-            <div class="d-flex align-items-baseline gap-3 mb-4">
-                <span class="display-6 fw-bold text-primary">${{ number_format($product->price, 2) }}</span>
+            <div class="d-flex align-items-baseline gap-3 mb-4 flex-wrap">
+                <span class="display-6 fw-bold text-primary" id="dynamicTotalPrice">${{ number_format($product->price, 2) }}</span>
+                <span class="text-muted small align-self-center" id="unitPriceLabel">(${{ number_format($product->price, 2) }} / each)</span>
                 @if($product->compare_at_price && $product->compare_at_price > $product->price)
-                    <span class="text-decoration-line-through text-muted fs-5">${{ number_format($product->compare_at_price, 2) }}</span>
-                    <span class="badge bg-danger rounded-pill">{{ __('Save') }} ${{ number_format($product->compare_at_price - $product->price, 2) }}</span>
+                    <span class="text-decoration-line-through text-muted fs-5" id="dynamicComparePrice">${{ number_format($product->compare_at_price, 2) }}</span>
+                    <span class="badge bg-danger rounded-pill" id="dynamicSavingsBadge">{{ __('Save') }} ${{ number_format($product->compare_at_price - $product->price, 2) }}</span>
                 @endif
             </div>
 
@@ -64,14 +65,14 @@
 
             <!-- Quantity & Actions -->
             <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-                <div class="input-group" style="width: 140px;">
-                    <button class="btn btn-outline-secondary" type="button" onclick="adjustQty(-1)">-</button>
-                    <input type="number" id="detailQty" class="form-control text-center fw-bold" value="1" min="1" max="{{ max(1, $availableStock) }}">
-                    <button class="btn btn-outline-secondary" type="button" onclick="adjustQty(1)">+</button>
+                <div class="input-group" style="width: 150px;">
+                    <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyMinus" onclick="adjustQty(-1)">-</button>
+                    <input type="number" id="detailQty" class="form-control text-center fw-bold fs-5" value="1" min="1" max="{{ max(1, $availableStock) }}" oninput="updateRate()">
+                    <button class="btn btn-outline-secondary px-3" type="button" id="btnQtyPlus" onclick="adjustQty(1)">+</button>
                 </div>
                 <button class="btn btn-primary btn-lg rounded-pill px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2" onclick="addDetailToCart({{ $product->id }})" {{ $availableStock <= 0 ? 'disabled' : '' }}>
                     <i class="bx bx-cart-add fs-4"></i>
-                    <span>{{ __('Add to Cart') }}</span>
+                    <span id="btnCartText">{{ __('Add to Cart') }} • ${{ number_format($product->price, 2) }}</span>
                 </button>
             </div>
 
@@ -236,11 +237,48 @@
 
 @section('scripts')
 <script>
+const unitPrice = {{ (float)$product->price }};
+const comparePrice = {{ (float)($product->compare_at_price ?: 0) }};
+const maxStock = {{ max(1, $availableStock) }};
+
 function adjustQty(amount) {
     const input = document.getElementById('detailQty');
-    let val = parseInt(input.value) + amount;
+    let val = parseInt(input.value) || 1;
+    val += amount;
     if (val < 1) val = 1;
+    if (val > maxStock) val = maxStock;
     input.value = val;
+    updateRate();
+}
+
+function updateRate() {
+    const input = document.getElementById('detailQty');
+    let qty = parseInt(input.value) || 1;
+    if (qty < 1) qty = 1;
+    if (qty > maxStock) qty = maxStock;
+    input.value = qty;
+
+    const total = (unitPrice * qty).toFixed(2);
+    const priceDisplay = document.getElementById('dynamicTotalPrice');
+    if (priceDisplay) {
+        priceDisplay.textContent = '$' + total;
+    }
+
+    const btnCartText = document.getElementById('btnCartText');
+    if (btnCartText) {
+        btnCartText.textContent = `Add to Cart • $${total}`;
+    }
+
+    if (comparePrice > unitPrice) {
+        const compareTotal = (comparePrice * qty).toFixed(2);
+        const savingsTotal = ((comparePrice - unitPrice) * qty).toFixed(2);
+        
+        const compareDisplay = document.getElementById('dynamicComparePrice');
+        if (compareDisplay) compareDisplay.textContent = '$' + compareTotal;
+
+        const savingsBadge = document.getElementById('dynamicSavingsBadge');
+        if (savingsBadge) savingsBadge.textContent = `Save $${savingsTotal}`;
+    }
 }
 
 function addDetailToCart(productId) {
