@@ -1,37 +1,90 @@
-# AK-Mart 2026 RESTful Storefront & Commerce API Reference
+# 🌐 AK-Mart 2.0 — RESTful API Documentation (v1)
 
-## Base URL
-`/api/v1`
-
-## Authentication
-Token-based authentication using **Laravel Sanctum**.
-Pass the Bearer token in the request header:
-`Authorization: Bearer <token>`
+**Base URL**: `http://127.0.0.1:8000/api/v1`  
+**Authentication**: Laravel Sanctum Bearer Token (where required)
 
 ---
 
 ## Endpoints
 
-### 1. Authentication
-- `POST /api/v1/auth/login`: Authenticate and receive Sanctum API token.
-- `POST /api/v1/auth/register`: Register new retail customer account.
-- `POST /api/v1/auth/logout`: Revoke active Sanctum token.
+### 1. Get Product Catalog
+- **Method**: `GET /products`
+- **Query Parameters**:
+  - `q` (string): Keyword search (Name, SKU, Barcode).
+  - `category_id` (integer): Filter by Category ID.
+  - `per_page` (integer, default 15, max 50): Pagination limit.
+- **Response**:
+```json
+{
+  "status": "success",
+  "data": {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 1,
+        "name": "Royal Heritage Aged Basmati Rice 5kg",
+        "sku": "POS-SKU-99",
+        "barcode": "8901234567890",
+        "price": "24.99",
+        "qty": 26,
+        "is_active": true
+      }
+    ]
+  }
+}
+```
 
-### 2. Catalog & Products
-- `GET /api/v1/products`: Filterable list of published products (supports `?category_id=`, `?search=`, `?sort=`, `?min_price=`, `?max_price=`).
-- `GET /api/v1/products/{id}`: Detailed product specifications, variants, gallery images, reviews, and stock availability.
-- `GET /api/v1/categories`: Hierarchical category tree.
+---
 
-### 3. Cart & Checkout
-- `POST /api/v1/cart/items`: Add or update item in cart session.
-- `DELETE /api/v1/cart/items/{id}`: Remove item from cart.
-- `POST /api/v1/coupons/validate`: Check promo code discount validity.
-- `POST /api/v1/checkout`: Place an atomic order with stock deduction, gift card / store credit application, and loyalty points.
+### 2. Get Single Product Details & Available Stock
+- **Method**: `GET /products/{id}`
+- **Response**:
+```json
+{
+  "status": "success",
+  "data": {
+    "product": {
+      "id": 1,
+      "name": "Royal Heritage Aged Basmati Rice 5kg",
+      "price": "24.99",
+      "qty": 26,
+      "variants": [],
+      "attribute_values": []
+    },
+    "available_stock": 26
+  }
+}
+```
 
-### 4. Gift Cards & Store Credit
-- `POST /api/v1/gift-cards/lookup`: Check digital voucher code validity, expiration date, and remaining balance.
+---
 
-### 5. Feeds & Omnichannel Endpoints
-- `GET /feeds/google.xml`: Live RSS 2.0 XML catalog for Google Merchant Center.
-- `GET /feeds/meta.csv`: Comma-separated product catalog for Facebook and Instagram Shop tagging.
-- `GET /feeds/tiktok.json`: Real-time JSON format for TikTok Catalog Partner integration.
+### 3. Get Category List
+- **Method**: `GET /categories`
+- **Response**:
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "name": "Groceries & Staples",
+      "products_count": 8
+    }
+  ]
+}
+```
+
+---
+
+### 4. Real-Time Available Stock Status
+- **Method**: `GET /inventory/status`
+- **Query Parameters**:
+  - `product_id` (integer, required): Product ID.
+- **Response**:
+```json
+{
+  "status": "success",
+  "product_id": 1,
+  "available_stock": 26
+}
+```

@@ -125,4 +125,11 @@ class Product extends Model
 
         return $scores;
     }
+
+    public function attributeValues()
+    {
+        return $this->hasMany(ProductAttributeValue::class);
+    }
 }
+
+

@@ -110,6 +110,53 @@ Route::get('/login', [LoginBasic::class, 'index'])->name('login');
 Route::post('/login', [LoginBasic::class, 'store'])->name('login.store');
 
 Route::get('/dashboard', [EcommerceDashboard::class, 'index'])->name('dashboard');
+
+// -----------------------------------------------------------------------
+// Customer Storefront & Catalog Routes (Public)
+// -----------------------------------------------------------------------
+Route::prefix('store')->name('storefront.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Storefront\StorefrontController::class, 'index'])->name('home');
+    Route::get('/shop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'shop'])->name('shop');
+    Route::get('/product/{id}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'product'])->name('product');
+    Route::get('/cart', [\App\Http\Controllers\Storefront\StorefrontController::class, 'cart'])->name('cart');
+    Route::post('/cart/add', [\App\Http\Controllers\Storefront\StorefrontController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/update', [\App\Http\Controllers\Storefront\StorefrontController::class, 'updateCart'])->name('cart.update');
+    Route::get('/checkout', [\App\Http\Controllers\Storefront\StorefrontController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/process', [\App\Http\Controllers\Storefront\StorefrontController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/order/confirmed/{orderNumber}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'orderConfirmation'])->name('order.confirmation');
+    Route::get('/track', [\App\Http\Controllers\Storefront\StorefrontController::class, 'trackOrder'])->name('track');
+    Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+});
+
+// -----------------------------------------------------------------------
+// Customer Account Portal (Authenticated)
+// -----------------------------------------------------------------------
+Route::middleware(['auth:sanctum', 'verified'])->prefix('customer/portal')->name('customer.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'orders'])->name('orders');
+    Route::get('/orders/{orderNumber}', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'orderDetails'])->name('order.details');
+    Route::get('/profile', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'profile'])->name('profile');
+    Route::post('/profile', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/wishlist', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'wishlist'])->name('wishlist');
+    Route::get('/wallet', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'wallet'])->name('wallet');
+    Route::get('/loyalty', [\App\Http\Controllers\Customer\CustomerAccountController::class, 'loyalty'])->name('loyalty');
+});
+
+// -----------------------------------------------------------------------
+// Product Attributes (EAV) & Accounting Exports (Admin)
+// -----------------------------------------------------------------------
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/products/attributes', [\App\Http\Controllers\apps\ProductAttributeController::class, 'index'])->name('app-attributes');
+    Route::post('/products/attributes', [\App\Http\Controllers\apps\ProductAttributeController::class, 'store'])->name('app-attributes-store');
+    Route::post('/products/attributes/{attribute}/value', [\App\Http\Controllers\apps\ProductAttributeController::class, 'storeValue'])->name('app-attributes-value-store');
+    Route::delete('/products/attributes/{id}', [\App\Http\Controllers\apps\ProductAttributeController::class, 'destroy'])->name('app-attributes-destroy');
+
+    Route::get('/finance/accounting-export', [\App\Http\Controllers\apps\AccountingExportController::class, 'index'])->name('app-accounting-export');
+    Route::get('/finance/accounting-export/sales', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportSales'])->name('app-accounting-export-sales');
+    Route::get('/finance/accounting-export/expenses', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportExpenses'])->name('app-accounting-export-expenses');
+    Route::get('/finance/accounting-export/gst', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportGst'])->name('app-accounting-export-gst');
+});
+
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');
 Route::get('/front-pages/payment', [Payment::class, 'index'])->name('front-pages-payment');
@@ -118,6 +165,7 @@ Route::get('/front-pages/help-center', [HelpCenter::class, 'index'])->name('fron
 Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index'])->name('front-pages-help-center-article');
 Route::get('/sitemap.xml', [\App\Http\Controllers\apps\SaaS\SeoController::class, 'sitemap'])->name('app-saas-sitemap');
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang-swap');
+
 
 // -----------------------------------------------------------------------
 // OTP Authentication Routes (session-based, no auth guard needed)
