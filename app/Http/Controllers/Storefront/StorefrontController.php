@@ -159,25 +159,41 @@ class StorefrontController extends Controller
      */
     public function product($id)
     {
-        $product = Product::with(['category', 'variants', 'reviews.user', 'attributeValues.attribute', 'attributeValues.value'])
-            ->where('is_active', true)
-            ->findOrFail($id);
+        $product = Product::with([
+            'category',
+            'variants',
+            'reviews.user',
+            'attributeValues.attribute',
+            'attributeValues.value',
+            'relatedProducts',
+            'suggestedProducts',
+            'crossSells'
+        ])
+        ->where('is_active', true)
+        ->findOrFail($id);
 
-        $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('is_active', true)
-            ->take(4)
-            ->get();
+        // Explicit admin-linked related products or fallback to same category
+        $relatedProducts = $product->relatedProducts->isNotEmpty()
+            ? $product->relatedProducts
+            : Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->take(4)
+                ->get();
 
-        $frequentlyBought = Product::where('id', '!=', $product->id)
-            ->where('is_active', true)
-            ->take(2)
-            ->get();
+        // Frequently Bought Together / Suggested items configured by Admin
+        $frequentlyBought = $product->suggestedProducts->isNotEmpty()
+            ? $product->suggestedProducts
+            : Product::where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->take(2)
+                ->get();
 
         $availableStock = app(InventoryService::class)->getAvailableStock($product->id);
 
         return view('storefront.product-detail', compact('product', 'relatedProducts', 'frequentlyBought', 'availableStock'));
     }
+
 
     /**
      * Cart Page

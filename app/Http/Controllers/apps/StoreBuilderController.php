@@ -182,4 +182,58 @@ class StoreBuilderController extends Controller
             'message'   => "Updated {$product->name} merchandising.",
         ]);
     }
+
+    /**
+     * Product Related & Suggested Items Management View
+     */
+    public function productRelations($id)
+    {
+        $product = Product::with(['relatedProducts', 'suggestedProducts', 'crossSells'])->findOrFail($id);
+        $allProducts = Product::where('id', '!=', $id)->where('is_active', true)->get(['id', 'name', 'sku', 'price', 'image']);
+
+        return view('content.apps.store-management.relations', compact('product', 'allProducts'));
+    }
+
+    /**
+     * Store Product Relation
+     */
+    public function storeProductRelation(Request $request, $id)
+    {
+        $request->validate([
+            'related_id' => 'required|exists:products,id',
+            'type'       => 'required|in:related,suggested,cross_sell',
+        ]);
+
+        $product = Product::findOrFail($id);
+        
+        \Illuminate\Support\Facades\DB::table('product_relations')->updateOrInsert(
+            [
+                'product_id' => $product->id,
+                'related_id' => $request->related_id,
+                'type'       => $request->type,
+            ],
+            [
+                'sort_order' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        return back()->with('success', "Product recommendation added as {$request->type} item.");
+    }
+
+    /**
+     * Delete Product Relation
+     */
+    public function destroyProductRelation($id, $relatedId, $type)
+    {
+        \Illuminate\Support\Facades\DB::table('product_relations')
+            ->where('product_id', $id)
+            ->where('related_id', $relatedId)
+            ->where('type', $type)
+            ->delete();
+
+        return back()->with('success', 'Recommendation item removed.');
+    }
 }
+

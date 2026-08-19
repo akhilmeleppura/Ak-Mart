@@ -58,6 +58,7 @@
                     <th class="text-center">{{ __('Trending 🔥') }}</th>
                     <th class="text-center">{{ __('Best Seller 🏆') }}</th>
                     <th class="text-center">{{ __('Daily Deal ⚡') }}</th>
+                    <th class="text-end">{{ __('Recommendations 🔗') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,10 +95,15 @@
                                 {{ $prod->deal_of_the_day ? 'Active' : 'Off' }}
                             </button>
                         </td>
+                        <td class="text-end">
+                            <a href="{{ route('app-product-relations', $prod->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                <i class="bx bx-git-merge me-1"></i> {{ __('Linked Items') }}
+                            </a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">{{ __('No products found.') }}</td>
+                        <td colspan="8" class="text-center py-5 text-muted">{{ __('No products found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -161,6 +161,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/store-management/merchandising', [\App\Http\Controllers\apps\StoreBuilderController::class, 'merchandising'])->name('app-merchandising');
     Route::post('/store-management/merchandising/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleMerchandising'])->name('app-merchandising-toggle');
 
+    // Product Relations & Suggestions
+    Route::get('/products/{id}/relations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'productRelations'])->name('app-product-relations');
+    Route::post('/products/{id}/relations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'storeProductRelation'])->name('app-product-relations-store');
+    Route::delete('/products/{id}/relations/{relatedId}/{type}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'destroyProductRelation'])->name('app-product-relations-destroy');
+
+
 
     Route::get('/finance/accounting-export', [\App\Http\Controllers\apps\AccountingExportController::class, 'index'])->name('app-accounting-export');
     Route::get('/finance/accounting-export/sales', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportSales'])->name('app-accounting-export-sales');

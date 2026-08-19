@@ -77,6 +77,28 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function relatedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'product_relations', 'product_id', 'related_id')
+            ->wherePivot('type', 'related')
+            ->withTimestamps();
+    }
+
+    public function suggestedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'product_relations', 'product_id', 'related_id')
+            ->wherePivot('type', 'suggested')
+            ->withTimestamps();
+    }
+
+    public function crossSells()
+    {
+        return $this->belongsToMany(Product::class, 'product_relations', 'product_id', 'related_id')
+            ->wherePivot('type', 'cross_sell')
+            ->withTimestamps();
+    }
+
+
     /** Check if product stock is low */
     public function isLowStock(): bool
     {
