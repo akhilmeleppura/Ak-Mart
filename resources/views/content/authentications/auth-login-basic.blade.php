@@ -1,13 +1,14 @@
 @php
   $customizerHidden = 'customizer-hide';
+  $pageConfigs = ['myLayout' => 'blank'];
 @endphp
 
-@extends('layouts/layoutMaster')
+@extends('layouts/blankLayout')
 
 @section('title', __('Login') . ' — AK-Mart')
 
 @section('page-style')
-  @vite(['resources/css/app.css'])
+  @vite(['resources/assets/vendor/scss/pages/page-auth.scss'])
   <style>
     /* Animated Gradient Mesh & Background */
     .ak-login-wrapper {

@@ -105,6 +105,10 @@ Route::get('/', function () {
     }
     return redirect()->route('auth-login-basic');
 })->name('root');
+
+Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+Route::post('/login', [LoginBasic::class, 'store'])->name('login.store');
+
 Route::get('/dashboard', [EcommerceDashboard::class, 'index'])->name('dashboard');
 Route::get('/front-pages/landing', [Landing::class, 'index'])->name('front-pages-landing');
 Route::get('/front-pages/pricing', [Pricing::class, 'index'])->name('front-pages-pricing');
