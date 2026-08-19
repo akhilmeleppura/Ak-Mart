@@ -17,11 +17,11 @@
 | **Homepage Hero Sliders & CMS** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Live Search Autocomplete** | ✅ Working | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Translated | ✅ Sanitized | **WORKING** | P1 Core |
 | **Catalog Listing & Basic Filters**| ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Param Guard | **WORKING** | P1 Core |
-| **Faceted Advanced Filters (Brand/Rating/Price Slider)** | ⚠️ Basic Only | ⚠️ Partial | ⚠️ Backend Ready | ✅ Schema Ready | ⚠️ Basic Inputs | ⚠️ Basic | ✅ 6 Langs | ✅ Sanitized | **PARTIAL** | P1 Core |
+| **Faceted Advanced Filters (Brand/Rating/Price Slider)** | ✅ Working | ✅ Working | ✅ Working | ✅ Schema Ready | ✅ Brand & Price Slider | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
 | **Product Detail: Dynamic Rate Multiplier** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Server-Side | **WORKING** | P0 Critical |
 | **Frequently Bought Together Bundles** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ DB Pivot | **WORKING** | P1 Core |
 | **Verified Customer Reviews** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Moderated | **WORKING** | P1 Core |
-| **Review Rating Histogram (5★-1★ Bar Distribution)** | ❌ Missing | ⚠️ Partial | ⚠️ Average Only | ✅ Queryable | ❌ Missing UI | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Review Rating Histogram (5★-1★ Bar Distribution)** | ✅ Working | ✅ Working | ✅ Working | ✅ Aggregated | ✅ Progress Bars | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
 | **Product Q&A (Ask a Question)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
 | **Interactive Wishlist with Move-to-Cart** | ✅ Working | ⚠️ Orders Only | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Product Compare (Side-by-Side Specs)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
@@ -31,7 +31,7 @@
 | **Out-of-Stock: Back-in-Stock Alerts** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
 | **Price Drop Notification Watcher** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P3 Enhanc. |
 | **Cart & Stock Validation** | ✅ Working | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Invariant | **WORKING** | P0 Critical |
-| **Storefront Coupon Discount Code Apply** | ❌ Missing UI | ✅ Admin Exists | ⚠️ POS Only | ✅ Coupon Table | ❌ Missing in Store | ❌ Missing | ❌ Missing | N/A | **PARTIAL** | P1 Core |
+| **Storefront Coupon Discount Code Apply** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ Coupon Table | ✅ Cart & Checkout UI | ✅ Working | ✅ 6 Langs | ✅ Usage Count | **WORKING** | P1 Core |
 | **Storefront Checkout & Atomic Stock Deduction** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ LockForUpdate | **WORKING** | P0 Critical |
 | **Public Order Tracking Timeline** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Public Key | **WORKING** | P1 Core |
 | **Customer Order Return / Exchange Portal** | ❌ Missing in Store | ⚠️ Admin Orders | ⚠️ Manual Only | ⚠️ Orders Status | ❌ Missing in Store | ❌ Missing | ❌ Missing | N/A | **PARTIAL** | P1 Core |
