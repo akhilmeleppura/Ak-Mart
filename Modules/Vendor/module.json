@@ -1,7 +1,7 @@
 {
     "name": "Vendor",
     "alias": "vendor",
-    "description": "Vendor Management Module",
+    "description": "Vendor Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [

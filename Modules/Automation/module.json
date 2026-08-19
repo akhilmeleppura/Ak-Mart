@@ -1,0 +1,12 @@
+{
+    "name": "Automation",
+    "alias": "automation",
+    "description": "Automation Domain Feature Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Automation\\Providers\\AutomationServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

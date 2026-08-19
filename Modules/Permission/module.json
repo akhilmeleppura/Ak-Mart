@@ -1,11 +1,12 @@
 {
     "name": "Permission",
     "alias": "permission",
-    "description": "",
+    "description": "Permission Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [
         "Modules\\Permission\\Providers\\PermissionServiceProvider"
     ],
-    "files": []
+    "files": [],
+    "enabled": true
 }

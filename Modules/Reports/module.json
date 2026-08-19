@@ -1,0 +1,12 @@
+{
+    "name": "Reports",
+    "alias": "reports",
+    "description": "Reports Domain Feature Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Reports\\Providers\\ReportsServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

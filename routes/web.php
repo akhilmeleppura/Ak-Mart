@@ -149,7 +149,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/languages/{language}/toggle', [\App\Http\Controllers\apps\SaaS\LanguageController::class, 'toggle'])->name('app-saas-languages-toggle');
         Route::get('/seo', [\App\Http\Controllers\apps\SaaS\SeoController::class, 'index'])->name('app-saas-seo');
         Route::get('/kyc', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'index'])->name('app-saas-kyc-admin');
+        Route::get('/kyc-admin', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'index']);
+        Route::get('/kyc/{vendorKyc}', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'show'])->name('app-saas-kyc-show');
         Route::post('/kyc/{vendorKyc}/approve', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'approve'])->name('app-saas-kyc-approve');
+        Route::post('/kyc/{vendorKyc}/reject', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'reject'])->name('app-saas-kyc-reject');
+        Route::post('/kyc/{vendorKyc}/review', [\App\Http\Controllers\apps\SaaS\KycAdminController::class, 'markUnderReview'])->name('app-saas-kyc-review');
         Route::get('/dunning', [\App\Http\Controllers\apps\SaaS\DunningController::class, 'index'])->name('app-saas-dunning');
         Route::post('/dunning/trigger', [\App\Http\Controllers\apps\SaaS\DunningController::class, 'trigger'])->name('app-saas-dunning-trigger');
     });
@@ -171,6 +175,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/store-builder', [\App\Http\Controllers\apps\Vendor\StoreBuilderController::class, 'index'])->name('app-vendor-store-builder');
         Route::post('/store-builder', [\App\Http\Controllers\apps\Vendor\StoreBuilderController::class, 'store'])->name('app-vendor-store-builder-save');
         Route::get('/support', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'index'])->name('app-vendor-support');
+        Route::get('/support-tickets', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'index']);
+        Route::get('/support/{ticket}', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'show'])->name('app-vendor-support-show');
+        Route::post('/support/{ticket}/reply', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'reply'])->name('app-vendor-support-reply');
+        Route::post('/support/{ticket}/status', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'updateStatus'])->name('app-vendor-support-status');
         Route::post('/wallet/payout', [\App\Http\Controllers\apps\Vendor\WalletController::class, 'requestPayout'])->name('app-vendor-wallet-payout');
         Route::get('/payment-settings', [\App\Http\Controllers\apps\Vendor\PaymentSettingsController::class, 'index'])->name('app-vendor-payment-settings');
         Route::post('/payment-settings', [\App\Http\Controllers\apps\Vendor\PaymentSettingsController::class, 'store'])->name('app-vendor-payment-settings-save');
@@ -281,6 +289,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/communication/templates', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'saveTemplate'])->name('app-communication-template-save');
     Route::post('/communication/campaigns', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'launchCampaign'])->name('app-communication-campaign-launch');
 
+    // Workflow Automation Engine
+    Route::get('/automation/rules', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'index'])->name('app-automation-rules');
+    Route::post('/automation/rules', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'store'])->name('app-automation-rules-store');
+    Route::post('/automation/rules/{id}/toggle', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'toggle'])->name('app-automation-rules-toggle');
+    Route::delete('/automation/rules/{id}', [\App\Http\Controllers\apps\WorkflowAutomationController::class, 'destroy'])->name('app-automation-rules-destroy');
+
     // System Health, Backups & Security Center
     Route::get('/system/health', [\App\Http\Controllers\apps\SystemHealthController::class, 'index'])->name('app-system-health');
     Route::get('/system/backups', [\App\Http\Controllers\apps\BackupController::class, 'index'])->name('app-backups');
@@ -299,9 +313,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // POS Direct Endpoint
     Route::get('/pos', [\App\Http\Controllers\apps\Vendor\PosController::class, 'index'])->name('pos-direct');
 
-    // Logistics
+    // Logistics & Shipping Methods
     Route::get('/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'index'])->name('app-logistics-shipping');
     Route::post('/logistics/shipping', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'store'])->name('app-logistics-shipping-store');
+    Route::post('/logistics/shipping/{method}/toggle', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'toggle'])->name('app-logistics-shipping-toggle');
+    Route::delete('/logistics/shipping/{method}', [\App\Http\Controllers\apps\Logistics\ShippingMethodController::class, 'destroy'])->name('app-logistics-shipping-destroy');
     
     // User Management
     Route::get('/admin/users', [\App\Http\Controllers\laravel_example\UserManagement::class, 'UserManagement'])->name('laravel-user-management');
@@ -486,11 +502,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Access Hub & Roles Management
     Route::get('/roles', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-roles');
+    Route::get('/app/roles', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('role.view');
     Route::get('/access-hub', [\App\Http\Controllers\apps\RoleController::class, 'index'])->name('app-access-hub');
     Route::post('/access-hub/roles', [\App\Http\Controllers\apps\RoleController::class, 'store'])->name('app-access-roles-store');
     Route::delete('/access-hub/roles/{id}', [\App\Http\Controllers\apps\RoleController::class, 'destroy'])->name('app-access-roles-destroy');
     Route::post('/access-hub/roles/sync-permissions', [\App\Http\Controllers\apps\RoleController::class, 'syncPermissions'])->name('app-access-roles-sync-permissions');
     Route::get('/permissions', [\App\Http\Controllers\apps\AccessPermission::class, 'index'])->name('app-access-permission-list');
+    Route::get('/app/permissions', [\App\Http\Controllers\apps\AccessPermission::class, 'index'])->name('permissions.index');
     Route::get('/permissions/data', [\App\Http\Controllers\apps\AccessPermission::class, 'list'])->name('app-access-permission-data');
     Route::get('/app/access-permission/list', [\App\Http\Controllers\apps\AccessPermission::class, 'list']);
     Route::post('/permissions', [\App\Http\Controllers\apps\AccessPermission::class, 'store'])->name('app-access-permission-store');

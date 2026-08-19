@@ -286,7 +286,7 @@
                         @foreach($filteredData as $row)
                             <tr>
                                 <td>
-                                    <a href="{{ route('accounting.ledger.view', ['id' => $row['account_id']]) }}{{ request('date_range') ? '?date_range=' . urlencode(request('date_range')) : '' }}" 
+                                    <a href="{{ route('accounting.ledger.details', ['id' => $row['account_id']]) }}{{ request('date_range') ? '?date_range=' . urlencode(request('date_range')) : '' }}" 
                                        target="_blank" class="account-link">
                                         {{ $row['account_name'] }}
                                     </a>

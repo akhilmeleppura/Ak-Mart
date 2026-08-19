@@ -1,0 +1,12 @@
+{
+    "name": "AI",
+    "alias": "ai",
+    "description": "AI Domain Feature Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AI\\Providers\\AIServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

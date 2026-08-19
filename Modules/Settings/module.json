@@ -1,7 +1,7 @@
 {
     "name": "Settings",
     "alias": "settings",
-    "description": "Store Settings & Branding Module",
+    "description": "Settings Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [

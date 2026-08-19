@@ -1,7 +1,7 @@
 {
     "name": "Ecommerce",
     "alias": "ecommerce",
-    "description": "Ecommerce Core Module",
+    "description": "Ecommerce Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [

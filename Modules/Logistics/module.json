@@ -1,7 +1,7 @@
 {
     "name": "Logistics",
     "alias": "logistics",
-    "description": "Logistics & Shipping Module",
+    "description": "Logistics Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [

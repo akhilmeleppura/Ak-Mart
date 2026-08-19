@@ -8,5 +8,9 @@
     "Vendor": true,
     "SaaS": true,
     "Logistics": true,
-    "Settings": true
+    "Settings": true,
+    "Automation": true,
+    "AI": true,
+    "Communication": true,
+    "Reports": true
 }

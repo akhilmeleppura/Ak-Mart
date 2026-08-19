@@ -525,10 +525,10 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'orders', title: 'Orders', subtitle: 'Order Processing', url: '{{ Route::has("app-ecommerce-order-list") ? route("app-ecommerce-order-list") : url("app/ecommerce/order/list") }}', icon: 'bx-shopping-bag' },
         { id: 'customers', title: 'Customers', subtitle: 'Manage Users', url: '{{ Route::has("app-ecommerce-customer-all") ? route("app-ecommerce-customer-all") : url("app/ecommerce/customer/all") }}', icon: 'bx-user' },
         { id: 'scanner', title: 'Catalog Scanner', subtitle: 'Health Check', url: '{{ Route::has("app-catalog-scanner") ? route("app-catalog-scanner") : url("catalog/scanner") }}', icon: 'bx-scan' },
-        { id: 'coupons', title: 'Promotions', subtitle: 'Discounts & Deals', url: '{{ Route::has("app-coupons-index") ? route("app-coupons-index") : url("promotions/coupons") }}', icon: 'bx-purchase-tag-alt' },
+        { id: 'coupons', title: 'Promotions', subtitle: 'Discounts & Deals', url: '{{ Route::has("app-ecommerce-coupon-list") ? route("app-ecommerce-coupon-list") : url("app/ecommerce/coupon/list") }}', icon: 'bx-purchase-tag-alt' },
         { id: 'b2b', title: 'B2B Quotes', subtitle: 'Wholesale Pricing', url: '{{ Route::has("app-b2b-quotes") ? route("app-b2b-quotes") : url("apps/b2b/quotes") }}', icon: 'bx-buildings' },
-        { id: 'expenses', title: 'Expenses', subtitle: 'Cost Tracking', url: '{{ Route::has("app-expenses-index") ? route("app-expenses-index") : url("expenses") }}', icon: 'bx-wallet' },
-        { id: 'automation', title: 'Automation', subtitle: 'Trigger Workflows', url: '{{ Route::has("app-automation-index") ? route("app-automation-index") : url("automation") }}', icon: 'bx-git-repo-forked' },
+        { id: 'expenses', title: 'Expenses', subtitle: 'Cost Tracking', url: '{{ Route::has("app-expenses") ? route("app-expenses") : url("expenses") }}', icon: 'bx-wallet' },
+        { id: 'automation', title: 'Automation', subtitle: 'Trigger Workflows', url: '{{ Route::has("app-automation-rules") ? route("app-automation-rules") : url("automation") }}', icon: 'bx-git-repo-forked' },
         { id: 'settings', title: 'Setting', subtitle: 'Account & Store', url: '{{ Route::has("app-ecommerce-settings-details") ? route("app-ecommerce-settings-details") : url("settings/store") }}', icon: 'bx-cog' },
         { id: 'roles', title: 'Role Management', subtitle: 'Permissions', url: '{{ Route::has("app-access-roles") ? route("app-access-roles") : url("app/access-roles") }}', icon: 'bx-check-shield' }
     ];

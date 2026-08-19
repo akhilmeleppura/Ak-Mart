@@ -1,7 +1,7 @@
 {
     "name": "SaaS",
     "alias": "saas",
-    "description": "SaaS Super Admin Platform Module",
+    "description": "SaaS Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [

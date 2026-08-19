@@ -1,0 +1,12 @@
+{
+    "name": "Communication",
+    "alias": "communication",
+    "description": "Communication Domain Feature Module",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Communication\\Providers\\CommunicationServiceProvider"
+    ],
+    "files": [],
+    "enabled": true
+}

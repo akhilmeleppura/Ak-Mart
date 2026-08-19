@@ -1,12 +1,11 @@
 {
     "name": "Accounting",
     "alias": "accounting",
-    "description": "",
+    "description": "Accounting Domain Feature Module",
     "keywords": [],
     "priority": 0,
     "providers": [
-        "Modules\\Accounting\\Providers\\AccountingServiceProvider",
-        "Modules\\Accounting\\Providers\\EventServiceProvider"
+        "Modules\\Accounting\\Providers\\AccountingServiceProvider"
     ],
     "files": [],
     "enabled": true
