@@ -78,10 +78,16 @@
                         <i class="bx bx-cart-add fs-4"></i>
                         <span id="btnCartText">{{ __('Add to Cart') }} • ${{ number_format($product->price, 2) }}</span>
                     </button>
+                    <button class="btn btn-outline-secondary btn-lg rounded-circle p-2 d-flex align-items-center justify-content-center shadow-xs" data-bs-toggle="modal" data-bs-target="#priceDropModal" title="{{ __('Notify Me on Price Drop') }}" style="width: 48px; height: 48px;">
+                        <i class="bx bx-trending-down fs-4 text-success"></i>
+                    </button>
                 @else
                     <button class="btn btn-warning btn-lg rounded-pill px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2 shadow-sm text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#backInStockModal">
                         <i class="bx bx-bell fs-4"></i>
                         <span>{{ __('Notify Me When Back in Stock') }}</span>
+                    </button>
+                    <button class="btn btn-outline-secondary btn-lg rounded-circle p-2 d-flex align-items-center justify-content-center shadow-xs" data-bs-toggle="modal" data-bs-target="#priceDropModal" title="{{ __('Notify Me on Price Drop') }}" style="width: 48px; height: 48px;">
+                        <i class="bx bx-trending-down fs-4 text-success"></i>
                     </button>
                 @endif
             </div>
@@ -406,6 +412,39 @@
         </form>
     </div>
 </div>
+
+<!-- Price Drop Alert Modal -->
+<div class="modal fade" id="priceDropModal" tabindex="-1" aria-labelledby="priceDropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" onsubmit="submitPriceDropAlert(event, {{ $product->id }})">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="priceDropModalLabel"><i class="bx bx-trending-down text-success me-2"></i> {{ __('Set Price Drop Alert') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">{{ __('Track :product and receive an instant email alert when the price drops below your target price.', ['product' => $product->name]) }}</p>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Current Price') }}</label>
+                    <input type="text" class="form-control" value="${{ number_format($product->price, 2) }}" readonly disabled>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Notify Me When Price Drops To ($)') }} <span class="text-danger">*</span></label>
+                    <input type="number" id="targetPriceInput" class="form-control fw-bold fs-5 text-success" step="0.5" min="0.5" max="{{ $product->price }}" value="{{ number_format($product->price * 0.9, 2, '.', '') }}" required>
+                    <small class="text-muted">{{ __('Suggested: 10% off at') }} ${{ number_format($product->price * 0.9, 2) }}</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Your Email Address') }} <span class="text-danger">*</span></label>
+                    <input type="email" id="priceAlertEmail" class="form-control" value="{{ Auth::user()?->email ?? '' }}" placeholder="you@example.com" required>
+                </div>
+                <div id="priceAlertFeedback" class="small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-success fw-bold px-4">{{ __('Activate Price Tracker') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -583,6 +622,38 @@ function submitQuestionForm(e, productId) {
     })
     .catch(err => {
         feedback.innerHTML = '<span class="text-danger">{{ __("An error occurred while posting your question.") }}</span>';
+    });
+}
+
+function submitPriceDropAlert(e, productId) {
+    e.preventDefault();
+    const email = document.getElementById('priceAlertEmail').value.trim();
+    const targetPrice = parseFloat(document.getElementById('targetPriceInput').value);
+    const feedback = document.getElementById('priceAlertFeedback');
+
+    if (!email || !targetPrice || targetPrice <= 0) {
+        feedback.innerHTML = '<span class="text-danger">{{ __("Please enter a valid target price and email.") }}</span>';
+        return;
+    }
+
+    fetch(`/store/product/${productId}/price-drop`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ email: email, target_price: targetPrice })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            const modalEl = document.getElementById('priceDropModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        } else {
+            feedback.innerHTML = `<span class="text-danger">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        feedback.innerHTML = '<span class="text-danger">{{ __("An error occurred.") }}</span>';
     });
 }
 </script>

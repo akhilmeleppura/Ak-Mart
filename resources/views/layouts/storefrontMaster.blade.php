@@ -162,6 +162,7 @@
                 <a href="{{ route('storefront.home') }}" class="text-dark fw-semibold text-decoration-none">{{ __('Home') }}</a>
                 <a href="{{ route('storefront.shop') }}" class="text-dark fw-semibold text-decoration-none">{{ __('All Products') }}</a>
                 <a href="{{ route('storefront.buy_again') }}" class="text-primary fw-semibold text-decoration-none"><i class="bx bx-repeat me-1"></i>{{ __('Buy Again') }}</a>
+                <a href="{{ route('storefront.referral') }}" class="text-success fw-semibold text-decoration-none"><i class="bx bx-gift me-1"></i>{{ __('Refer & Earn $10') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="text-muted text-decoration-none">{{ __('Groceries & Staples') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="text-muted text-decoration-none">{{ __('Beverages & Juices') }}</a>
                 <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="text-muted text-decoration-none">{{ __('Dairy & Eggs') }}</a>
@@ -218,6 +219,7 @@
                     <ul class="list-unstyled small text-muted d-flex flex-column gap-2">
                         <li><a href="{{ route('storefront.track') }}" class="text-muted text-decoration-none">{{ __('Track Order') }}</a></li>
                         <li><a href="{{ route('storefront.returns') }}" class="text-primary text-decoration-none fw-semibold"><i class="bx bx-revision me-1"></i>{{ __('Returns & Exchanges') }}</a></li>
+                        <li><a href="{{ route('storefront.referral') }}" class="text-success text-decoration-none fw-semibold"><i class="bx bx-gift me-1"></i>{{ __('Refer & Earn $10') }}</a></li>
                         <li><a href="{{ route('customer.dashboard') }}" class="text-muted text-decoration-none">{{ __('My Account') }}</a></li>
                         <li><a href="{{ route('customer.wishlist') }}" class="text-muted text-decoration-none">{{ __('Wishlist') }}</a></li>
                         <li><a href="{{ route('customer.wallet') }}" class="text-muted text-decoration-none">{{ __('Wallet & Loyalty') }}</a></li>

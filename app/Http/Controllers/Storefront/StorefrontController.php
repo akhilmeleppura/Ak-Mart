@@ -17,6 +17,8 @@ use App\Models\StockNotification;
 use App\Models\ProductQuestion;
 use App\Models\OrderReturn;
 use App\Models\DeliverySlot;
+use App\Models\PriceAlert;
+use App\Models\User;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +30,12 @@ class StorefrontController extends Controller
     /**
      * Storefront Homepage with Dynamic CMS Sliders & Merchandising Blocks
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($ref = $request->query('ref')) {
+            session()->put('referred_by_code', strtoupper(trim($ref)));
+        }
+
         $heroSliders = CmsBanner::where('is_active', true)
             ->where('position', 'home_hero')
             ->orderBy('sort_order')
@@ -674,6 +680,20 @@ class StorefrontController extends Controller
                 }
             }
 
+            // Award Referrer Bonus ($10 Store Credit) if referred by friend
+            if ($refCode = session()->get('referred_by_code')) {
+                $referrer = User::where('referral_code', $refCode)->first();
+                if ($referrer && $referrer->id !== $user?->id) {
+                    $sc = StoreCredit::firstOrCreate(['user_id' => $referrer->id], ['balance' => 0]);
+                    $sc->credit(10.00, 'referral', $order->id, "Referral reward from order #{$orderNumber}");
+                    if ($user && !$user->referred_by_id) {
+                        $user->referred_by_id = $referrer->id;
+                        $user->save();
+                    }
+                    session()->forget('referred_by_code');
+                }
+            }
+
             // Clear Cart
             session()->forget('cart');
 
@@ -981,6 +1001,56 @@ class StorefrontController extends Controller
         ]);
 
         return redirect()->route('storefront.returns')->with('success', "Return Request #{$returnNumber} has been logged. Our dispatch team will inspect and process your refund/replacement within 24 hours.");
+    }
+
+    /**
+     * Set Price Drop Alert AJAX
+     */
+    public function setPriceAlert(Request $request, $productId)
+    {
+        $request->validate([
+            'email'        => 'required|email|max:255',
+            'target_price' => 'required|numeric|min:0.01',
+        ]);
+
+        $product = Product::findOrFail($productId);
+
+        PriceAlert::create([
+            'product_id'   => $product->id,
+            'user_id'      => Auth::id(),
+            'email'        => $request->email,
+            'target_price' => $request->target_price,
+            'is_triggered' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Price drop alert activated! We will email you at {$request->email} the instant {$product->name} drops to \${$request->target_price} or lower.",
+        ]);
+    }
+
+    /**
+     * Customer Referral & Viral Growth Hub
+     */
+    public function referralProgram()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('info', 'Please sign in or create an account to get your personal referral link.');
+        }
+
+        if (!$user->referral_code) {
+            $user->referral_code = 'AK-' . strtoupper(Str::random(6));
+            $user->save();
+        }
+
+        $referralLink = url('/store?ref=' . $user->referral_code);
+        $referredUsers = User::where('referred_by_id', $user->id)->latest()->get();
+        $earnedCredits = StoreCredit::where('user_id', $user->id)->first()?->transactions()
+            ->where('reference_type', 'referral')
+            ->sum('amount') ?: 0.00;
+
+        return view('storefront.referral', compact('user', 'referralLink', 'referredUsers', 'earnedCredits'));
     }
 }
 
