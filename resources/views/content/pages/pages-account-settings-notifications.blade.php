@@ -1,153 +1,85 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Account settings - Pages')
-
-<!-- Vendor Styles -->
-@section('vendor-style')
-  @vite(['resources/assets/vendor/libs/select2/select2.scss'])
-@endsection
-
-<!-- Vendor Scripts -->
-@section('vendor-script')
-  @vite(['resources/assets/vendor/libs/select2/select2.js'])
-@endsection
+@section('title', __('Notification Preferences') . ' — AK-Mart')
 
 @section('content')
   <div class="row">
     <div class="col-md-12">
       <div class="nav-align-top">
         <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
-          <li class="nav-item"> <a class="nav-link" href="{{ url('pages/account-settings-account') }}">
-              <i class="icon-base bx bx-user icon-sm me-1_5"></i> Account</a>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages-profile-user') }}"><i class="icon-base bx bx-user icon-sm me-1_5"></i>{{ __('My Profile') }}</a>
           </li>
-          <li class="nav-item"> <a class="nav-link" href="{{ url('pages/account-settings-security') }}">
-              <i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i> Security</a>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages-account-settings-account') }}"><i class="icon-base bx bx-cog icon-sm me-1_5"></i>{{ __('Account Settings') }}</a>
           </li>
-          <li class="nav-item"> <a class="nav-link" href="{{ url('pages/account-settings-billing') }}">
-              <i class="icon-base bx bx-detail icon-sm me-1_5"></i> Billing & Plans</a>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages-account-settings-security') }}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i>{{ __('Security & Password') }}</a>
           </li>
-          <li class="nav-item"> <a class="nav-link active" href="javascript:void(0);">
-              <i class="icon-base bx bx-bell icon-sm me-1_5"></i> Notifications</a>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('app-saas-billing') }}"><i class="icon-base bx bx-credit-card icon-sm me-1_5"></i>{{ __('Billing & Plans') }}</a>
           </li>
-          <li class="nav-item"> <a class="nav-link" href="{{ url('pages/account-settings-connections') }}">
-              <i class="icon-base bx bx-link-alt icon-sm me-1_5"></i> Connections</a>
+          <li class="nav-item">
+            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base bx bx-bell icon-sm me-1_5"></i>{{ __('Notifications') }}</a>
           </li>
         </ul>
       </div>
-      <div class="card">
-        <!-- Notifications -->
-        <div class="card-body">
-          <h5 class="mb-1">Recent Devices</h5>
-          <span class="card-subtitle">We need permission from your browser to show notifications. <span
-              class="notificationRequest"><span class="text-primary">Request Permission</span></span></span>
-          <div class="error"></div>
-        </div>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th class="text-nowrap">Type</th>
-                <th class="text-nowrap text-center">Email</th>
-                <th class="text-nowrap text-center">Browser</th>
-                <th class="text-nowrap text-center">App</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="text-nowrap text-heading">New for you</td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck1" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck2" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck3" checked />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-nowrap text-heading">Account activity</td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck4" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck5" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck6" checked />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-nowrap text-heading">A new browser used to sign in</td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck7" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck8" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck9" />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-nowrap text-heading">A new device is linked</td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck10" checked />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck11" />
-                  </div>
-                </td>
-                <td>
-                  <div class="form-check mb-0 d-flex justify-content-center align-items-center">
-                    <input class="form-check-input" type="checkbox" id="defaultCheck12" />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-body">
-          <h6 class="text-body mb-6">When should we send you notifications?</h6>
-          <form action="javascript:void(0);">
-            <div class="row">
-              <div class="col-sm-6">
-                <select id="sendNotification" class="form-select" name="sendNotification">
-                  <option selected>Only when I'm online</option>
-                  <option>Anytime</option>
-                </select>
+
+      @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="bx bx-check-circle me-1"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      @endif
+
+      <div class="card mb-6 shadow-sm border-0">
+        <h5 class="card-header border-bottom d-flex align-items-center gap-2">
+          <i class="bx bx-bell text-primary fs-4"></i>
+          <span>{{ __('User Notification Preferences') }}</span>
+        </h5>
+        <div class="card-body pt-5">
+          <form method="POST" action="{{ route('account-settings-notifications-update') }}">
+            @csrf
+            <h6 class="text-heading fw-bold mb-4">{{ __('Email Notifications & Alerts') }}</h6>
+            
+            <div class="list-group list-group-flush mb-5">
+              <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                  <h6 class="mb-0 fw-semibold">{{ __('Order & Customer Activity') }}</h6>
+                  <small class="text-muted">{{ __('Receive notifications when new orders are placed or return requests are submitted.') }}</small>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" checked disabled />
+                </div>
               </div>
-              <div class="mt-6">
-                <button type="submit" class="btn btn-primary me-3">Save changes</button>
-                <button type="reset" class="btn btn-label-secondary">Discard</button>
+
+              <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                  <h6 class="mb-0 fw-semibold">{{ __('Low-Stock & Inventory Alerts') }}</h6>
+                  <small class="text-muted">{{ __('Receive high-priority alerts when store products fall below threshold levels.') }}</small>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" checked disabled />
+                </div>
+              </div>
+
+              <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                  <h6 class="mb-0 fw-semibold">{{ __('Marketing & Feature Updates') }}</h6>
+                  <small class="text-muted">{{ __('Opt out of promotional broadcasts, marketing emails, and weekly tips.') }}</small>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="marketing_opt_out" name="marketing_opt_out" value="1" {{ $user->marketing_opt_out ? 'checked' : '' }} />
+                </div>
               </div>
             </div>
+
+            <button type="submit" class="btn btn-primary shadow-sm">
+              <i class="bx bx-check me-1"></i>{{ __('Save Notification Preferences') }}
+            </button>
           </form>
         </div>
-        <!-- /Notifications -->
       </div>
     </div>
   </div>
-
 @endsection

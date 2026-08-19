@@ -137,15 +137,15 @@
               class="icon-base bx bx-user icon-18px me-1_5"></i>Overview</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/security/' . $customer->id) }}"><i
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/security') }}"><i
               class="icon-base bx bx-lock icon-18px me-1_5"></i>Security</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/billing/' . $customer->id) }}"><i
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/billing') }}"><i
               class="icon-base bx bx-map icon-18px me-1_5"></i>Address & Billing</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/notifications/' . $customer->id) }}"><i
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/notifications') }}"><i
               class="icon-base bx bx-bell icon-18px me-1_5"></i>Notifications</a>
         </li>
       </ul>

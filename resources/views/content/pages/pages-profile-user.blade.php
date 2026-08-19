@@ -1,10 +1,10 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'User Profile - Profile')
+@section('title', __('My Profile') . ' — AK-Mart')
 
 <!-- Vendor Styles -->
 @section('vendor-style')
-  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss'])
+  @vite(['resources/assets/vendor/libs/animate-css/animate.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'])
 @endsection
 
 <!-- Page Styles -->
@@ -12,46 +12,55 @@
   @vite(['resources/assets/vendor/scss/pages/page-profile.scss'])
 @endsection
 
-<!-- Vendor Scripts -->
-@section('vendor-script')
-  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'])
-@endsection
-
-<!-- Page Scripts -->
-@section('page-script')
-  @vite(['resources/assets/js/app-user-view-account.js'])
-@endsection
-
 @section('content')
   <!-- Header -->
   <div class="row">
     <div class="col-12">
-      <div class="card mb-6">
+      <div class="card mb-6 shadow-sm border-0">
         <div class="user-profile-header-banner">
-          <img src="{{ asset('assets/img/pages/profile-banner.png') }}" alt="Banner image" class="rounded-top" />
+          <img src="{{ asset('assets/img/pages/profile-banner.png') }}" alt="Banner image" class="rounded-top w-100" style="max-height: 180px; object-fit: cover;" />
         </div>
-        <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-8">
-          <div class="flex-shrink-0 mt-1 mx-sm-0 mx-auto">
-            <img src="{{ asset('assets/img/avatars/1.png') }}" alt="user image"
-              class="d-block h-auto ms-0 ms-sm-6 rounded-3 user-profile-img" />
+        <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-6">
+          <div class="flex-shrink-0 mt-n5 mx-sm-0 mx-auto position-relative">
+            <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
+              class="d-block h-auto ms-0 ms-sm-6 rounded-circle user-profile-img border border-4 border-white shadow"
+              style="width: 120px; height: 120px; object-fit: cover; background: #fff;" />
           </div>
           <div class="flex-grow-1 mt-3 mt-lg-5">
-            <div
-              class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-5 flex-md-row flex-column gap-4">
+            <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-5 flex-md-row flex-column gap-4">
               <div class="user-profile-info">
-                <h4 class="mb-2 mt-lg-7">John Doe</h4>
-                <ul
-                  class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-4 mt-4">
-                  <li class="list-inline-item"><i class="icon-base bx bx-palette me-2 align-top"></i><span
-                      class="fw-medium">UX Designer</span></li>
-                  <li class="list-inline-item"><i class="icon-base bx bx-map me-2 align-top"></i><span
-                      class="fw-medium">Vatican City</span></li>
-                  <li class="list-inline-item"><i class="icon-base bx bx-calendar me-2 align-top"></i><span
-                      class="fw-medium"> Joined April 2021</span></li>
+                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-sm-start justify-content-center">
+                  <h4 class="mb-0 fw-bold">{{ $user->name }}</h4>
+                  <span class="badge bg-label-primary px-3 py-1">{{ $roleName }}</span>
+                  <span class="badge bg-label-success px-3 py-1"><i class="bx bx-check-circle me-1"></i>{{ __('Active') }}</span>
+                </div>
+                <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-4 mt-3 text-muted">
+                  @if($branch)
+                  <li class="list-inline-item">
+                    <i class="icon-base bx bx-store me-1 align-top text-primary"></i>
+                    <span class="fw-medium">{{ $branch->name }}</span>
+                  </li>
+                  @endif
+                  @if($user->town || $user->country)
+                  <li class="list-inline-item">
+                    <i class="icon-base bx bx-map me-1 align-top text-danger"></i>
+                    <span class="fw-medium">{{ collect([$user->town, $user->country])->filter()->implode(', ') }}</span>
+                  </li>
+                  @endif
+                  <li class="list-inline-item">
+                    <i class="icon-base bx bx-calendar me-1 align-top text-info"></i>
+                    <span class="fw-medium">{{ __('Joined') }} {{ $user->created_at ? $user->created_at->format('M Y') : 'N/A' }}</span>
+                  </li>
                 </ul>
               </div>
-              <a href="javascript:void(0)" class="btn btn-primary mb-1"> <i
-                  class="icon-base bx bx-user-check icon-sm me-2"></i>Connected </a>
+              <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ route('pages-account-settings-account') }}" class="btn btn-primary shadow-sm">
+                  <i class="icon-base bx bx-edit-alt me-1_5"></i>{{ __('Edit Profile') }}
+                </a>
+                <a href="{{ route('pages-account-settings-security') }}" class="btn btn-label-secondary">
+                  <i class="icon-base bx bx-shield-quarter me-1_5"></i>{{ __('Security') }}
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -61,28 +70,24 @@
   <!--/ Header -->
 
   <!-- Navbar pills -->
-  <div class="row">
+  <div class="row mb-6">
     <div class="col-md-12">
       <div class="nav-align-top">
-        <ul class="nav nav-pills flex-column flex-sm-row mb-6 gap-sm-0 gap-2">
+        <ul class="nav nav-pills flex-column flex-sm-row gap-sm-0 gap-2">
           <li class="nav-item">
-            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base bx bx-user icon-sm me-1_5"></i>
-              Profile</a>
+            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base bx bx-user icon-sm me-1_5"></i>{{ __('Overview') }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('pages/profile-teams') }}"><i
-                class="icon-base bx bx-group icon-sm me-1_5"></i>
-              Teams</a>
+            <a class="nav-link" href="{{ route('pages-account-settings-account') }}"><i class="icon-base bx bx-cog icon-sm me-1_5"></i>{{ __('Account Settings') }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('pages/profile-projects') }}"><i
-                class="icon-base bx bx-grid-alt icon-sm me-1_5"></i>
-              Projects</a>
+            <a class="nav-link" href="{{ route('pages-account-settings-security') }}"><i class="icon-base bx bx-lock-alt icon-sm me-1_5"></i>{{ __('Security & Password') }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('pages/profile-connections') }}"><i
-                class="icon-base bx bx-link icon-sm me-1_5"></i>
-              Connections</a>
+            <a class="nav-link" href="{{ route('app-saas-billing') }}"><i class="icon-base bx bx-credit-card icon-sm me-1_5"></i>{{ __('Billing & Plans') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pages-account-settings-notifications') }}"><i class="icon-base bx bx-bell icon-sm me-1_5"></i>{{ __('Notifications') }}</a>
           </li>
         </ul>
       </div>
@@ -94,396 +99,167 @@
   <div class="row">
     <div class="col-xl-4 col-lg-5 col-md-5">
       <!-- About User -->
-      <div class="card mb-6">
+      <div class="card mb-6 shadow-sm border-0">
         <div class="card-body">
-          <small class="card-text text-uppercase text-body-secondary small">About</small>
-          <ul class="list-unstyled my-3 py-1">
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-user"></i><span
-                class="fw-medium mx-2">Full Name:</span> <span>John Doe</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-check"></i><span
-                class="fw-medium mx-2">Status:</span> <span>Active</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-crown"></i><span
-                class="fw-medium mx-2">Role:</span> <span>Developer</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-flag"></i><span
-                class="fw-medium mx-2">Country:</span> <span>USA</span></li>
-            <li class="d-flex align-items-center mb-2"><i class="icon-base bx bx-detail"></i><span
-                class="fw-medium mx-2">Languages:</span> <span>English</span></li>
+          <h6 class="card-text text-uppercase text-body-secondary small fw-bold mb-4">{{ __('About User') }}</h6>
+          <ul class="list-unstyled mb-4">
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-user text-primary fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('Full Name') }}</span>
+                <span class="fw-medium text-heading">{{ $user->name }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-envelope text-primary fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('Email Address') }}</span>
+                <span class="fw-medium text-heading">{{ $user->email }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-phone text-primary fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('Phone') }}</span>
+                <span class="fw-medium text-heading">{{ $user->phone ?: __('Not Provided') }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-crown text-warning fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('System Role') }}</span>
+                <span class="badge bg-label-primary">{{ $roleName }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-store text-info fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('Assigned Branch') }}</span>
+                <span class="fw-medium text-heading">{{ $branch ? $branch->name : __('All Branches (Global)') }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="icon-base bx bx-globe text-success fs-5 me-3"></i>
+              <div>
+                <span class="text-muted d-block small">{{ __('Preferred Language') }}</span>
+                <span class="fw-medium text-heading text-uppercase">{{ $user->locale ?: 'EN' }}</span>
+              </div>
+            </li>
           </ul>
-          <small class="card-text text-uppercase text-body-secondary small">Contacts</small>
-          <ul class="list-unstyled my-3 py-1">
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-phone"></i><span
-                class="fw-medium mx-2">Contact:</span> <span>(123) 456-7890</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-chat"></i><span
-                class="fw-medium mx-2">Skype:</span> <span>john.doe</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-envelope"></i><span
-                class="fw-medium mx-2">Email:</span> <span>john.doe@example.com</span></li>
-          </ul>
-          <small class="card-text text-uppercase text-body-secondary small">Teams</small>
-          <ul class="list-unstyled mb-0 mt-3 pt-1">
-            <li class="d-flex flex-wrap mb-4"><span class="fw-medium me-2">Backend Developer</span><span>(126
-                Members)</span></li>
-            <li class="d-flex flex-wrap"><span class="fw-medium me-2">React Developer</span><span>(98 Members)</span></li>
+
+          <h6 class="card-text text-uppercase text-body-secondary small fw-bold mb-3">{{ __('Address & Location') }}</h6>
+          <ul class="list-unstyled mb-0">
+            <li class="d-flex align-items-start mb-2">
+              <i class="icon-base bx bx-map-pin text-danger fs-5 me-3 mt-1"></i>
+              <div>
+                <span class="fw-medium text-heading">
+                  {{ collect([$user->address_line_1, $user->address_line_2, $user->town, $user->state, $user->post_code, $user->country])->filter()->implode(', ') ?: __('No address registered.') }}
+                </span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
       <!--/ About User -->
-      <!-- Profile Overview -->
-      <div class="card mb-6">
+
+      <!-- Store Overview Card -->
+      @if($branch)
+      <div class="card mb-6 shadow-sm border-0">
         <div class="card-body">
-          <small class="card-text text-uppercase text-body-secondary small">Overview</small>
-          <ul class="list-unstyled mb-0 mt-3 pt-1">
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-check"></i><span
-                class="fw-medium mx-2">Task Compiled:</span> <span>13.5k</span></li>
-            <li class="d-flex align-items-center mb-4"><i class="icon-base bx bx-star"></i><span
-                class="fw-medium mx-2">Projects Compiled:</span> <span>146</span></li>
-            <li class="d-flex align-items-center"><i class="icon-base bx bx-user"></i><span
-                class="fw-medium mx-2">Connections:</span> <span>897</span></li>
-          </ul>
+          <h6 class="card-text text-uppercase text-body-secondary small fw-bold mb-3">{{ __('Store / Branch Details') }}</h6>
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar avatar-md bg-label-primary rounded p-2 me-3">
+              <i class="bx bx-buildings fs-3"></i>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ $branch->name }}</h6>
+              <small class="text-muted">{{ __('Branch Code:') }} <strong>{{ $branch->code ?: 'BR-' . $branch->id }}</strong></small>
+            </div>
+          </div>
+          <p class="small text-muted mb-0"><i class="bx bx-map me-1"></i>{{ $branch->address ?: __('Standard Location') }}</p>
         </div>
       </div>
-      <!--/ Profile Overview -->
+      @endif
     </div>
+
     <div class="col-xl-8 col-lg-7 col-md-7">
       <!-- Activity Timeline -->
-      <div class="card card-action mb-6">
-        <div class="card-header align-items-center">
-          <h5 class="card-action-title mb-0"><i
-              class="icon-base bx bx-bar-chart-alt-2 icon-lg text-body me-4"></i>Activity Timeline</h5>
+      <div class="card mb-6 shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+            <i class="icon-base bx bx-time-five text-primary"></i>
+            <span>{{ __('Recent Account Activity') }}</span>
+          </h5>
+          <span class="badge bg-label-secondary">{{ $activities->count() }} {{ __('Events') }}</span>
         </div>
-        <div class="card-body pt-3">
+        <div class="card-body pt-2">
+          @if($activities->isNotEmpty())
           <ul class="timeline mb-0">
-            <li class="timeline-item timeline-item-transparent">
-              <span class="timeline-point timeline-point-primary"></span>
+            @foreach($activities as $act)
+            <li class="timeline-item timeline-item-transparent pb-4">
+              <span class="timeline-point @if(str_contains($act->event, 'password')) timeline-point-danger @elseif(str_contains($act->event, 'photo')) timeline-point-info @elseif(str_contains($act->event, 'plan')) timeline-point-warning @else timeline-point-primary @endif"></span>
               <div class="timeline-event">
-                <div class="timeline-header mb-3">
-                  <h6 class="mb-0">12 Invoices have been paid</h6>
-                  <small class="text-body-secondary">12 min ago</small>
+                <div class="timeline-header mb-1 d-flex justify-content-between">
+                  <h6 class="mb-0 fw-semibold text-capitalize">{{ str_replace('_', ' ', $act->event) }}</h6>
+                  <small class="text-muted">{{ $act->created_at->diffForHumans() }}</small>
                 </div>
-                <p class="mb-2">Invoices have been paid to the company</p>
-                <div class="d-flex align-items-center mb-2">
-                  <div class="badge bg-lighter rounded d-flex align-items-center">
-                    <img src="{{ asset('assets/img/icons/misc/pdf.png') }}" alt="img" width="20"
-                      class="me-2" />
-                    <span class="h6 mb-0 text-body">invoices.pdf</span>
-                  </div>
+                <p class="mb-1 text-muted small">
+                  {{ __('Triggered from IP:') }} <code>{{ $act->ip_address ?: '127.0.0.1' }}</code>
+                </p>
+                @if($act->new_values)
+                <div class="badge bg-label-secondary rounded mt-1 font-monospace small">
+                  {{ Str::limit($act->new_values, 120) }}
                 </div>
+                @endif
               </div>
             </li>
-            <li class="timeline-item timeline-item-transparent">
-              <span class="timeline-point timeline-point-success"></span>
-              <div class="timeline-event">
-                <div class="timeline-header mb-3">
-                  <h6 class="mb-0">Client Meeting</h6>
-                  <small class="text-body-secondary">45 min ago</small>
-                </div>
-                <p class="mb-2">Project meeting with john @10:15am</p>
-                <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
-                  <div class="d-flex flex-wrap align-items-center mb-50">
-                    <div class="avatar avatar-sm me-3">
-                      <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" />
-                    </div>
-                    <div>
-                      <p class="mb-0 small fw-medium">Lester McCarthy (Client)</p>
-                      <small>CEO of {{ config('variables.creatorName') }}</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li class="timeline-item timeline-item-transparent">
-              <span class="timeline-point timeline-point-info"></span>
-              <div class="timeline-event">
-                <div class="timeline-header mb-3">
-                  <h6 class="mb-0">Create a new project for client</h6>
-                  <small class="text-body-secondary">2 Day Ago</small>
-                </div>
-                <p class="mb-2">6 team members in a project</p>
-                <ul class="list-group list-group-flush">
-                  <li
-                    class="list-group-item d-flex justify-content-between align-items-center flex-wrap border-top-0 p-0">
-                    <div class="d-flex flex-wrap align-items-center">
-                      <ul class="list-unstyled users-list d-flex align-items-center avatar-group m-0 me-2">
-                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"
-                          title="Vinnie Mostowy" class="avatar pull-up">
-                          <img class="rounded-circle" src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" />
-                        </li>
-                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"
-                          title="Allen Rieske" class="avatar pull-up">
-                          <img class="rounded-circle" src="{{ asset('assets/img/avatars/4.png') }}" alt="Avatar" />
-                        </li>
-                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"
-                          title="Julee Rossignol" class="avatar pull-up">
-                          <img class="rounded-circle" src="{{ asset('assets/img/avatars/2.png') }}" alt="Avatar" />
-                        </li>
-                        <li class="avatar">
-                          <span class="avatar-initial rounded-circle pull-up text-heading" data-bs-toggle="tooltip"
-                            data-bs-placement="bottom" title="3 more">+3</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </li>
+            @endforeach
           </ul>
+          @else
+          <div class="text-center py-6 text-muted">
+            <i class="bx bx-history fs-1 d-block mb-2 text-secondary"></i>
+            <p class="mb-0">{{ __('No recent activity logs recorded for your profile.') }}</p>
+          </div>
+          @endif
         </div>
       </div>
       <!--/ Activity Timeline -->
-      <div class="row">
-        <!-- Connections -->
-        <div class="col-lg-12 col-xl-6">
-          <div class="card card-action mb-6">
-            <div class="card-header align-items-center">
-              <h5 class="card-action-title mb-0">Connections</h5>
-              <div class="card-action-element">
-                <div class="dropdown">
-                  <button type="button"
-                    class="btn btn-icon btn-text-secondary rounded-pill dropdown-toggle hide-arrow p-0 text-body-secondary"
-                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                      class="icon-base bx bx-dots-vertical-rounded icon-md text-body-secondary"></i></button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="javascript:void(0);">Share connections</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Suggest edits</a></li>
-                    <li>
-                      <hr class="dropdown-divider" />
-                    </li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Report bug</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <ul class="list-unstyled mb-0">
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/avatars/2.png') }}" alt="Avatar" class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Cecilia Payne</h6>
-                        <small>45 Connections</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <button class="btn btn-label-primary btn-icon"><i
-                          class="icon-base bx bx-user-check icon-md"></i></button>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/avatars/3.png') }}" alt="Avatar" class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Curtis Fletcher</h6>
-                        <small>1.32k Connections</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <button class="btn btn-primary btn-icon"><i class="icon-base bx bx-user-x icon-md"></i></button>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/avatars/10.png') }}" alt="Avatar" class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Alice Stone</h6>
-                        <small>125 Connections</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <button class="btn btn-primary btn-icon"><i class="icon-base bx bx-user-x icon-md"></i></button>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/avatars/7.png') }}" alt="Avatar" class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Darrell Barnes</h6>
-                        <small>456 Connections</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <button class="btn btn-label-primary btn-icon"><i
-                          class="icon-base bx bx-user-check icon-md"></i></button>
-                    </div>
-                  </div>
-                </li>
 
-                <li class="mb-6">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/avatars/12.png') }}" alt="Avatar" class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Eugenia Moore</h6>
-                        <small>1.2k Connections</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <button class="btn btn-label-primary btn-icon"><i
-                          class="icon-base bx bx-user-check icon-md"></i></button>
-                    </div>
-                  </div>
-                </li>
-                <li class="text-center">
-                  <a href="javascript:;">View all connections</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <!--/ Connections -->
-        <!-- Teams -->
-        <div class="col-lg-12 col-xl-6">
-          <div class="card card-action mb-6">
-            <div class="card-header align-items-center">
-              <h5 class="card-action-title mb-0">Teams</h5>
-              <div class="card-action-element">
-                <div class="dropdown">
-                  <button type="button" class="btn btn-icon btn-text-secondary dropdown-toggle hide-arrow p-0"
-                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                      class="icon-base bx bx-dots-vertical-rounded icon-md text-body-secondary"></i></button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="javascript:void(0);">Share teams</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Suggest edits</a></li>
-                    <li>
-                      <hr class="dropdown-divider" />
-                    </li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Report bug</a></li>
-                  </ul>
+      <!-- Quick Actions Grid -->
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div class="d-flex align-items-center mb-3">
+                <div class="avatar bg-label-primary rounded p-2 me-3">
+                  <i class="bx bx-shield-alt-2 fs-3"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0">{{ __('Account Security') }}</h6>
+                  <small class="text-muted">{{ __('Manage password & 2FA protection') }}</small>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <ul class="list-unstyled mb-0">
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/icons/brands/react-label.png') }}" alt="Avatar"
-                          class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">React Developers</h6>
-                        <small>72 Members</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <a href="javascript:;"><span class="badge bg-label-danger">Developer</span></a>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/icons/brands/support-label.png') }}" alt="Avatar"
-                          class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Support Team</h6>
-                        <small>122 Members</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <a href="javascript:;"><span class="badge bg-label-primary">Support</span></a>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/icons/brands/figma-label.png') }}" alt="Avatar"
-                          class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">UI Designers</h6>
-                        <small>7 Members</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <a href="javascript:;"><span class="badge bg-label-info">Designer</span></a>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/icons/brands/vue-label.png') }}" alt="Avatar"
-                          class="rounded-circle" />
-                      </div>
-                      <div class="me-2">
-                        <h6 class="mb-0">Vue.js Developers</h6>
-                        <small>289 Members</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <a href="javascript:;"><span class="badge bg-label-danger">Developer</span></a>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-6">
-                  <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-2">
-                        <img src="{{ asset('assets/img/icons/brands/twitter-label.png') }}" alt="Avatar"
-                          class="rounded-circle" />
-                      </div>
-                      <div class="me-w">
-                        <h6 class="mb-0">Digital Marketing</h6>
-                        <small>24 Members</small>
-                      </div>
-                    </div>
-                    <div class="ms-auto">
-                      <a href="javascript:;"><span class="badge bg-label-secondary">Marketing</span></a>
-                    </div>
-                  </div>
-                </li>
-                <li class="text-center">
-                  <a href="javascript:;">View all teams</a>
-                </li>
-              </ul>
+              <a href="{{ route('pages-account-settings-security') }}" class="btn btn-outline-primary btn-sm w-100">{{ __('Update Password') }}</a>
             </div>
           </div>
         </div>
-        <!--/ Teams -->
-      </div>
-      <!-- Projects table -->
-      <div class="card mb-6">
-        <h5 class="card-header pb-0 text-md-start text-center">Projects List</h5>
-        <div class="table-responsive mb-4">
-          <table class="table datatable-project">
-            <thead class="border-top">
-              <tr>
-                <th></th>
-                <th></th>
-                <th>Project</th>
-                <th>Leader</th>
-                <th>Team</th>
-                <th class="w-px-200">Progress</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-          </table>
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div class="d-flex align-items-center mb-3">
+                <div class="avatar bg-label-success rounded p-2 me-3">
+                  <i class="bx bx-credit-card-front fs-3"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0">{{ __('Store Subscription') }}</h6>
+                  <small class="text-muted">{{ __('View plan limits & active billing') }}</small>
+                </div>
+              </div>
+              <a href="{{ route('app-saas-billing') }}" class="btn btn-outline-success btn-sm w-100">{{ __('Manage Plan') }}</a>
+            </div>
+          </div>
         </div>
       </div>
-      <!--/ Projects table -->
     </div>
   </div>
-  <!--/ User Profile Content -->
 @endsection

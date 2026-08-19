@@ -20,6 +20,9 @@ class TenantSubscription extends Model
 
     public function branch()
     {
+        if (class_exists(\App\Models\Branch\Branch::class)) {
+            return $this->belongsTo(\App\Models\Branch\Branch::class, 'branch_id');
+        }
         return $this->belongsTo(\Modules\General\App\Models\Branch::class, 'branch_id');
     }
 
@@ -28,9 +31,15 @@ class TenantSubscription extends Model
         return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(SubscriptionInvoice::class, 'tenant_subscription_id');
+    }
+
     public function isActive()
     {
         return $this->status === 'active' || 
-               ($this->status === 'trialing' && $this->trial_ends_at && $this->trial_ends_at->isFuture());
+               ($this->status === 'trialing' && $this->trial_ends_at && $this->trial_ends_at->isFuture()) ||
+               ($this->status === 'canceled' && $this->current_period_end && $this->current_period_end->isFuture());
     }
 }

@@ -19,6 +19,127 @@
 @endsection
 
 @section('content')
+<!-- Dashboard Date Filter & Branch Header -->
+<div class="card shadow-sm border-0 mb-6 bg-primary text-white">
+  <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <h4 class="mb-1 text-white fw-bold d-flex align-items-center gap-2">
+        <i class="bx bx-bar-chart-alt-2 fs-3"></i>
+        <span>{{ __('E-Commerce Analytics & Real-Time Operations') }}</span>
+      </h4>
+      <p class="mb-0 text-white-75 small">
+        {{ __('Active Facility:') }} <span class="fw-semibold text-white">{{ \App\Models\Branch\Branch::find(session('branch_id'))?->name ?? __('Main Flagship Store (HQ)') }}</span> — {{ __('Live Database Aggregation') }}
+      </p>
+    </div>
+    <form method="GET" action="{{ route('app-ecommerce-dashboard') }}" class="d-flex align-items-center gap-2">
+      <label class="text-white-75 small text-nowrap fw-medium">{{ __('Time Period:') }}</label>
+      <select name="period" class="form-select form-select-sm bg-white text-dark border-0 shadow-sm" onchange="this.form.submit()">
+        <option value="today" {{ ($period ?? '30_days') === 'today' ? 'selected' : '' }}>{{ __('Today') }}</option>
+        <option value="yesterday" {{ ($period ?? '') === 'yesterday' ? 'selected' : '' }}>{{ __('Yesterday') }}</option>
+        <option value="7_days" {{ ($period ?? '') === '7_days' ? 'selected' : '' }}>{{ __('Last 7 Days') }}</option>
+        <option value="30_days" {{ ($period ?? '') === '30_days' ? 'selected' : '' }}>{{ __('Last 30 Days') }}</option>
+        <option value="this_month" {{ ($period ?? '') === 'this_month' ? 'selected' : '' }}>{{ __('This Month') }}</option>
+        <option value="last_month" {{ ($period ?? '') === 'last_month' ? 'selected' : '' }}>{{ __('Last Month') }}</option>
+        <option value="this_year" {{ ($period ?? '') === 'this_year' ? 'selected' : '' }}>{{ __('This Year') }}</option>
+      </select>
+    </form>
+  </div>
+</div>
+
+<!-- Action Required Insight Cards -->
+<div class="row g-4 mb-6">
+  @if(($lowStockCount ?? 0) > 0)
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('app-ecommerce-inventory') }}" class="card border-warning border shadow-xs h-100 text-decoration-none transition-all">
+      <div class="card-body p-4 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar avatar-md bg-label-warning rounded p-2">
+            <i class="bx bx-error-alt fs-3 text-warning"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-heading">{{ $lowStockCount }} {{ __('Low Stock Items') }}</h6>
+            <small class="text-muted">{{ __('Inventory reorder needed') }}</small>
+          </div>
+        </div>
+        <i class="bx bx-chevron-right fs-4 text-warning"></i>
+      </div>
+    </a>
+  </div>
+  @endif
+
+  @if(($pendingPaymentsCount ?? 0) > 0)
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('app-ecommerce-order-list') }}" class="card border-info border shadow-xs h-100 text-decoration-none transition-all">
+      <div class="card-body p-4 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar avatar-md bg-label-info rounded p-2">
+            <i class="bx bx-credit-card-alt fs-3 text-info"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-heading">{{ $pendingPaymentsCount }} {{ __('Pending Payments') }}</h6>
+            <small class="text-muted">{{ __('Awaiting verification') }}</small>
+          </div>
+        </div>
+        <i class="bx bx-chevron-right fs-4 text-info"></i>
+      </div>
+    </a>
+  </div>
+  @endif
+
+  @if(!($smtpConfigured ?? false))
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ url('settings/email') }}" class="card border-danger border shadow-xs h-100 text-decoration-none transition-all">
+      <div class="card-body p-4 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar avatar-md bg-label-danger rounded p-2">
+            <i class="bx bx-envelope fs-3 text-danger"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-heading">{{ __('SMTP Not Configured') }}</h6>
+            <small class="text-danger">{{ __('Setup mail credentials') }}</small>
+          </div>
+        </div>
+        <i class="bx bx-chevron-right fs-4 text-danger"></i>
+      </div>
+    </a>
+  </div>
+  @else
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ url('settings/email') }}" class="card border-success border shadow-xs h-100 text-decoration-none transition-all">
+      <div class="card-body p-4 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar avatar-md bg-label-success rounded p-2">
+            <i class="bx bx-check-double fs-3 text-success"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-heading">{{ __('SMTP Connected') }}</h6>
+            <small class="text-success">{{ __('Transactional email active') }}</small>
+          </div>
+        </div>
+        <i class="bx bx-chevron-right fs-4 text-success"></i>
+      </div>
+    </a>
+  </div>
+  @endif
+
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ url('settings/whatsapp') }}" class="card border-success border shadow-xs h-100 text-decoration-none transition-all">
+      <div class="card-body p-4 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar avatar-md bg-label-success rounded p-2">
+            <i class="bx bxl-whatsapp fs-3 text-success"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-heading">{{ __('WhatsApp Cloud API') }}</h6>
+            <small class="text-muted">{{ __('Instant alerts enabled') }}</small>
+          </div>
+        </div>
+        <i class="bx bx-chevron-right fs-4 text-success"></i>
+      </div>
+    </a>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-12 col-xxl-4 mb-6">
     <div class="card h-100">

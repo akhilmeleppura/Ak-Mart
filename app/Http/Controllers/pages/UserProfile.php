@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class UserProfile extends Controller
 {
-  public function index()
-  {
-    return view('content.pages.pages-profile-user');
-  }
+    public function index(Request $request)
+    {
+        return app(ProfileController::class)->show($request);
+    }
 }

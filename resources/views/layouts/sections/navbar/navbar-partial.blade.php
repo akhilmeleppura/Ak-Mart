@@ -306,19 +306,18 @@ use Illuminate\Support\Facades\Route;
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}" alt
-            class="rounded-circle" />
+          <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}" alt="{{ Auth::user()?->name ?? 'User' }}"
+            class="rounded-circle" style="object-fit: cover; width: 38px; height: 38px;" />
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
         <li>
-          <a class="dropdown-item"
-            href="{{ Route::has('profile.show') ? route('profile.show') : route('pages-profile-user') }}">
+          <a class="dropdown-item" href="{{ route('pages-profile-user') }}">
             <div class="d-flex">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
                   <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}"
-                    alt class="w-px-40 h-auto rounded-circle" />
+                    alt="{{ Auth::user()?->name ?? 'User' }}" class="w-px-40 h-px-40 rounded-circle" style="object-fit: cover;" />
                 </div>
               </div>
               <div class="flex-grow-1">
@@ -329,7 +328,18 @@ use Illuminate\Support\Facades\Route;
                   John Doe
                   @endif
                 </h6>
-                <small class="text-body-secondary">{{ __('Admin') }}</small>
+                @if (Auth::check())
+                  @php
+                    $authUser = Auth::user();
+                    $displayRole = $authUser->roles->first()?->name 
+                      ?? ($authUser->isSupremeAdmin() ? __('Supreme Admin') 
+                      : ($authUser->isSuperAdmin() ? __('Super Admin') 
+                      : ucfirst(str_replace('_', ' ', $authUser->user_type ?? 'User'))));
+                  @endphp
+                  <small class="text-body-secondary">{{ $displayRole }}</small>
+                @else
+                  <small class="text-body-secondary">{{ __('Admin') }}</small>
+                @endif
               </div>
             </div>
           </a>
@@ -338,69 +348,31 @@ use Illuminate\Support\Facades\Route;
           <div class="dropdown-divider my-1"></div>
         </li>
         <li>
-          <a class="dropdown-item"
-            href="{{ Route::has('profile.show') ? route('profile.show') : route('pages-profile-user') }}">
+          <a class="dropdown-item" href="{{ route('pages-profile-user') }}">
             <i class="icon-base bx bx-user icon-md me-3"></i><span>{{ __('My Profile') }}</span>
           </a>
         </li>
-        @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
         <li>
-          <a class="dropdown-item" href="{{ route('api-tokens.index') }}">
-            <i class="icon-base bx bx-key icon-md me-3"></i><span>{{ __('API Tokens') }}</span>
+          <a class="dropdown-item" href="{{ route('pages-account-settings-security') }}">
+            <i class="icon-base bx bx-shield-quarter icon-md me-3"></i><span>{{ __('Security') }}</span>
           </a>
         </li>
-        @endif
+        @if (Auth::check() && (Auth::user()->isSuperAdmin() || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Branch Manager') || Auth::user()->branch_id))
         <li>
-          <a class="dropdown-item" href="{{ route('app-user-view-billing') }}">
+          <a class="dropdown-item" href="{{ route('app-saas-billing') }}">
             <span class="d-flex align-items-center align-middle">
               <i class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i>
               <span class="flex-grow-1 align-middle">{{ __('Billing Plan') }}</span>
-              <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
+              <span class="flex-shrink-0 badge rounded-pill bg-label-primary">{{ __('SaaS') }}</span>
             </span>
           </a>
         </li>
-        @if (Auth::user() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
+        @endif
         <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <h6 class="dropdown-header">Manage Team</h6>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <a class="dropdown-item"
-            href="{{ (Auth::user() && Auth::user()->currentTeam) ? route('teams.show', Auth::user()->currentTeam->id) : 'javascript:void(0)' }}">
-            <i class="icon-base bx bx-cog icon-md me-3"></i><span>Team Settings</span>
+          <a class="dropdown-item" href="{{ route('app-notifications') }}">
+            <i class="icon-base bx bx-bell icon-md me-3"></i><span>{{ __('Notifications') }}</span>
           </a>
         </li>
-        @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-        <li>
-          <a class="dropdown-item" href="{{ route('teams.create') }}">
-            <i class="icon-base bx bx-user icon-md me-3"></i><span>Create New Team</span>
-          </a>
-        </li>
-        @endcan
-        @if (Auth::user() && Auth::user()->allTeams()->count() > 1)
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <h6 class="dropdown-header">Switch Teams</h6>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        @endif
-        @if (Auth::user())
-        @foreach (Auth::user()->allTeams() as $team)
-        {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream. --}}
-
-        <x-switchable-team :team="$team" />
-        @endforeach
-        @endif
-        @endif
         <li>
           <div class="dropdown-divider my-1"></div>
         </li>
@@ -408,16 +380,16 @@ use Illuminate\Support\Facades\Route;
         <li>
           <a class="dropdown-item" href="{{ route('logout') }}"
             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Logout</span>
+            <i class="icon-base bx bx-power-off icon-md me-3 text-danger"></i><span class="text-danger">{{ __('Logout') }}</span>
           </a>
         </li>
-        <form method="POST" id="logout-form" action="{{ route('logout') }}">
+        <form method="POST" id="logout-form" action="{{ route('logout') }}" class="d-none">
           @csrf
         </form>
         @else
         <li>
-          <a class="dropdown-item" href="{{ Route::has('login') ? route('login') : url('auth/login-basic') }}">
-            <i class="icon-base bx bx-log-in icon-md me-3"></i><span>Login</span>
+          <a class="dropdown-item" href="{{ route('auth-login-basic') }}">
+            <i class="icon-base bx bx-log-in icon-md me-3"></i><span>{{ __('Login') }}</span>
           </a>
         </li>
         @endif

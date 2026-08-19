@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SupplierAndPurchaseSeeder::class,
             EcommerceSeeder::class,
             SubscriptionPlanSeeder::class,
+            SettingsSeeder::class,
             PaymentOptionSeeder::class,
             NotificationSeeder::class,
             AdvancedCommerceSeeder::class,

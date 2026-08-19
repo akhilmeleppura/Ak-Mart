@@ -28,8 +28,8 @@ $configData = Helper::appClasses();
 <div
   class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between mb-6 text-center text-sm-start gap-2">
   <div class="mb-2 mb-sm-0">
-    <h4 class="mb-1">Customer ID #634759</h4>
-    <p class="mb-0">Aug 17, 2020, 5:48 (ET)</p>
+    <h4 class="mb-1">Customer ID #{{ str_pad($customer->id, 5, '0', STR_PAD_LEFT) }}</h4>
+    <p class="mb-0">Joined {{ $customer->created_at->format('M d, Y') }}</p>
   </div>
   <button type="button" class="btn btn-label-danger delete-customer">Delete Customer</button>
 </div>
@@ -42,11 +42,14 @@ $configData = Helper::appClasses();
       <div class="card-body pt-12">
         <div class="customer-avatar-section">
           <div class="d-flex align-items-center flex-column">
-            <img class="img-fluid rounded mb-4" src="{{ asset('assets/img/avatars/1.png') }}" height="120" width="120"
-              alt="User avatar" />
+            @if($customer->profile_photo_path)
+              <img class="img-fluid rounded mb-4" src="{{ Storage::url($customer->profile_photo_path) }}" height="120" width="120" alt="User avatar" />
+            @else
+              <img class="img-fluid rounded mb-4" src="{{ asset('assets/img/avatars/1.png') }}" height="120" width="120" alt="User avatar" />
+            @endif
             <div class="customer-info text-center mb-6">
-              <h5 class="mb-0">Lorine Hischke</h5>
-              <span>Customer ID #634759</span>
+              <h5 class="mb-0">{{ $customer->name }}</h5>
+              <span>Customer ID #{{ str_pad($customer->id, 5, '0', STR_PAD_LEFT) }}</span>
             </div>
           </div>
         </div>
@@ -56,7 +59,7 @@ $configData = Helper::appClasses();
               <div class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-cart icon-lg"></i></div>
             </div>
             <div>
-              <h5 class="mb-0">184</h5>
+              <h5 class="mb-0">{{ $ordersCount }}</h5>
               <span>Orders</span>
             </div>
           </div>
@@ -65,7 +68,7 @@ $configData = Helper::appClasses();
               <div class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-dollar icon-lg"></i></div>
             </div>
             <div>
-              <h5 class="mb-0">$12,378</h5>
+              <h5 class="mb-0">${{ number_format($totalSpent, 2) }}</h5>
               <span>Spent</span>
             </div>
           </div>
@@ -76,11 +79,11 @@ $configData = Helper::appClasses();
           <ul class="list-unstyled mb-6">
             <li class="mb-2">
               <span class="h6 me-1">Username:</span>
-              <span>lorine.hischke</span>
+              <span>{{ $customer->name }}</span>
             </li>
             <li class="mb-2">
               <span class="h6 me-1">Email:</span>
-              <span>vafgot@vultukir.org</span>
+              <span>{{ $customer->email }}</span>
             </li>
             <li class="mb-2">
               <span class="h6 me-1">Status:</span>
@@ -88,12 +91,12 @@ $configData = Helper::appClasses();
             </li>
             <li class="mb-2">
               <span class="h6 me-1">Contact:</span>
-              <span>(123) 456-7890</span>
+              <span>{{ $customer->phone ?? '—' }}</span>
             </li>
 
             <li class="mb-2">
               <span class="h6 me-1">Country:</span>
-              <span>USA</span>
+              <span>{{ $customer->country ?? '—' }}</span>
             </li>
           </ul>
           <div class="d-flex justify-content-center">
@@ -132,17 +135,17 @@ $configData = Helper::appClasses();
     <div class="nav-align-top">
       <ul class="nav nav-pills flex-column flex-md-row mb-6 row-gap-2 flex-wrap">
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/overview') }}">
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/overview') }}">
             <i class="icon-base bx bx-user icon-18px me-1_5"></i>Overview
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/security') }}"><i
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/security') }}"><i
               class="icon-base bx bx-lock icon-18px me-1_5"></i>Security</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url('app/ecommerce/customer/details/billing') }}"><i
-              class="icon-base bx bx-map icon-18px me-1_5"></i>Address & Billing</a>
+          <a class="nav-link" href="{{ url('customers/' . $customer->id . '/billing') }}"><i
+              class="icon-base bx bx-map icon-18px me-1_5"></i>Address &amp; Billing</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="javascript:void(0);"><i

@@ -130,6 +130,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/billing', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'index'])->name('app-saas-billing');
         Route::post('/billing/subscribe', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'subscribe'])->name('app-saas-subscribe');
         Route::post('/billing/cancel', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'cancel'])->name('app-saas-cancel');
+        Route::post('/billing/resume', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'resume'])->name('app-saas-resume');
         
         Route::get('/commission', [\App\Http\Controllers\apps\SaaS\CommissionController::class, 'index'])->name('app-saas-commission');
         Route::post('/commission', [\App\Http\Controllers\apps\SaaS\CommissionController::class, 'store'])->name('app-saas-commission-store');
@@ -314,9 +315,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::middleware(['tenant.subscription'])->group(function () {
         Route::get('/admin/dashboard', [EcommerceDashboard::class, 'index'])->name('app-ecommerce-dashboard');
         
-        // Products
+        // Products & Inventory
         Route::get('/products', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
         Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index']);
+        Route::get('/inventory', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'index'])->name('app-ecommerce-inventory');
+        Route::get('/app/ecommerce/inventory', [\App\Http\Controllers\apps\Vendor\InventoryController::class, 'index']);
         Route::get('/products/create', [EcommerceProductAdd::class, 'index'])->name('app-ecommerce-product-add');
         Route::get('/app/ecommerce/product/add', [EcommerceProductAdd::class, 'index']);
         Route::post('/products/create', [EcommerceProductAdd::class, 'store'])->name('app-ecommerce-product-add-post');
@@ -389,25 +392,39 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/coupons/{id}', [EcommerceCouponController::class, 'destroy'])->name('app-ecommerce-coupon-delete');
         Route::post('/coupons/bulk-generate', [EcommerceCouponController::class, 'bulkGenerate'])->name('app-ecommerce-coupon-bulk');
         
-        // Settings
-        Route::get('/settings/store', [EcommerceSettingsDetails::class, 'index'])->name('app-ecommerce-settings-details');
-        Route::get('/app/ecommerce/settings/details', [EcommerceSettingsDetails::class, 'index']);
-        Route::post('/settings/store/save', [EcommerceSettingsDetails::class, 'store'])->name('app-ecommerce-settings-details-save');
-        Route::get('/settings/payments', [EcommerceSettingsPayments::class, 'index'])->name('app-ecommerce-settings-payments');
-        Route::get('/app/ecommerce/settings/payments', [EcommerceSettingsPayments::class, 'index']);
-        Route::post('/settings/payments/save', [EcommerceSettingsPayments::class, 'store'])->name('app-ecommerce-settings-payments-save');
-        Route::get('/settings/checkout', [EcommerceSettingsCheckout::class, 'index'])->name('app-ecommerce-settings-checkout');
-        Route::get('/app/ecommerce/settings/checkout', [EcommerceSettingsCheckout::class, 'index']);
-        Route::post('/settings/checkout/save', [EcommerceSettingsCheckout::class, 'store'])->name('app-ecommerce-settings-checkout-save');
-        Route::get('/settings/shipping', [EcommerceSettingsShipping::class, 'index'])->name('app-ecommerce-settings-shipping');
-        Route::get('/app/ecommerce/settings/shipping', [EcommerceSettingsShipping::class, 'index']);
-        Route::post('/settings/shipping/save', [EcommerceSettingsShipping::class, 'store'])->name('app-ecommerce-settings-shipping-save');
-        Route::get('/settings/locations', [EcommerceSettingsLocations::class, 'index'])->name('app-ecommerce-settings-locations');
-        Route::get('/app/ecommerce/settings/locations', [EcommerceSettingsLocations::class, 'index']);
-        Route::post('/settings/locations/save', [EcommerceSettingsLocations::class, 'store'])->name('app-ecommerce-settings-locations-save');
-        Route::get('/settings/notifications', [EcommerceSettingsNotifications::class, 'index'])->name('app-ecommerce-settings-notifications');
-        Route::get('/app/ecommerce/settings/notifications', [EcommerceSettingsNotifications::class, 'index']);
-        Route::post('/settings/notifications/save', [EcommerceSettingsNotifications::class, 'store'])->name('app-ecommerce-settings-notifications-save');
+        // Centralized Store Settings & E-Commerce Management Center
+        Route::get('/settings', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->name('app-ecommerce-settings');
+        Route::get('/settings/store', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->name('app-ecommerce-settings-details');
+        Route::get('/app/ecommerce/settings/details', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection']);
+        Route::post('/settings/store/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'store')->name('app-ecommerce-settings-details-save');
+
+        Route::get('/settings/payments', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'payments')->name('app-ecommerce-settings-payments');
+        Route::get('/app/ecommerce/settings/payments', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'payments');
+        Route::post('/settings/payments/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'payments')->name('app-ecommerce-settings-payments-save');
+
+        Route::get('/settings/checkout', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'checkout')->name('app-ecommerce-settings-checkout');
+        Route::get('/app/ecommerce/settings/checkout', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'checkout');
+        Route::post('/settings/checkout/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'checkout')->name('app-ecommerce-settings-checkout-save');
+
+        Route::get('/settings/shipping', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'shipping')->name('app-ecommerce-settings-shipping');
+        Route::get('/app/ecommerce/settings/shipping', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'shipping');
+        Route::post('/settings/shipping/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'shipping')->name('app-ecommerce-settings-shipping-save');
+
+        Route::get('/settings/locations', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'locations')->name('app-ecommerce-settings-locations');
+        Route::get('/app/ecommerce/settings/locations', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'locations');
+        Route::post('/settings/locations/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'locations')->name('app-ecommerce-settings-locations-save');
+
+        Route::get('/settings/notifications', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'notifications')->name('app-ecommerce-settings-notifications');
+        Route::get('/app/ecommerce/settings/notifications', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'notifications');
+        Route::post('/settings/notifications/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'notifications')->name('app-ecommerce-settings-notifications-save');
+
+        // Modular Settings Sections & Actions
+        Route::get('/settings/{section}', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->name('settings.section');
+        Route::post('/settings/{section}/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->name('settings.section.save');
+        Route::post('/settings-action/email/test-smtp', [\App\Http\Controllers\apps\SettingsHubController::class, 'testSmtp'])->name('settings.email.test-smtp');
+        Route::post('/settings-action/whatsapp/test', [\App\Http\Controllers\apps\SettingsHubController::class, 'testWhatsApp'])->name('settings.whatsapp.test');
+        Route::post('/settings-action/templates/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveTemplate'])->name('settings.templates.save');
+        Route::post('/settings-action/cache/clear', [\App\Http\Controllers\apps\SettingsHubController::class, 'clearCache'])->name('settings.cache.clear');
 
         // Invoices
         Route::get('/invoices', 'App\Http\Controllers\apps\InvoiceList@index')->name('app-invoice-list');
@@ -443,12 +460,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/apps/ai-copilot', [AISettingsController::class, 'index'])->name('app-ai-copilot');
     Route::post('/settings/ai/save', [AISettingsController::class, 'store'])->name('app-ecommerce-settings-ai-save');
     Route::post('/app/ecommerce/settings/ai/save', [AISettingsController::class, 'store']);
-    Route::post('/api/ai/copilot-chat', [\App\Http\Controllers\apps\AIProductToolsController::class, 'copilotChat'])->name('app-ai-copilot-chat');
-    Route::post('/api/ai/generate-content', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent'])->name('app-ai-generate-content');
+    Route::post('/api/ai/copilot-chat', [\App\Http\Controllers\apps\AIProductToolsController::class, 'copilotChat'])->name('app-ai-product-copilot-chat');
+    Route::post('/api/ai/generate-content', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent']);
     Route::post('/app/ecommerce/ai/generate', [\App\Http\Controllers\apps\AIProductToolsController::class, 'generateContent']);
-    Route::post('/api/ai/quality-score', [\App\Http\Controllers\apps\AIProductToolsController::class, 'calculateQualityScore'])->name('app-ai-quality-score');
-    Route::post('/api/ai/extract-attributes', [\App\Http\Controllers\apps\AIProductToolsController::class, 'extractAttributes'])->name('app-ai-extract-attributes');
-    Route::post('/api/ai/suggest-category', [\App\Http\Controllers\apps\AIProductToolsController::class, 'suggestCategory'])->name('app-ai-suggest-category');
+    Route::post('/api/ai/quality-score', [\App\Http\Controllers\apps\AIProductToolsController::class, 'calculateQualityScore']);
+    Route::post('/api/ai/extract-attributes', [\App\Http\Controllers\apps\AIProductToolsController::class, 'extractAttributes']);
+    Route::post('/api/ai/suggest-category', [\App\Http\Controllers\apps\AIProductToolsController::class, 'suggestCategory']);
 
     // Branding & Logo Settings
     Route::get('/settings/branding', [\App\Http\Controllers\apps\EcommerceSettingsBranding::class, 'index'])->name('app-ecommerce-settings-branding');
@@ -502,9 +519,43 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Pages & Modals
     Route::get('/faq', [Faq::class, 'index'])->name('pages-faq');
-    Route::get('/account/settings', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
     Route::get('/modals', [ModalExample::class, 'index'])->name('modal-examples');
-    Route::get('/user/profile', [UserProfile::class, 'index'])->name('pages-profile-user');
+
+    // User Profile Hub
+    Route::get('/profile', [\App\Http\Controllers\pages\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/user/profile', [\App\Http\Controllers\pages\ProfileController::class, 'show'])->name('pages-profile-user');
+
+    // Account Settings Modules
+    Route::get('/account/settings', [\App\Http\Controllers\pages\ProfileController::class, 'edit'])->name('pages-account-settings-account');
+    Route::get('/pages/account-settings-account', [\App\Http\Controllers\pages\ProfileController::class, 'edit']);
+    Route::post('/account/settings/profile', [\App\Http\Controllers\pages\ProfileController::class, 'update'])->name('account-settings-profile-update');
+    Route::post('/account/settings/photo', [\App\Http\Controllers\pages\ProfileController::class, 'updatePhoto'])->name('account-settings-photo-update');
+    Route::post('/account/settings/photo-remove', [\App\Http\Controllers\pages\ProfileController::class, 'removePhoto'])->name('account-settings-photo-remove');
+
+    // Account Security & Password
+    Route::get('/account/security', [\App\Http\Controllers\pages\ProfileController::class, 'security'])->name('pages-account-settings-security');
+    Route::get('/pages/account-settings-security', [\App\Http\Controllers\pages\ProfileController::class, 'security']);
+    Route::post('/account/settings/password', [\App\Http\Controllers\pages\ProfileController::class, 'updatePassword'])->name('account-settings-password-update');
+
+    // Account Notifications
+    Route::get('/account/notifications', [\App\Http\Controllers\pages\ProfileController::class, 'notifications'])->name('pages-account-settings-notifications');
+    Route::get('/pages/account-settings-notifications', [\App\Http\Controllers\pages\ProfileController::class, 'notifications']);
+    Route::post('/account/settings/notifications', [\App\Http\Controllers\pages\ProfileController::class, 'updateNotifications'])->name('account-settings-notifications-update');
+
+    // Account Connections
+    Route::get('/pages/account-settings-connections', [\App\Http\Controllers\pages\AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
+
+    // SaaS Billing & Invoices Hub
+    Route::get('/billing', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'index'])->name('billing.index');
+    Route::get('/pages/account-settings-billing', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'index'])->name('pages-account-settings-billing');
+    Route::post('/billing/subscribe', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'subscribe']);
+    Route::post('/billing/cancel', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'cancel']);
+    Route::post('/billing/resume', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'resume'])->name('billing-resume');
+    Route::get('/billing/invoices/{id}/preview', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'invoicePreview'])->name('billing-invoice-preview');
+    Route::get('/billing/invoices/{id}/print', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'invoicePreview'])->name('billing-invoice-print');
+
+    // Secure Logout
+    Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
 });
 
 // Authentication Routes (Public)
@@ -512,3 +563,7 @@ Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-
 Route::post('/auth/login-basic', [LoginBasic::class, 'store'])->name('auth-login-basic-store');
 Route::post('/login', [LoginBasic::class, 'store'])->name('login-store');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
+
+// Public Billing Webhooks
+Route::post('/saas/billing/webhook', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'webhook'])->name('billing-webhook');
+
