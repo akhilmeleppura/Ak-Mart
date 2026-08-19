@@ -16,6 +16,7 @@ use App\Models\Review;
 use App\Models\StockNotification;
 use App\Models\ProductQuestion;
 use App\Models\OrderReturn;
+use App\Models\DeliverySlot;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,13 +67,19 @@ class StorefrontController extends Controller
             ->take(4)
             ->get();
 
+        $recentIds = session()->get('recently_viewed', []);
+        $recentlyViewed = Product::whereIn('id', array_slice($recentIds, 0, 6))
+            ->where('is_active', true)
+            ->get();
+
         return view('storefront.home', compact(
             'heroSliders',
             'featuredCategories',
             'featuredProducts',
             'trendingProducts',
             'bestSellers',
-            'dealsOfTheDay'
+            'dealsOfTheDay',
+            'recentlyViewed'
         ));
     }
 
@@ -231,6 +238,17 @@ class StorefrontController extends Controller
             ->latest()
             ->get();
 
+        // Recently Viewed Tracking
+        $recentIds = session()->get('recently_viewed', []);
+        $filteredRecentIds = array_values(array_diff($recentIds, [$product->id]));
+        $recentlyViewed = Product::whereIn('id', array_slice($filteredRecentIds, 0, 6))
+            ->where('is_active', true)
+            ->get();
+
+        // Push current product to front of session list
+        array_unshift($recentIds, $product->id);
+        session()->put('recently_viewed', array_values(array_unique(array_slice($recentIds, 0, 10))));
+
         return view('storefront.product-detail', compact(
             'product',
             'relatedProducts',
@@ -239,7 +257,8 @@ class StorefrontController extends Controller
             'ratingBreakdown',
             'averageRating',
             'totalReviews',
-            'questions'
+            'questions',
+            'recentlyViewed'
         ));
     }
 
@@ -520,6 +539,7 @@ class StorefrontController extends Controller
             }
         }
         $finalTotal = max(0, $subtotal - $couponDiscount);
+        $deliverySlots = DeliverySlot::where('is_active', true)->get();
 
         return view('storefront.checkout', compact(
             'cart',
@@ -528,7 +548,8 @@ class StorefrontController extends Controller
             'loyaltyPoints',
             'coupon',
             'couponDiscount',
-            'finalTotal'
+            'finalTotal',
+            'deliverySlots'
         ));
     }
 
@@ -543,6 +564,8 @@ class StorefrontController extends Controller
             'customer_phone'   => 'required|string|max:20',
             'shipping_address' => 'required|string|max:500',
             'payment_method'   => 'required|string',
+            'delivery_slot_id' => 'nullable|exists:delivery_slots,id',
+            'use_store_credit' => 'nullable',
         ]);
 
         $cart = session()->get('cart', []);
@@ -577,16 +600,34 @@ class StorefrontController extends Controller
             $orderNumber = 'ORD-' . strtoupper(Str::random(10));
             $user = Auth::user();
 
+            // Store Credit Deduction
+            $storeCreditUsed = 0;
+            if ($request->boolean('use_store_credit') && $user) {
+                $storeCredit = StoreCredit::where('user_id', $user->id)->first();
+                if ($storeCredit && $storeCredit->balance > 0) {
+                    $storeCreditUsed = min($storeCredit->balance, $orderTotal);
+                    $storeCredit->debit(
+                        $storeCreditUsed,
+                        'order',
+                        null,
+                        "Applied Store Credit toward Order #{$orderNumber}"
+                    );
+                    $orderTotal = max(0, $orderTotal - $storeCreditUsed);
+                }
+            }
+
             $order = Order::create([
-                'order_number'     => $orderNumber,
-                'user_id'          => $user?->id,
-                'total_amount'     => $orderTotal,
-                'payment_method'   => $request->payment_method,
-                'payment_status'   => $request->payment_method === 'cod' ? 'pending' : 'paid',
-                'order_status'     => 'pending',
-                'shipping_address' => $request->shipping_address,
-                'billing_address'  => $request->shipping_address,
-                'branch_id'        => session('branch_id', 1),
+                'order_number'        => $orderNumber,
+                'user_id'             => $user?->id,
+                'total_amount'        => $orderTotal,
+                'store_credit_amount' => $storeCreditUsed,
+                'delivery_slot_id'    => $request->delivery_slot_id,
+                'payment_method'      => $orderTotal == 0 ? 'store_credit' : $request->payment_method,
+                'payment_status'      => ($orderTotal == 0 || $request->payment_method !== 'cod') ? 'paid' : 'pending',
+                'order_status'        => 'pending',
+                'shipping_address'    => $request->shipping_address,
+                'billing_address'     => $request->shipping_address,
+                'branch_id'           => session('branch_id', 1),
             ]);
 
             foreach ($cart as $item) {

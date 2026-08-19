@@ -150,6 +150,43 @@
         </div>
     </div>
 
+    <!-- Recently Viewed Products -->
+    @if(isset($recentlyViewed) && $recentlyViewed->isNotEmpty())
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="fw-bold mb-0"><i class="bx bx-history text-primary me-2"></i> {{ __('Recently Viewed Items') }}</h4>
+                    <p class="text-muted small mb-0">{{ __('Quickly jump back to items you were browsing earlier.') }}</p>
+                </div>
+            </div>
+            <div class="row g-3">
+                @foreach($recentlyViewed as $recent)
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <div class="product-card h-100 d-flex flex-column justify-content-between p-3 bg-white border rounded-4 shadow-xs">
+                            <div>
+                                <div class="product-img-wrap rounded-3 mb-2 position-relative text-center">
+                                    <button class="btn btn-sm btn-light rounded-circle position-absolute top-0 end-0 m-1 shadow-xs border-0 p-1" onclick="quickToggleWishlist({{ $recent->id }}, this, event)" style="z-index: 5;" title="{{ __('Save to Wishlist') }}">
+                                        <i class="bx {{ in_array($recent->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-6 align-middle"></i>
+                                    </button>
+                                    <img src="{{ $recent->image ? asset($recent->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $recent->name }}" width="90" height="90" class="object-fit-contain">
+                                </div>
+                                <h6 class="fw-bold mb-1 small text-truncate">
+                                    <a href="{{ route('storefront.product', $recent->id) }}" class="text-dark text-decoration-none">{{ $recent->name }}</a>
+                                </h6>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="fw-bold text-primary small">${{ number_format($recent->price, 2) }}</span>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill p-1 px-2" onclick="quickAddToCart({{ $recent->id }})" title="{{ __('Add to Cart') }}">
+                                    <i class="bx bx-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- Trust Badges & Guarantees -->
     <div class="card p-4 border shadow-xs rounded-4 bg-white mb-5">
         <div class="row g-4 text-center">
