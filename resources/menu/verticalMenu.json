@@ -52,6 +52,13 @@
       "menuHeader": "Store Management"
     },
     {
+      "url": "store",
+      "name": "Live Customer Store",
+      "icon": "menu-icon icon-base bx bx-store-alt",
+      "slug": "app-storefront-live",
+      "target": "_blank"
+    },
+    {
       "name": "Products & Catalog",
       "icon": "menu-icon icon-base bx bx-package",
       "slug": "app-ecommerce-product",
@@ -70,6 +77,11 @@
           "url": "products/categories",
           "name": "Category List",
           "slug": "app-ecommerce-product-category"
+        },
+        {
+          "url": "products/attributes",
+          "name": "EAV Attributes",
+          "slug": "app-attributes"
         },
         {
           "url": "catalog/scanner",
@@ -198,6 +210,11 @@
           "slug": "app-pos-register"
         },
         {
+          "url": "finance/accounting-export",
+          "name": "Accounting & GST Exports",
+          "slug": "app-accounting-export"
+        },
+        {
           "url": "gift-cards",
           "name": "Gift Cards & Vouchers",
           "slug": "app-gift-cards"
@@ -227,7 +244,7 @@
           "slug": "app-ecommerce-customer-all"
         },
         {
-          "url": "customer/portal",
+          "url": "customer/portal/dashboard",
           "name": "Customer Portal",
           "slug": "app-customer-portal"
         },
