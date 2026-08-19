@@ -20,7 +20,10 @@
     <div class="row g-5 mb-5">
         <!-- Gallery Images -->
         <div class="col-lg-5">
-            <div class="card p-4 border shadow-xs rounded-4 text-center bg-white">
+            <div class="card p-4 border shadow-xs rounded-4 text-center bg-white position-relative">
+                <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-xs" onclick="toggleProductWishlist({{ $product->id }}, this)">
+                    <i class="bx bx-heart fs-4 text-danger align-middle"></i>
+                </button>
                 <img src="{{ $product->image ? asset($product->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" id="mainProductImg" class="img-fluid rounded-3 object-fit-contain" style="max-height: 380px;" alt="{{ $product->name }}">
             </div>
         </div>
@@ -125,6 +128,44 @@
         </div>
     @endif
 
+    <!-- Customer Reviews & Rating Section -->
+    <div class="card p-4 border shadow-sm rounded-4 mb-5 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="bx bxs-star text-warning me-2"></i> {{ __('Verified Customer Reviews') }} ({{ $product->reviews->count() }})</h4>
+                <p class="text-muted small mb-0">{{ __('Real verified shopper experiences and feedback') }}</p>
+            </div>
+            <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#writeReviewModal">
+                <i class="bx bx-edit me-1"></i> {{ __('Write a Review') }}
+            </button>
+        </div>
+
+        <div class="row g-3">
+            @forelse($product->reviews as $rev)
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-light h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-warning small">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="bx {{ $i <= $rev->rating ? 'bxs-star' : 'bx-star text-muted' }}"></i>
+                                @endfor
+                            </div>
+                            <span class="badge bg-label-success small"><i class="bx bx-check-shield me-1"></i> {{ __('Verified Purchase') }}</span>
+                        </div>
+                        <h6 class="fw-bold mb-1">{{ $rev->title ?: __('Customer Review') }}</h6>
+                        <p class="small text-muted mb-2">{{ $rev->comment }}</p>
+                        <small class="text-secondary fw-semibold">— {{ $rev->user?->name ?? 'Verified Shopper' }}</small>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12 text-center py-4 text-muted">
+                    <i class="bx bx-comment-detail fs-1 mb-2"></i>
+                    <p class="mb-0">{{ __('No reviews written yet. Be the first to share your thoughts on this product!') }}</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
     <!-- Related Products -->
     @if($relatedProducts->isNotEmpty())
         <div class="mb-5">
@@ -154,6 +195,42 @@
             </div>
         </div>
     @endif
+</div>
+
+<!-- Modal: Write Review -->
+<div class="modal fade" id="writeReviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form onsubmit="submitReviewForm(event, {{ $product->id }})" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('Write a Verified Product Review') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ __('Star Rating') }}</label>
+                    <select id="reviewRating" class="form-select" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 / 5 — Excellent)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 / 5 — Very Good)</option>
+                        <option value="3">⭐⭐⭐ (3 / 5 — Good)</option>
+                        <option value="2">⭐⭐ (2 / 5 — Fair)</option>
+                        <option value="1">⭐ (1 / 5 — Poor)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ __('Review Title') }}</label>
+                    <input type="text" id="reviewTitle" class="form-control" placeholder="e.g. Excellent fresh quality!" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ __('Detailed Feedback') }}</label>
+                    <textarea id="reviewComment" class="form-control" rows="4" placeholder="Share your experience with product freshness, packaging, and taste..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Submit Verified Review') }}</button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
 
@@ -197,6 +274,40 @@ function addBundleToCart(productIds) {
         const badge = document.getElementById('cartBadge');
         if (badge && lastResult) badge.textContent = lastResult.totalItems;
         alert('All bundle items added to your cart!');
+    });
+}
+
+function toggleProductWishlist(productId, btn) {
+    fetch('{{ route("storefront.wishlist.toggle") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+        }
+    });
+}
+
+function submitReviewForm(e, productId) {
+    e.preventDefault();
+    const rating = document.getElementById('reviewRating').value;
+    const title = document.getElementById('reviewTitle').value;
+    const comment = document.getElementById('reviewComment').value;
+
+    fetch(`/store/product/${productId}/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ rating: rating, title: title, comment: comment })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        }
     });
 }
 </script>

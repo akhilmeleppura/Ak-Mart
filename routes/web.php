@@ -126,6 +126,8 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/checkout/process', [\App\Http\Controllers\Storefront\StorefrontController::class, 'processCheckout'])->name('checkout.process');
     Route::get('/order/confirmed/{orderNumber}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'orderConfirmation'])->name('order.confirmation');
     Route::get('/track', [\App\Http\Controllers\Storefront\StorefrontController::class, 'trackOrder'])->name('track');
+    Route::post('/product/{id}/review', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReview'])->name('review.submit');
+    Route::post('/wishlist/toggle', [\App\Http\Controllers\Storefront\StorefrontController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 });
 
@@ -166,12 +168,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/products/{id}/relations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'storeProductRelation'])->name('app-product-relations-store');
     Route::delete('/products/{id}/relations/{relatedId}/{type}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'destroyProductRelation'])->name('app-product-relations-destroy');
 
-
+    // Communication Templates & WhatsApp API Config
+    Route::get('/communication/email-templates', [\App\Http\Controllers\apps\CommunicationTemplatesController::class, 'emailTemplates'])->name('app-email-templates');
+    Route::put('/communication/email-templates/{id}', [\App\Http\Controllers\apps\CommunicationTemplatesController::class, 'updateEmailTemplate'])->name('app-email-templates-update');
+    Route::get('/communication/whatsapp-config', [\App\Http\Controllers\apps\CommunicationTemplatesController::class, 'whatsappConfig'])->name('app-whatsapp-config');
+    Route::post('/communication/whatsapp-config', [\App\Http\Controllers\apps\CommunicationTemplatesController::class, 'updateWhatsappConfig'])->name('app-whatsapp-config-save');
 
     Route::get('/finance/accounting-export', [\App\Http\Controllers\apps\AccountingExportController::class, 'index'])->name('app-accounting-export');
     Route::get('/finance/accounting-export/sales', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportSales'])->name('app-accounting-export-sales');
     Route::get('/finance/accounting-export/expenses', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportExpenses'])->name('app-accounting-export-expenses');
     Route::get('/finance/accounting-export/gst', [\App\Http\Controllers\apps\AccountingExportController::class, 'exportGst'])->name('app-accounting-export-gst');
+
 });
 
 

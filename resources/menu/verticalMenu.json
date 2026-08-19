@@ -186,6 +186,16 @@
           "url": "communication",
           "name": "Communication Center",
           "slug": "app-communication-center"
+        },
+        {
+          "url": "communication/email-templates",
+          "name": "Email Templates",
+          "slug": "app-email-templates"
+        },
+        {
+          "url": "communication/whatsapp-config",
+          "name": "WhatsApp Cloud API",
+          "slug": "app-whatsapp-config"
         }
       ]
     },

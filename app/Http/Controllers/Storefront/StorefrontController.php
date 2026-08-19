@@ -404,4 +404,62 @@ class StorefrontController extends Controller
 
         return view('storefront.order-tracking', compact('order'));
     }
+
+    /**
+     * Submit Product Review AJAX
+     */
+    public function submitReview(Request $request, $id)
+    {
+        $request->validate([
+            'rating'  => 'required|integer|min:1|max:5',
+            'title'   => 'nullable|string|max:150',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $product = Product::findOrFail($id);
+        $user = Auth::user();
+
+        $review = \App\Models\Review::create([
+            'product_id'           => $product->id,
+            'user_id'              => $user?->id ?? 1,
+            'rating'               => (int)$request->rating,
+            'title'                => $request->title ?: 'Customer Review',
+            'comment'              => $request->comment,
+            'status'               => 'approved',
+            'is_verified_purchase' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you! Your verified review has been published.',
+            'review'  => $review,
+        ]);
+    }
+
+    /**
+     * Toggle Wishlist Item AJAX
+     */
+    public function toggleWishlist(Request $request)
+    {
+        $productId = (int)$request->input('product_id');
+        $wishlist = session()->get('wishlist', []);
+
+        if (in_array($productId, $wishlist)) {
+            $wishlist = array_values(array_diff($wishlist, [$productId]));
+            $added = false;
+        } else {
+            $wishlist[] = $productId;
+            $added = true;
+        }
+
+        session()->put('wishlist', $wishlist);
+
+        return response()->json([
+            'success'   => true,
+            'added'     => $added,
+            'count'     => count($wishlist),
+            'message'   => $added ? 'Added to wishlist!' : 'Removed from wishlist.',
+        ]);
+    }
 }
+
