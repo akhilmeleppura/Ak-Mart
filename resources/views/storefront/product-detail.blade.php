@@ -24,6 +24,9 @@
                 <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-xs border-0" onclick="quickToggleWishlist({{ $product->id }}, this, event)" title="{{ __('Save to Wishlist') }}">
                     <i class="bx {{ in_array($product->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-4 align-middle"></i>
                 </button>
+                <button class="btn btn-light rounded-circle position-absolute top-0 start-0 m-3 shadow-xs border-0 p-2" onclick="quickToggleCompare({{ $product->id }}, this, event)" style="z-index: 10;" title="{{ __('Add to Compare') }}">
+                    <i class="bx {{ in_array($product->id, session('compare_list', [])) ? 'bx-git-compare text-primary fw-bold' : 'bx-git-compare text-muted' }} fs-4 align-middle"></i>
+                </button>
                 <img src="{{ $product->image ? asset($product->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" id="mainProductImg" class="img-fluid rounded-3 object-fit-contain" style="max-height: 380px;" alt="{{ $product->name }}">
             </div>
         </div>
@@ -208,6 +211,50 @@
         </div>
     </div>
 
+    <!-- Customer Questions & Answers Section -->
+    <div class="card p-4 border shadow-sm rounded-4 mb-5 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="bx bx-help-circle text-primary me-2"></i> {{ __('Customer Questions & Answers') }} ({{ $questions->count() }})</h4>
+                <p class="text-muted small mb-0">{{ __('Got a question about freshness, origin, or usage? Ask our staff or community.') }}</p>
+            </div>
+            <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                <i class="bx bx-message-rounded-dots me-1"></i> {{ __('Ask a Question') }}
+            </button>
+        </div>
+
+        <div class="accordion accordion-flush" id="productQaAccordion">
+            @forelse($questions as $index => $qa)
+                <div class="accordion-item border rounded-3 mb-2 overflow-hidden">
+                    <h2 class="accordion-header" id="headingQa-{{ $qa->id }}">
+                        <button class="accordion-button {{ $index > 1 ? 'collapsed' : '' }} fw-semibold bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQa-{{ $qa->id }}" aria-expanded="{{ $index <= 1 ? 'true' : 'false' }}">
+                            <span class="badge bg-primary me-2 fw-bold">Q</span> {{ $qa->question }}
+                        </button>
+                    </h2>
+                    <div id="collapseQa-{{ $qa->id }}" class="accordion-collapse collapse {{ $index <= 1 ? 'show' : '' }}" data-bs-parent="#productQaAccordion">
+                        <div class="accordion-body bg-white pt-3">
+                            <div class="d-flex align-items-start gap-2">
+                                <span class="badge bg-success fw-bold">A</span>
+                                <div>
+                                    <p class="mb-1 text-secondary">{{ $qa->answer ?: __('Our support team has received your question and will verify with the store manager shortly.') }}</p>
+                                    <small class="text-muted">
+                                        {{ __('Answered by') }} <strong>{{ $qa->answeredBy?->name ?? __('AK-Mart Supermarket Staff') }}</strong>
+                                        • {{ $qa->answered_at ? $qa->answered_at->diffForHumans() : $qa->created_at->diffForHumans() }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-4 text-muted">
+                    <i class="bx bx-question-mark fs-1 mb-2"></i>
+                    <p class="mb-0">{{ __('No questions asked yet for this product. Be the first to ask!') }}</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
     <!-- Related Products -->
     @if($relatedProducts->isNotEmpty())
         <div class="mb-5">
@@ -298,6 +345,29 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                 <button type="submit" class="btn btn-warning text-dark fw-bold px-4">{{ __('Subscribe to Restock Alert') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ask a Question Modal -->
+<div class="modal fade" id="askQuestionModal" tabindex="-1" aria-labelledby="askQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" onsubmit="submitQuestionForm(event, {{ $product->id }})">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="askQuestionModalLabel"><i class="bx bx-message-rounded-dots text-primary me-2"></i> {{ __('Ask a Question about :product', ['product' => $product->name]) }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ __('Your Question') }} <span class="text-danger">*</span></label>
+                    <textarea id="questionInput" class="form-control" rows="4" placeholder="{{ __('e.g. Does this package contain allergens or gluten? Where is it sourced from?') }}" required></textarea>
+                </div>
+                <div id="askQuestionFeedback" class="small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary px-4 fw-bold">{{ __('Post Question') }}</button>
             </div>
         </form>
     </div>
@@ -447,6 +517,38 @@ function submitStockNotification(e, productId) {
     })
     .catch(err => {
         feedback.innerHTML = '<span class="text-danger">{{ __("An error occurred.") }}</span>';
+    });
+}
+
+function submitQuestionForm(e, productId) {
+    e.preventDefault();
+    const question = document.getElementById('questionInput').value.trim();
+    const feedback = document.getElementById('askQuestionFeedback');
+
+    if (!question || question.length < 5) {
+        feedback.innerHTML = '<span class="text-danger">{{ __("Please enter a question with at least 5 characters.") }}</span>';
+        return;
+    }
+
+    fetch(`/store/product/${productId}/question`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ question: question })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            const modalEl = document.getElementById('askQuestionModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            setTimeout(() => window.location.reload(), 600);
+        } else {
+            feedback.innerHTML = `<span class="text-danger">${data.message}</span>`;
+        }
+    })
+    .catch(err => {
+        feedback.innerHTML = '<span class="text-danger">{{ __("An error occurred while posting your question.") }}</span>';
     });
 }
 </script>

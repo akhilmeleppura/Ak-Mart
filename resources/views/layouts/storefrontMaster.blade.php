@@ -128,8 +128,16 @@
             </div>
 
 
-            <!-- Action Buttons: Wishlist & Cart -->
+            <!-- Action Buttons: Compare, Wishlist & Cart -->
             <div class="d-flex align-items-center gap-3">
+                @php $compCount = count(session('compare_list', [])); @endphp
+                <a href="{{ route('storefront.compare') }}" class="btn btn-light rounded-pill position-relative px-3" id="headerCompareBtn" title="{{ __('Product Comparison') }}">
+                    <i class="bx bx-git-compare fs-5 align-middle text-primary"></i>
+                    <span class="badge bg-primary rounded-pill position-absolute top-0 start-100 translate-middle" id="compareBadge" style="{{ $compCount > 0 ? '' : 'display:none;' }}">
+                        {{ $compCount }}
+                    </span>
+                </a>
+
                 @php $wishCount = count(session('wishlist', [])); @endphp
                 <a href="{{ route('storefront.wishlist') }}" class="btn btn-light rounded-pill position-relative px-3" id="headerWishlistBtn" title="{{ __('My Wishlist') }}">
                     <i class="bx bx-heart fs-5 align-middle text-danger"></i>
@@ -209,6 +217,7 @@
                     <h6 class="text-white fw-semibold mb-3">{{ __('Customer Care') }}</h6>
                     <ul class="list-unstyled small text-muted d-flex flex-column gap-2">
                         <li><a href="{{ route('storefront.track') }}" class="text-muted text-decoration-none">{{ __('Track Order') }}</a></li>
+                        <li><a href="{{ route('storefront.returns') }}" class="text-primary text-decoration-none fw-semibold"><i class="bx bx-revision me-1"></i>{{ __('Returns & Exchanges') }}</a></li>
                         <li><a href="{{ route('customer.dashboard') }}" class="text-muted text-decoration-none">{{ __('My Account') }}</a></li>
                         <li><a href="{{ route('customer.wishlist') }}" class="text-muted text-decoration-none">{{ __('Wishlist') }}</a></li>
                         <li><a href="{{ route('customer.wallet') }}" class="text-muted text-decoration-none">{{ __('Wallet & Loyalty') }}</a></li>
@@ -340,6 +349,44 @@
                         }
                     }
                     showToast(data.message, data.added ? 'success' : 'info');
+                }
+            });
+        }
+
+        function quickToggleCompare(productId, btn, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            fetch('{{ route("storefront.compare.toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(r => r.json().then(data => ({ status: r.status, body: data })))
+            .then(({ status, body }) => {
+                if (body.success) {
+                    const badge = document.getElementById('compareBadge');
+                    if (badge) {
+                        badge.textContent = body.count;
+                        badge.style.display = body.count > 0 ? 'inline-block' : 'none';
+                    }
+                    if (btn) {
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            if (body.added) {
+                                icon.className = 'bx bx-git-compare text-primary fw-bold fs-4 align-middle';
+                            } else {
+                                icon.className = 'bx bx-git-compare text-muted fs-4 align-middle';
+                            }
+                        }
+                    }
+                    showToast(body.message, body.added ? 'primary' : 'secondary');
+                } else {
+                    showToast(body.message || 'Comparison limit reached.', 'primary');
                 }
             });
         }

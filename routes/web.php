@@ -136,6 +136,12 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/cart/remove-saved', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeSaved'])->name('cart.remove_saved');
     Route::get('/buy-again', [\App\Http\Controllers\Storefront\StorefrontController::class, 'buyAgain'])->name('buy_again');
     Route::post('/product/{id}/notify-stock', [\App\Http\Controllers\Storefront\StorefrontController::class, 'subscribeStockNotification'])->name('product.notify_stock');
+    Route::get('/compare', [\App\Http\Controllers\Storefront\StorefrontController::class, 'compare'])->name('compare');
+    Route::post('/compare/toggle', [\App\Http\Controllers\Storefront\StorefrontController::class, 'toggleCompare'])->name('compare.toggle');
+    Route::post('/compare/clear', [\App\Http\Controllers\Storefront\StorefrontController::class, 'clearCompare'])->name('compare.clear');
+    Route::post('/product/{id}/question', [\App\Http\Controllers\Storefront\StorefrontController::class, 'askQuestion'])->name('product.question');
+    Route::get('/returns', [\App\Http\Controllers\Storefront\StorefrontController::class, 'returns'])->name('returns');
+    Route::post('/returns/submit', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReturn'])->name('returns.submit');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 });
 

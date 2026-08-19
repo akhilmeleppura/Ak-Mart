@@ -14,6 +14,8 @@ use App\Models\StoreCredit;
 use App\Models\Coupon;
 use App\Models\Review;
 use App\Models\StockNotification;
+use App\Models\ProductQuestion;
+use App\Models\OrderReturn;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -222,6 +224,13 @@ class StorefrontController extends Controller
         ];
         $averageRating = $totalReviews ? round($reviews->avg('rating'), 1) : 5.0;
 
+        // Customer Questions & Answers
+        $questions = ProductQuestion::where('product_id', $product->id)
+            ->where('is_published', true)
+            ->with('user', 'answeredBy')
+            ->latest()
+            ->get();
+
         return view('storefront.product-detail', compact(
             'product',
             'relatedProducts',
@@ -229,7 +238,8 @@ class StorefrontController extends Controller
             'availableStock',
             'ratingBreakdown',
             'averageRating',
-            'totalReviews'
+            'totalReviews',
+            'questions'
         ));
     }
 
@@ -792,6 +802,144 @@ class StorefrontController extends Controller
             'success' => true,
             'message' => 'You are on the priority alert list! We will notify you immediately once this item is back in stock.',
         ]);
+    }
+
+    /**
+     * Toggle Product in Compare List AJAX (Max 4 items)
+     */
+    public function toggleCompare(Request $request)
+    {
+        $productId = (int)$request->input('product_id');
+        $compareList = session()->get('compare_list', []);
+
+        if (in_array($productId, $compareList)) {
+            $compareList = array_values(array_diff($compareList, [$productId]));
+            $added = false;
+        } else {
+            if (count($compareList) >= 4) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can compare up to 4 items at a time.',
+                ], 422);
+            }
+            $compareList[] = $productId;
+            $added = true;
+        }
+
+        session()->put('compare_list', $compareList);
+
+        return response()->json([
+            'success' => true,
+            'added'   => $added,
+            'count'   => count($compareList),
+            'message' => $added ? 'Added to comparison matrix!' : 'Removed from comparison.',
+        ]);
+    }
+
+    /**
+     * Clear Comparison List
+     */
+    public function clearCompare()
+    {
+        session()->forget('compare_list');
+        return redirect()->route('storefront.compare')->with('success', 'Comparison list cleared.');
+    }
+
+    /**
+     * Side-by-Side Product Comparison View
+     */
+    public function compare()
+    {
+        $compareIds = session()->get('compare_list', []);
+        $products = Product::whereIn('id', $compareIds)
+            ->where('is_active', true)
+            ->with(['category', 'attributeValues.attribute', 'attributeValues.value'])
+            ->get();
+
+        return view('storefront.compare', compact('products'));
+    }
+
+    /**
+     * Ask a Question AJAX
+     */
+    public function askQuestion(Request $request, $productId)
+    {
+        $request->validate([
+            'question' => 'required|string|min:5|max:1000',
+        ]);
+
+        $product = Product::findOrFail($productId);
+        $user = Auth::user();
+
+        $question = ProductQuestion::create([
+            'product_id'   => $product->id,
+            'user_id'      => $user?->id,
+            'question'     => $request->question,
+            'is_published' => true,
+        ]);
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Your question has been posted! Our staff and community will answer shortly.',
+            'question' => $question,
+        ]);
+    }
+
+    /**
+     * Customer Self-Service Return Portal View
+     */
+    public function returns()
+    {
+        $user = Auth::user();
+        $orders = $user
+            ? Order::where('user_id', $user->id)->with('items.product')->latest()->take(10)->get()
+            : collect();
+
+        $myReturns = $user
+            ? OrderReturn::where('user_id', $user->id)->with(['order', 'product'])->latest()->get()
+            : collect();
+
+        return view('storefront.returns', compact('orders', 'myReturns'));
+    }
+
+    /**
+     * Submit Return / Exchange Request
+     */
+    public function submitReturn(Request $request)
+    {
+        $request->validate([
+            'order_number' => 'required|string|max:50',
+            'product_id'   => 'nullable|exists:products,id',
+            'reason'       => 'required|string|max:255',
+            'comments'     => 'nullable|string|max:1000',
+            'photo'        => 'nullable|image|max:2048',
+        ]);
+
+        $order = Order::where('order_number', $request->order_number)->first();
+        if (!$order) {
+            return redirect()->back()->with('error', 'Invalid Order Number. Please check and try again.');
+        }
+
+        $imagePath = null;
+        if ($request->hasFile('photo')) {
+            $imagePath = $request->file('photo')->store('returns', 'public');
+        }
+
+        $returnNumber = 'RET-' . strtoupper(Str::random(8));
+
+        OrderReturn::create([
+            'return_number' => $returnNumber,
+            'order_id'      => $order->id,
+            'user_id'       => Auth::id() ?? $order->user_id,
+            'product_id'    => $request->product_id,
+            'reason'        => $request->reason,
+            'comments'      => $request->comments,
+            'image_path'    => $imagePath,
+            'status'        => 'pending',
+            'refund_amount' => $order->total_amount,
+        ]);
+
+        return redirect()->route('storefront.returns')->with('success', "Return Request #{$returnNumber} has been logged. Our dispatch team will inspect and process your refund/replacement within 24 hours.");
     }
 }
 
