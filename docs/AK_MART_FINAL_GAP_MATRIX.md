@@ -22,9 +22,9 @@
 | **Frequently Bought Together Bundles** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ DB Pivot | **WORKING** | P1 Core |
 | **Verified Customer Reviews** | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Moderated | **WORKING** | P1 Core |
 | **Review Rating Histogram (5★-1★ Bar Distribution)** | ✅ Working | ✅ Working | ✅ Working | ✅ Aggregated | ✅ Progress Bars | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
-| **Product Q&A (Ask a Question)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Product Q&A (Ask a Question)** | ✅ Working | ✅ DB Table | ✅ Relations | ✅ Questions Table | ✅ Accordion & Modal | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
 | **Interactive Wishlist with Move-to-Cart** | ✅ Working | ⚠️ Orders Only | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
-| **Product Compare (Side-by-Side Specs)** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
+| **Product Compare (Side-by-Side Specs)** | ✅ Working | ✅ DB Ready | ✅ Session List | ✅ Attributes Matrix | ✅ Compare View | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Save For Later (In Cart)** | ✅ Working | N/A | ✅ Working | ✅ Session DB | ✅ Cart Shelf | ✅ Working | ✅ 6 Langs | ✅ CSRF | **WORKING** | P1 Core |
 | **Buy Again (1-Click Reorder Screen)** | ✅ Working | N/A | ✅ Aggregated | ✅ Order History | ✅ 1-Click Reorder | ✅ Working | ✅ 6 Langs | ✅ Auth Guard | **WORKING** | P1 Core |
 | **Recently Viewed Products Carousel** | ❌ Missing | N/A | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P2 Advanced |
