@@ -461,5 +461,16 @@ class StorefrontController extends Controller
             'message'   => $added ? 'Added to wishlist!' : 'Removed from wishlist.',
         ]);
     }
+
+    /**
+     * Storefront Wishlist Page
+     */
+    public function wishlist()
+    {
+        $wishlistIds = session()->get('wishlist', []);
+        $products = Product::whereIn('id', $wishlistIds)->with('category')->get();
+        return view('storefront.wishlist', compact('products'));
+    }
 }
+
 

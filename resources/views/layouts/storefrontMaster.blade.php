@@ -130,8 +130,12 @@
 
             <!-- Action Buttons: Wishlist & Cart -->
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('customer.wishlist') }}" class="btn btn-light rounded-pill position-relative px-3">
-                    <i class="bx bx-heart fs-5 align-middle"></i>
+                @php $wishCount = count(session('wishlist', [])); @endphp
+                <a href="{{ route('storefront.wishlist') }}" class="btn btn-light rounded-pill position-relative px-3" id="headerWishlistBtn" title="{{ __('My Wishlist') }}">
+                    <i class="bx bx-heart fs-5 align-middle text-danger"></i>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="wishlistBadge" style="{{ $wishCount > 0 ? '' : 'display:none;' }}">
+                        {{ $wishCount }}
+                    </span>
                 </a>
                 <a href="{{ route('storefront.cart') }}" class="btn btn-primary rounded-pill position-relative px-3 d-flex align-items-center gap-2">
                     <i class="bx bx-cart fs-5"></i>
@@ -280,14 +284,69 @@
                         });
                 }, 250);
             });
-
             document.addEventListener('click', function (e) {
                 if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
                     suggestionsBox.classList.add('d-none');
                 }
             });
         }
+
+        // Toast Notification Helper
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('storeToastContainer');
+            if (!toastContainer) return;
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'primary'} shadow-lg rounded-pill px-4 py-2 mb-2 d-flex align-items-center gap-2 fade show`;
+            toast.style.cssText = 'pointer-events: auto; min-width: 260px; transition: all 0.3s ease;';
+            toast.innerHTML = `<i class="bx ${type === 'success' ? 'bx-check-circle' : 'bx-info-circle'} fs-5"></i> <span class="fw-semibold small">${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Quick Wishlist Toggle Function
+        function quickToggleWishlist(productId, btn, e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            fetch('{{ route("storefront.wishlist.toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const badge = document.getElementById('wishlistBadge');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'inline-block' : 'none';
+                    }
+                    if (btn) {
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            if (data.added) {
+                                icon.className = 'bx bxs-heart text-danger fs-5 align-middle';
+                            } else {
+                                icon.className = 'bx bx-heart text-muted fs-5 align-middle';
+                            }
+                        }
+                    }
+                    showToast(data.message, data.added ? 'success' : 'info');
+                }
+            });
+        }
     </script>
+
+    <!-- Global Floating Toast Container -->
+    <div id="storeToastContainer" class="position-fixed bottom-0 end-0 p-4" style="z-index: 1100; pointer-events: none;"></div>
+
     @yield('scripts')
 </body>
 </html>

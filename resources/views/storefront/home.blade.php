@@ -117,6 +117,9 @@
                                 @elseif($prod->deal_of_the_day)
                                     <span class="badge bg-success position-absolute top-0 start-0 m-2"><i class="bx bxs-zap"></i> Deal</span>
                                 @endif
+                                <button class="btn btn-sm btn-light rounded-circle position-absolute top-0 end-0 m-2 shadow-xs border-0 p-1.5" onclick="quickToggleWishlist({{ $prod->id }}, this, event)" style="z-index: 5;" title="{{ __('Save to Wishlist') }}">
+                                    <i class="bx {{ in_array($prod->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-5 align-middle"></i>
+                                </button>
                                 <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $prod->name }}">
                             </div>
 

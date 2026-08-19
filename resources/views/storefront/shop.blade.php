@@ -60,6 +60,9 @@
                         <div class="product-card h-100 d-flex flex-column justify-content-between p-3">
                             <div>
                                 <div class="product-img-wrap rounded-3 mb-3 position-relative">
+                                    <button class="btn btn-sm btn-light rounded-circle position-absolute top-0 end-0 m-2 shadow-xs border-0 p-1.5" onclick="quickToggleWishlist({{ $prod->id }}, this, event)" style="z-index: 5;" title="{{ __('Save to Wishlist') }}">
+                                        <i class="bx {{ in_array($prod->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-5 align-middle"></i>
+                                    </button>
                                     <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $prod->name }}">
                                 </div>
                                 <span class="text-muted small d-block mb-1">{{ $prod->category?->name ?? __('General') }}</span>

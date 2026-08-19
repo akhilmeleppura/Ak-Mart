@@ -21,8 +21,8 @@
         <!-- Gallery Images -->
         <div class="col-lg-5">
             <div class="card p-4 border shadow-xs rounded-4 text-center bg-white position-relative">
-                <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-xs" onclick="toggleProductWishlist({{ $product->id }}, this)">
-                    <i class="bx bx-heart fs-4 text-danger align-middle"></i>
+                <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-xs border-0" onclick="quickToggleWishlist({{ $product->id }}, this, event)" title="{{ __('Save to Wishlist') }}">
+                    <i class="bx {{ in_array($product->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-4 align-middle"></i>
                 </button>
                 <img src="{{ $product->image ? asset($product->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" id="mainProductImg" class="img-fluid rounded-3 object-fit-contain" style="max-height: 380px;" alt="{{ $product->name }}">
             </div>
