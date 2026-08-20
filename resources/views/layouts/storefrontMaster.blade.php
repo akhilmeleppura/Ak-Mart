@@ -10,7 +10,7 @@
     <!-- Google Fonts & Boxicons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
 
     <!-- Core Theme Styles -->
@@ -19,71 +19,168 @@
 
     <style>
         :root {
-            --ak-primary: #2563EB;
-            --ak-primary-dark: #1D4ED8;
-            --ak-accent: #14B8A6;
+            --ak-primary: #4F46E5;
+            --ak-primary-hover: #4338CA;
+            --ak-primary-light: #EEF2FF;
+            --ak-emerald: #10B981;
+            --ak-emerald-light: #ECFDF5;
+            --ak-amber: #F59E0B;
+            --ak-amber-light: #FFFBEB;
+            --ak-rose: #F43F5E;
             --ak-bg: #F8FAFC;
-            --ak-card-bg: #FFFFFF;
+            --ak-surface: #FFFFFF;
+            --ak-text: #0F172A;
+            --ak-text-muted: #64748B;
+            --ak-border: #E2E8F0;
+            --ak-radius: 16px;
+            --ak-shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
+            --ak-shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+            --ak-shadow-hover: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
         }
         body {
-            font-family: 'Public Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--ak-bg);
-            color: #0F172A;
+            color: var(--ak-text);
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
         }
         .store-header {
-            background: #FFFFFF;
-            border-bottom: 1px solid #E2E8F0;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
             position: sticky;
             top: 0;
             z-index: 1000;
+            transition: all 0.2s ease;
         }
         .top-bar {
             background: #0F172A;
             color: #94A3B8;
-            font-size: 12.5px;
-            padding: 6px 0;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .top-bar a {
+            color: #CBD5E1;
+            transition: color 0.15s;
+        }
+        .top-bar a:hover {
+            color: #FFFFFF;
+        }
+        
+        /* Modern Card Styling */
         .product-card {
             background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.25s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: var(--ak-shadow-card);
         }
         .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
-            border-color: #CBD5E1;
+            transform: translateY(-5px);
+            box-shadow: var(--ak-shadow-hover);
+            border-color: rgba(79, 70, 229, 0.3);
         }
         .product-img-wrap {
             position: relative;
-            background: #F1F5F9;
-            height: 200px;
+            background: radial-gradient(circle at center, #F8FAFC 0%, #F1F5F9 100%);
+            height: 190px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 14px;
             overflow: hidden;
+            transition: background 0.3s;
         }
         .product-img-wrap img {
-            max-height: 85%;
-            max-width: 85%;
+            max-height: 80%;
+            max-width: 80%;
             object-fit: contain;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .product-card:hover .product-img-wrap img {
-            transform: scale(1.06);
+            transform: scale(1.08);
         }
-        .store-footer {
-            background: #0F172A;
-            color: #94A3B8;
-            padding: 48px 0 24px;
-            margin-top: 64px;
+        .btn-action-round {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .badge-stock {
+        .btn-action-round:hover {
+            background: #FFFFFF;
+            transform: scale(1.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            border: none;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+            transition: all 0.25s ease;
+        }
+        .btn-gradient-primary:hover {
+            background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+        }
+        .badge-pill-soft {
             font-size: 11px;
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .store-footer {
+            background: #0B1120;
+            color: #94A3B8;
+            padding: 56px 0 28px;
+            margin-top: 72px;
+            border-top: 1px solid #1E293B;
+        }
+        .nav-category-pill {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-category-pill:hover, .nav-category-pill.active {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .search-pill-input {
+            border: 1px solid #E2E8F0;
+            background: #F8FAFC;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .search-pill-input:focus {
+            background: #FFFFFF;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+            outline: none;
         }
     </style>
     @yield('styles')
@@ -92,46 +189,56 @@
 
     <!-- Top Announcement Bar -->
     <div class="top-bar">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <i class="bx bx-map-pin text-primary me-1"></i> {{ __('Store Location') }}: <strong>Main Branch Central</strong> | <i class="bx bx-phone ms-2 me-1"></i> +1 (800) 555-AKMART
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span><i class="bx bxs-map-pin text-primary me-1"></i> {{ __('Store Location') }}: <strong class="text-white">Main Branch Central</strong></span>
+                <span class="d-none d-md-inline text-muted">|</span>
+                <span class="d-none d-md-inline"><i class="bx bxs-phone me-1"></i> +1 (800) 555-AKMART</span>
+                <span class="d-none d-lg-inline badge bg-emerald-500 bg-opacity-20 text-success rounded-pill px-2 py-0.5" style="background: rgba(16,185,129,0.15); color: #10B981;"><i class="bx bx-check-circle me-1"></i>{{ __('Open for Instant Delivery') }}</span>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('storefront.track') }}" class="text-white text-decoration-none small"><i class="bx bx-package me-1"></i>{{ __('Track Order') }}</a>
+                <a href="{{ route('storefront.track') }}" class="text-decoration-none small"><i class="bx bx-package me-1"></i>{{ __('Track Order') }}</a>
                 @if(Auth::check())
-                    <a href="{{ route('customer.dashboard') }}" class="text-white text-decoration-none small"><i class="bx bx-user me-1"></i>{{ Auth::user()->name }}</a>
+                    <a href="{{ route('customer.dashboard') }}" class="text-decoration-none small"><i class="bx bx-user-circle me-1"></i>{{ Auth::user()->name }}</a>
                 @else
-                    <a href="{{ route('login') }}" class="text-white text-decoration-none small"><i class="bx bx-lock-alt me-1"></i>{{ __('Sign In') }}</a>
+                    <a href="{{ route('login') }}" class="text-decoration-none small"><i class="bx bx-lock-alt me-1"></i>{{ __('Sign In') }}</a>
                 @endif
             </div>
         </div>
     </div>
 
     <!-- Main Navigation Header -->
-    <header class="store-header py-3 shadow-xs">
+    <header class="store-header py-2.5">
         <div class="container d-flex justify-content-between align-items-center gap-3">
             <!-- Brand Logo -->
-            <a href="{{ route('storefront.home') }}" class="d-flex align-items-center gap-2 text-decoration-none text-dark">
-                <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart" height="42" onerror="this.src='{{ asset('assets/img/favicon/favicon.ico') }}'">
-                <span class="fs-4 fw-bolder text-primary">AK-Mart</span>
+            <a href="{{ route('storefront.home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <div class="p-1.5 rounded-3" style="background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);">
+                    <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart" height="38" onerror="this.src='{{ asset('assets/img/favicon/favicon.ico') }}'">
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="fs-4 fw-bolder lh-1" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AK-Mart</span>
+                    <span class="text-muted" style="font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Supermarket &amp; POS</span>
+                </div>
             </a>
 
             <!-- Search Bar with Live Suggestions Dropdown -->
-            <div class="position-relative flex-grow-1 mx-4 d-none d-md-block" style="max-width: 550px;">
+            <div class="position-relative flex-grow-1 mx-3 d-none d-md-block" style="max-width: 580px;">
                 <form action="{{ route('storefront.shop') }}" method="GET">
-                    <div class="input-group">
-                        <input type="text" name="q" id="storeSearchInput" class="form-control rounded-start-pill ps-3" placeholder="{{ __('Search 5,000+ groceries, essentials, and snacks...') }}" value="{{ request('q') }}" autocomplete="off">
-                        <button class="btn btn-primary rounded-end-pill px-4" type="submit"><i class="bx bx-search fs-5"></i></button>
+                    <div class="position-relative">
+                        <i class="bx bx-search position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-muted"></i>
+                        <input type="text" name="q" id="storeSearchInput" class="form-control search-pill-input ps-5 pe-5" placeholder="{{ __('Search 5,000+ groceries, organic produce, dairy, snacks...') }}" value="{{ request('q') }}" autocomplete="off">
+                        <button class="btn btn-sm btn-gradient-primary rounded-pill position-absolute top-50 end-0 translate-middle-y me-1.5 px-3 py-1 fw-semibold" type="submit">
+                            {{ __('Search') }}
+                        </button>
                     </div>
                 </form>
-                <div id="searchSuggestionsBox" class="position-absolute start-0 w-100 bg-white border rounded-3 shadow-lg p-2 d-none" style="top: 105%; z-index: 1050; max-height: 360px; overflow-y: auto;"></div>
+                <div id="searchSuggestionsBox" class="position-absolute start-0 w-100 bg-white border rounded-4 shadow-lg p-2 d-none" style="top: 110%; z-index: 1050; max-height: 360px; overflow-y: auto;"></div>
             </div>
 
-
             <!-- Action Buttons: Compare, Wishlist & Cart -->
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
                 @php $compCount = count(session('compare_list', [])); @endphp
-                <a href="{{ route('storefront.compare') }}" class="btn btn-light rounded-pill position-relative px-3" id="headerCompareBtn" title="{{ __('Product Comparison') }}">
+                <a href="{{ route('storefront.compare') }}" class="btn btn-light rounded-pill position-relative p-2 px-2.5 border" id="headerCompareBtn" title="{{ __('Product Comparison') }}" style="background: #F8FAFC;">
                     <i class="bx bx-git-compare fs-5 align-middle text-primary"></i>
                     <span class="badge bg-primary rounded-pill position-absolute top-0 start-100 translate-middle" id="compareBadge" style="{{ $compCount > 0 ? '' : 'display:none;' }}">
                         {{ $compCount }}
@@ -139,37 +246,38 @@
                 </a>
 
                 @php $wishCount = count(session('wishlist', [])); @endphp
-                <a href="{{ route('storefront.wishlist') }}" class="btn btn-light rounded-pill position-relative px-3" id="headerWishlistBtn" title="{{ __('My Wishlist') }}">
+                <a href="{{ route('storefront.wishlist') }}" class="btn btn-light rounded-pill position-relative p-2 px-2.5 border" id="headerWishlistBtn" title="{{ __('My Wishlist') }}" style="background: #F8FAFC;">
                     <i class="bx bx-heart fs-5 align-middle text-danger"></i>
                     <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="wishlistBadge" style="{{ $wishCount > 0 ? '' : 'display:none;' }}">
                         {{ $wishCount }}
                     </span>
                 </a>
-                <a href="{{ route('storefront.cart') }}" class="btn btn-primary rounded-pill position-relative px-3 d-flex align-items-center gap-2">
+                
+                @php $cartCount = array_sum(array_column(session('cart', []), 'qty')); @endphp
+                <a href="{{ route('storefront.cart') }}" class="btn btn-gradient-primary rounded-pill position-relative px-3.5 py-2 d-flex align-items-center gap-2">
                     <i class="bx bx-cart fs-5"></i>
-                    <span class="d-none d-sm-inline fw-semibold">{{ __('Cart') }}</span>
-                    @php $cartCount = array_sum(array_column(session('cart', []), 'qty')); @endphp
-                    <span class="badge bg-white text-primary rounded-pill" id="cartBadge">{{ $cartCount }}</span>
+                    <span class="d-none d-sm-inline fw-bold small">{{ __('Cart') }}</span>
+                    <span class="badge bg-white text-primary rounded-pill fw-bolder px-2" id="cartBadge">{{ $cartCount }}</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Sub-Navbar: Categories -->
-    <nav class="bg-white border-bottom py-2 shadow-xs d-none d-md-block">
+    <!-- Sub-Navbar: Aisles & Fast Navigation -->
+    <nav class="bg-white border-bottom py-2 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98);">
         <div class="container d-flex align-items-center justify-content-between">
-            <div class="d-flex gap-4">
-                <a href="{{ route('storefront.home') }}" class="text-dark fw-semibold text-decoration-none">{{ __('Home') }}</a>
-                <a href="{{ route('storefront.shop') }}" class="text-dark fw-semibold text-decoration-none">{{ __('All Products') }}</a>
-                <a href="{{ route('storefront.buy_again') }}" class="text-primary fw-semibold text-decoration-none"><i class="bx bx-repeat me-1"></i>{{ __('Buy Again') }}</a>
-                <a href="{{ route('storefront.referral') }}" class="text-success fw-semibold text-decoration-none"><i class="bx bx-gift me-1"></i>{{ __('Refer & Earn $10') }}</a>
-                <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="text-muted text-decoration-none">{{ __('Groceries & Staples') }}</a>
-                <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="text-muted text-decoration-none">{{ __('Beverages & Juices') }}</a>
-                <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="text-muted text-decoration-none">{{ __('Dairy & Eggs') }}</a>
-                <a href="{{ route('storefront.shop', ['category' => 4]) }}" class="text-muted text-decoration-none">{{ __('Fresh Bakery') }}</a>
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <a href="{{ route('storefront.home') }}" class="nav-category-pill {{ request()->routeIs('storefront.home') ? 'active' : '' }}"><i class="bx bx-home-alt text-primary"></i> {{ __('Home') }}</a>
+                <a href="{{ route('storefront.shop') }}" class="nav-category-pill {{ request()->routeIs('storefront.shop') && !request('category') ? 'active' : '' }}"><i class="bx bx-grid-alt text-primary"></i> {{ __('All Catalog') }}</a>
+                <a href="{{ route('storefront.buy_again') }}" class="nav-category-pill text-primary fw-bold" style="background: #EEF2FF;"><i class="bx bx-repeat"></i> {{ __('Buy Again') }}</a>
+                <a href="{{ route('storefront.referral') }}" class="nav-category-pill text-success fw-bold" style="background: #ECFDF5;"><i class="bx bx-gift"></i> {{ __('Refer & Earn $10') }}</a>
+                <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="nav-category-pill {{ request('category') == 1 ? 'active' : '' }}">🍎 {{ __('Groceries') }}</a>
+                <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="nav-category-pill {{ request('category') == 2 ? 'active' : '' }}">🥤 {{ __('Beverages') }}</a>
+                <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="nav-category-pill {{ request('category') == 3 ? 'active' : '' }}">🧀 {{ __('Dairy & Eggs') }}</a>
+                <a href="{{ route('storefront.shop', ['category' => 4]) }}" class="nav-category-pill {{ request('category') == 4 ? 'active' : '' }}">🥐 {{ __('Fresh Bakery') }}</a>
             </div>
             <div>
-                <a href="{{ route('dashboard') }}" class="badge bg-label-primary text-decoration-none px-3 py-1.5"><i class="bx bx-grid-alt me-1"></i>{{ __('Admin Portal') }}</a>
+                <a href="{{ route('dashboard') }}" class="badge rounded-pill text-decoration-none px-3 py-1.5 fw-semibold" style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;"><i class="bx bx-slider me-1"></i>{{ __('Admin Portal') }}</a>
             </div>
         </div>
     </nav>
