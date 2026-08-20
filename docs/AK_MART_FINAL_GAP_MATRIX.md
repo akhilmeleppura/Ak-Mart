@@ -29,7 +29,8 @@
 | **Buy Again (1-Click Reorder Screen)** | ✅ Working | N/A | ✅ Aggregated | ✅ Order History | ✅ 1-Click Reorder | ✅ Working | ✅ 6 Langs | ✅ Auth Guard | **WORKING** | P1 Core |
 | **Recently Viewed Products Carousel** | ✅ Working | N/A | ✅ Session List | ✅ Product Tracking | ✅ PDP & Home Carousel | ✅ Working | ✅ 6 Langs | ✅ Fast Load | **WORKING** | P1 Core |
 | **Out-of-Stock: Back-in-Stock Alerts** | ✅ Working | ✅ DB Ready | ✅ Subscriptions | ✅ Notifications Table | ✅ Modal & Toast | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P1 Core |
-| **Price Drop Notification Watcher** | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | N/A | **MISSING** | P3 Enhanc. |
+| **Price Drop Notification Watcher** | ✅ Working | ✅ DB Ready | ✅ Price Watcher | ✅ PriceAlerts DB | ✅ Modal & Alerts | ✅ Working | ✅ 6 Langs | ✅ Sanitized | **WORKING** | P2 Advanced |
+| **Delivery Driver Portal & Dispatch Hub** | N/A | ✅ Working | ✅ Assigned Route | ✅ Driver DB Pivot | ✅ Driver Dashboard | ✅ Mobile GPS | ✅ 6 Langs | ✅ Driver Guard | **WORKING** | P1 Core |
 | **Cart & Stock Validation** | ✅ Working | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Invariant | **WORKING** | P0 Critical |
 | **Storefront Coupon Discount Code Apply** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ Coupon Table | ✅ Cart & Checkout UI | ✅ Working | ✅ 6 Langs | ✅ Usage Count | **WORKING** | P1 Core |
 | **Storefront Delivery Slot Selection** | ✅ Working | ✅ Admin Exists | ✅ Validated | ✅ DeliverySlot Table | ✅ Checkout Slot Selector | ✅ Working | ✅ 6 Langs | ✅ Order Persistence | **WORKING** | P1 Core |
