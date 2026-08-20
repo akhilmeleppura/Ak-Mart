@@ -71,6 +71,12 @@
       "slug": "app-merchandising"
     },
     {
+      "url": "store-management/filters",
+      "name": "Advanced Filters & Facets",
+      "icon": "menu-icon icon-base bx bx-slider-alt",
+      "slug": "app-store-filters"
+    },
+    {
       "name": "Products & Catalog",
       "icon": "menu-icon icon-base bx bx-package",
       "slug": "app-ecommerce-product",

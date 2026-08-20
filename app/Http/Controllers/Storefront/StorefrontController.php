@@ -19,6 +19,7 @@ use App\Models\OrderReturn;
 use App\Models\DeliverySlot;
 use App\Models\PriceAlert;
 use App\Models\User;
+use App\Models\StoreSetting;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -116,6 +117,23 @@ class StorefrontController extends Controller
      */
     public function shop(Request $request)
     {
+        $filterConfig = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [
+            'show_search'      => true,
+            'show_category'    => true,
+            'show_brand'       => true,
+            'show_price'       => true,
+            'show_rating'      => true,
+            'show_stock'       => true,
+            'show_dietary'     => true,
+            'show_deals'       => true,
+            'price_min_limit'  => 0,
+            'price_max_limit'  => 100,
+            'brand_display'    => 'scroll_list',
+            'dietary_tags'     => 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal',
+            'quick_filter_bar' => true,
+            'grid_list_toggle' => true,
+        ];
+
         $query = Product::where('is_active', true)->with(['category', 'variants']);
 
         // Search Keyword
@@ -157,6 +175,23 @@ class StorefrontController extends Controller
             $query->where('rating_cache', '>=', (float)$minRating);
         }
 
+        // Dietary / Lifestyle Tag Filter
+        if ($dietary = $request->input('dietary')) {
+            $query->where(function ($q) use ($dietary) {
+                $q->where('name', 'LIKE', "%{$dietary}%")
+                  ->orWhere('description', 'LIKE', "%{$dietary}%")
+                  ->orWhere('attributes', 'LIKE', "%{$dietary}%");
+            });
+        }
+
+        // Deals / Flash Sale Filter
+        if ($request->boolean('deals_only') || $request->input('deals') === '1') {
+            $query->where(function ($q) {
+                $q->where('deal_of_the_day', true)
+                  ->orWhereNotNull('compare_at_price');
+            });
+        }
+
         // Price Range
         if ($minPrice = $request->input('min_price')) {
             $query->where('price', '>=', (float)$minPrice);
@@ -184,8 +219,14 @@ class StorefrontController extends Controller
         $products = $query->paginate(12)->withQueryString();
         $categories = Category::where('is_active', true)->withCount('products')->get();
         $availableBrands = Product::whereNotNull('brand')->where('brand', '!=', '')->distinct()->orderBy('brand')->pluck('brand');
+        $brandCounts = Product::whereNotNull('brand')->where('brand', '!=', '')->selectRaw('brand, count(*) as count')->groupBy('brand')->pluck('count', 'brand');
 
-        return view('storefront.shop', compact('products', 'categories', 'availableBrands'));
+        $inStockCount = Product::where('is_active', true)->where('qty', '>', 0)->count();
+        $dealsCount = Product::where('is_active', true)->where(function ($q) {
+            $q->where('deal_of_the_day', true)->orWhereNotNull('compare_at_price');
+        })->count();
+
+        return view('storefront.shop', compact('products', 'categories', 'availableBrands', 'brandCounts', 'filterConfig', 'inStockCount', 'dealsCount'));
     }
 
     /**

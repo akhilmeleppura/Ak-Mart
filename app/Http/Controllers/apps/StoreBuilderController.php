@@ -9,6 +9,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use App\Models\StoreSetting;
+
 class StoreBuilderController extends Controller
 {
     /**
@@ -234,6 +236,62 @@ class StoreBuilderController extends Controller
             ->delete();
 
         return back()->with('success', 'Recommendation item removed.');
+    }
+
+    /**
+     * Storefront Advanced Filters Management View
+     */
+    public function filters()
+    {
+        $filterConfig = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [
+            'show_search'      => true,
+            'show_category'    => true,
+            'show_brand'       => true,
+            'show_price'       => true,
+            'show_rating'      => true,
+            'show_stock'       => true,
+            'show_dietary'     => true,
+            'show_deals'       => true,
+            'price_min_limit'  => 0,
+            'price_max_limit'  => 100,
+            'brand_display'    => 'scroll_list',
+            'dietary_tags'     => 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal',
+            'quick_filter_bar' => true,
+            'grid_list_toggle' => true,
+        ];
+
+        $availableBrands = Product::whereNotNull('brand')->where('brand', '!=', '')->distinct()->orderBy('brand')->pluck('brand');
+        $totalProducts = Product::where('is_active', true)->count();
+        $categoriesCount = Category::where('is_active', true)->count();
+
+        return view('content.apps.store-management.filters', compact('filterConfig', 'availableBrands', 'totalProducts', 'categoriesCount'));
+    }
+
+    /**
+     * Update Storefront Advanced Filters Configuration
+     */
+    public function updateFilters(Request $request)
+    {
+        $config = [
+            'show_search'      => $request->boolean('show_search'),
+            'show_category'    => $request->boolean('show_category'),
+            'show_brand'       => $request->boolean('show_brand'),
+            'show_price'       => $request->boolean('show_price'),
+            'show_rating'      => $request->boolean('show_rating'),
+            'show_stock'       => $request->boolean('show_stock'),
+            'show_dietary'     => $request->boolean('show_dietary'),
+            'show_deals'       => $request->boolean('show_deals'),
+            'price_min_limit'  => (float) $request->input('price_min_limit', 0),
+            'price_max_limit'  => (float) $request->input('price_max_limit', 100),
+            'brand_display'    => $request->input('brand_display', 'scroll_list'),
+            'dietary_tags'     => $request->input('dietary_tags', 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal'),
+            'quick_filter_bar' => $request->boolean('quick_filter_bar'),
+            'grid_list_toggle' => $request->boolean('grid_list_toggle'),
+        ];
+
+        StoreSetting::set('storefront_filter_config', json_encode($config));
+
+        return back()->with('success', 'Storefront Advanced Filter Configuration saved successfully!');
     }
 }
 

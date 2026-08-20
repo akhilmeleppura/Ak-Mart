@@ -194,6 +194,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/store-management/sliders/{id}', [\App\Http\Controllers\apps\StoreBuilderController::class, 'destroySlider'])->name('app-sliders-destroy');
     Route::get('/store-management/merchandising', [\App\Http\Controllers\apps\StoreBuilderController::class, 'merchandising'])->name('app-merchandising');
     Route::post('/store-management/merchandising/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleMerchandising'])->name('app-merchandising-toggle');
+    Route::get('/store-management/filters', [\App\Http\Controllers\apps\StoreBuilderController::class, 'filters'])->name('app-store-filters');
+    Route::post('/store-management/filters', [\App\Http\Controllers\apps\StoreBuilderController::class, 'updateFilters'])->name('app-store-filters-save');
 
     // Product Relations & Suggestions
     Route::get('/products/{id}/relations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'productRelations'])->name('app-product-relations');
