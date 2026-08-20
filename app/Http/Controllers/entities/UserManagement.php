@@ -99,7 +99,7 @@ class UserManagement extends AccountBaseController
         $usersUnique = $users->unique(['email']);
         $userDuplicates = $users->diff($usersUnique)->count();
 
-        return view('content.HS.standard-datatable', [
+        return view('content.entities.user-management', [
             'totalUser' => $userCount,
             'verified' => $verified,
             'notVerified' => $notVerified,
