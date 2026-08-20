@@ -143,6 +143,36 @@
                         </div>
                     </div>
 
+                    <!-- 3.5. Size & Package Options Module -->
+                    <div class="p-3 border rounded-3 mb-3 bg-light bg-opacity-50">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="fs-4 text-info"><i class="bx bx-expand-alt"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ __('Size & Package Options (Small, Large, XL, etc.)') }}</h6>
+                                    <small class="text-muted">{{ __('Enables customers to filter by product size, clothing fit, or grocery package volume') }}</small>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch fs-4">
+                                <input class="form-check-input" type="checkbox" name="show_size" value="1" {{ !empty($filterConfig['show_size']) ? 'checked' : '' }}>
+                            </div>
+                        </div>
+                        <div class="row g-2 mt-2 pt-2 border-top">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">{{ __('Display Style') }}</label>
+                                <select name="size_display" class="form-select form-select-sm">
+                                    <option value="pills" {{ ($filterConfig['size_display'] ?? '') === 'pills' ? 'selected' : '' }}>{{ __('Clickable Size Badges / Pills') }}</option>
+                                    <option value="checkboxes" {{ ($filterConfig['size_display'] ?? '') === 'checkboxes' ? 'selected' : '' }}>{{ __('Checkbox List') }}</option>
+                                    <option value="dropdown" {{ ($filterConfig['size_display'] ?? '') === 'dropdown' ? 'selected' : '' }}>{{ __('Dropdown Menu') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">{{ __('Available Sizes (Comma-Separated)') }}</label>
+                                <input type="text" name="size_options" class="form-control form-control-sm" value="{{ $filterConfig['size_options'] ?? 'Small, Medium, Large, XL, XXL, 250g, 500g, 1kg, 5kg, 500ml, 1L, 2L' }}">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 4. Price Dual Slider Module -->
                     <div class="p-3 border rounded-3 mb-3 bg-light bg-opacity-50">
                         <div class="d-flex justify-content-between align-items-center mb-2">

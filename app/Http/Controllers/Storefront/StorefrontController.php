@@ -121,6 +121,7 @@ class StorefrontController extends Controller
             'show_search'      => true,
             'show_category'    => true,
             'show_brand'       => true,
+            'show_size'        => true,
             'show_price'       => true,
             'show_rating'      => true,
             'show_stock'       => true,
@@ -129,6 +130,8 @@ class StorefrontController extends Controller
             'price_min_limit'  => 0,
             'price_max_limit'  => 100,
             'brand_display'    => 'scroll_list',
+            'size_options'     => 'Small, Medium, Large, XL, XXL, 250g, 500g, 1kg, 5kg, 500ml, 1L, 2L',
+            'size_display'     => 'pills',
             'dietary_tags'     => 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal',
             'quick_filter_bar' => true,
             'grid_list_toggle' => true,
@@ -168,6 +171,25 @@ class StorefrontController extends Controller
             $query->whereIn('brand', $brandList);
         } elseif ($brand = $request->input('brand')) {
             $query->where('brand', $brand);
+        }
+
+        // Size Filter (e.g. Small, Large, XL, 500g, 1kg, 1L)
+        if ($sizes = $request->input('sizes') ?: $request->input('size')) {
+            $sizeList = is_array($sizes) ? $sizes : explode(',', $sizes);
+            $query->where(function ($q) use ($sizeList) {
+                foreach ($sizeList as $s) {
+                    $s = trim($s);
+                    if (!empty($s)) {
+                        $q->orWhere('name', 'LIKE', "%{$s}%")
+                          ->orWhere('description', 'LIKE', "%{$s}%")
+                          ->orWhere('attributes', 'LIKE', "%{$s}%")
+                          ->orWhereHas('variants', function ($vq) use ($s) {
+                              $vq->where('name', 'LIKE', "%{$s}%")
+                                 ->orWhere('sku', 'LIKE', "%{$s}%");
+                          });
+                    }
+                }
+            });
         }
 
         // Rating Filter (e.g. 4 => 4 stars and above)

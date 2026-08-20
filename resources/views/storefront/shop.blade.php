@@ -283,7 +283,7 @@
                         </div>
                         <h5 class="fw-bold mb-0 text-dark">{{ __('Filter Catalog') }}</h5>
                     </div>
-                    @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only', 'sort']))
+                    @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only', 'sort']))
                         <a href="{{ route('storefront.shop') }}" class="small text-danger fw-bold text-decoration-none">
                             <i class="bx bx-rotate-left me-0.5"></i>{{ __('Reset') }}
                         </a>
@@ -344,6 +344,30 @@
                                             <span class="text-muted ms-1 small">({{ $cnt }})</span>
                                         </label>
                                     </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Size & Package Options Filter -->
+                    @if(!empty($filterConfig['show_size']) && !empty($filterConfig['size_options']))
+                        <div class="mb-4">
+                            <div class="filter-section-title d-flex justify-content-between align-items-center">
+                                <span>{{ __('Size & Options') }}</span>
+                                @if(request('size') || request('sizes'))
+                                    <a href="{{ request()->fullUrlWithQuery(['size' => null, 'sizes' => null]) }}" class="text-danger small text-decoration-none fw-normal">{{ __('Clear') }}</a>
+                                @endif
+                            </div>
+                            <div class="d-flex flex-wrap gap-1.5">
+                                @php
+                                    $availableSizes = array_map('trim', explode(',', $filterConfig['size_options']));
+                                    $selectedSizes = (array) (request('sizes') ?: (request('size') ? [request('size')] : []));
+                                @endphp
+                                @foreach($availableSizes as $sz)
+                                    @php $isSelected = in_array($sz, $selectedSizes); @endphp
+                                    <a href="{{ $isSelected ? request()->fullUrlWithQuery(['size' => null, 'sizes' => array_diff($selectedSizes, [$sz]) ?: null]) : request()->fullUrlWithQuery(['size' => $sz]) }}" class="badge rounded-pill px-3 py-1.5 text-decoration-none fw-bold {{ $isSelected ? 'bg-primary text-white shadow-xs' : 'bg-light text-dark border' }}" style="font-size: 11.5px; transition: all 0.2s;">
+                                        {{ $sz }} {{ $isSelected ? '✓' : '' }}
+                                    </a>
                                 @endforeach
                             </div>
                         </div>
@@ -488,7 +512,7 @@
                 </div>
 
                 <!-- Active Filter Chips Bar -->
-                @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only']))
+                @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only']))
                     <div class="d-flex align-items-center flex-wrap gap-1.5 pt-3 mt-3 border-top">
                         <span class="small text-muted fw-bold me-1"><i class="bx bx-check-circle text-primary"></i> {{ __('Active Filters:') }}</span>
                         
@@ -514,6 +538,15 @@
                                 @endphp
                                 <a href="{{ request()->fullUrlWithQuery(['brands' => $remainingBrands ?: null]) }}" class="active-filter-pill" style="background: #FFFBEB; color: #D97706; border-color: #FDE68A;">
                                     {{ __('Brand:') }} {{ $b }} <i class="bx bx-x fs-6"></i>
+                                </a>
+                            @endforeach
+                        @endif
+
+                        @if(request('size') || request('sizes'))
+                            @php $szList = (array)(request('sizes') ?: [request('size')]); @endphp
+                            @foreach($szList as $sz)
+                                <a href="{{ request()->fullUrlWithQuery(['size' => null, 'sizes' => array_diff($szList, [$sz]) ?: null]) }}" class="active-filter-pill" style="background: #F0FDF4; color: #15803D; border-color: #BBF7D0;">
+                                    📏 {{ __('Size:') }} {{ $sz }} <i class="bx bx-x fs-6"></i>
                                 </a>
                             @endforeach
                         @endif

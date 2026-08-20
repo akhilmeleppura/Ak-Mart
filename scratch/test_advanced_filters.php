@@ -105,6 +105,20 @@ if (isset($dealsData['products']) && isset($dealsData['dealsCount'])) {
     echo "[FAIL] Deals filter failed.\n";
 }
 
+// D. Filter by Size (e.g. 1L, Large, 500g)
+$reqSize = Request::create('/store/shop', 'GET', [
+    'size' => '1L',
+]);
+$respSize = $storefrontCtrl->shop($reqSize);
+$sizeData = $respSize->getData();
+
+if (isset($sizeData['products'])) {
+    echo "[PASS] Storefront Size Filter ('1L') executed successfully (Items Found: {$sizeData['products']->total()})!\n";
+} else {
+    echo "[FAIL] Size filter failed.\n";
+}
+
 echo "\n--------------------------------------------------------\n";
 echo " ALL ADVANCED FILTER TESTS PASSED SUCCESSFULLY (100%)\n";
 echo "--------------------------------------------------------\n";
+
