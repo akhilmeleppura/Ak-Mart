@@ -158,6 +158,119 @@
             box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
         }
 
+        /* Universal Storefront Product Cards */
+        .product-grid-card, .product-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 22px;
+            padding: 16px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+        .product-grid-card:hover, .product-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(79, 70, 229, 0.35);
+            box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 8px 12px -4px rgba(0, 0, 0, 0.04);
+        }
+        .product-img-canvas, .product-img-wrap {
+            height: 180px;
+            max-height: 180px;
+            width: 100%;
+            background: radial-gradient(circle at center, #F8FAFC 0%, #F1F5F9 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .product-img-canvas img, .product-img-wrap img {
+            max-height: 140px;
+            max-width: 85%;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+            margin: 0 auto;
+        }
+        .product-grid-card:hover .product-img-canvas img,
+        .product-card:hover .product-img-wrap img {
+            transform: scale(1.08);
+        }
+
+        /* Glass Badges & Round Action Icons */
+        .glass-badge-deal {
+            background: rgba(239, 68, 68, 0.9);
+            backdrop-filter: blur(8px);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        }
+        .card-action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            z-index: 6;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .card-action-btn:hover {
+            background: #FFFFFF;
+            transform: scale(1.14);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        .btn-add-cart {
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            font-size: 13.5px;
+            font-weight: 700;
+            padding: 9px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.2);
+        }
+        .btn-add-cart:hover {
+            background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+        }
+        .btn-add-cart:disabled {
+            background: #E2E8F0;
+            color: #94A3B8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
         /* Colorful Category Navigation Chips */
         .category-chip-link {
             font-size: 13px;

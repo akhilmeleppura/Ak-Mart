@@ -262,40 +262,62 @@
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-3.5">
             @forelse($featuredProducts as $prod)
                 <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product-card h-100 d-flex flex-column justify-content-between p-3.5 position-relative">
+                    <div class="product-grid-card">
                         <div>
-                            <div class="product-img-wrap rounded-4 mb-3 position-relative overflow-hidden">
+                            <!-- Image Frame Canvas with Floating Glass Icons -->
+                            <div class="product-img-canvas">
                                 @if($prod->is_trending)
-                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2.5 rounded-pill shadow-xs"><i class="bx bxs-flame"></i> {{ __('Hot') }}</span>
+                                    <span class="glass-badge-deal" style="background: linear-gradient(135deg, #EF4444 0%, #F97316 100%);">
+                                        🔥 {{ __('Hot') }}
+                                    </span>
                                 @elseif($prod->deal_of_the_day || ($prod->compare_at_price && $prod->compare_at_price > $prod->price))
-                                    <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2.5 rounded-pill shadow-xs fw-bold"><i class="bx bxs-zap"></i> {{ __('Deal') }}</span>
+                                    <span class="glass-badge-deal">
+                                        ⚡ {{ __('Deal') }}
+                                    </span>
                                 @endif
 
-                                <div class="btn-action-round position-absolute top-0 end-0 m-2.5" onclick="quickToggleWishlist({{ $prod->id }}, this, event)" style="z-index: 5;" title="{{ __('Save to Wishlist') }}">
+                                <!-- Compare Action Button -->
+                                <div class="card-action-btn top-0 start-0 m-2.5" onclick="quickToggleCompare({{ $prod->id }}, this, event)" title="{{ __('Add to Compare') }}">
+                                    <i class="bx {{ in_array($prod->id, session('compare_list', [])) ? 'bx-git-compare text-primary fw-bold' : 'bx-git-compare text-muted' }} fs-5 align-middle"></i>
+                                </div>
+
+                                <!-- Wishlist Action Button -->
+                                <div class="card-action-btn top-0 end-0 m-2.5" onclick="quickToggleWishlist({{ $prod->id }}, this, event)" title="{{ __('Save to Wishlist') }}">
                                     <i class="bx {{ in_array($prod->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-5 align-middle"></i>
                                 </div>
+
                                 <a href="{{ route('storefront.product', $prod->id) }}" class="d-flex align-items-center justify-content-center w-100 h-100">
                                     <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $prod->name }}">
                                 </a>
                             </div>
 
-                            <span class="text-muted small fw-bold text-uppercase letter-spacing-1 d-block mb-1" style="font-size: 11px;">{{ $prod->category?->name ?? __('General') }}</span>
-                            <h6 class="fw-bold mb-1.5">
+                            <!-- Meta Row: Category & Brand -->
+                            <div class="d-flex justify-content-between align-items-center mb-1.5">
+                                <span class="text-muted small fw-semibold text-uppercase letter-spacing-1" style="font-size: 11px;">{{ $prod->category?->name ?? __('General') }}</span>
+                                @if($prod->brand)
+                                    <span class="badge rounded-pill bg-light text-muted border px-2 py-0.5" style="font-size: 10.5px;">{{ $prod->brand }}</span>
+                                @endif
+                            </div>
+
+                            <!-- Product Title -->
+                            <h6 class="fw-bold mb-1 text-dark lh-sm">
                                 <a href="{{ route('storefront.product', $prod->id) }}" class="text-dark text-decoration-none text-truncate d-block" title="{{ $prod->name }}">{{ $prod->name }}</a>
                             </h6>
 
+                            <!-- Rating Row -->
                             @if($prod->rating_cache > 0)
-                                <div class="d-flex align-items-center gap-1 small mb-2">
-                                    <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 fw-bold" style="font-size: 10.5px;">
+                                <div class="d-flex align-items-center gap-1 small mb-2.5">
+                                    <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 fw-bold d-flex align-items-center gap-1" style="font-size: 11px;">
                                         <i class="bx bxs-star text-white"></i> {{ number_format($prod->rating_cache, 1) }}
                                     </span>
                                 </div>
                             @endif
                         </div>
 
+                        <!-- Bottom Row: Price & Add to Cart -->
                         <div class="mt-2 pt-2 border-top">
                             <div class="d-flex justify-content-between align-items-center mb-2.5">
                                 <div>
@@ -309,7 +331,7 @@
                                 </span>
                             </div>
 
-                            <button class="btn btn-gradient-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 fw-bold py-2 shadow-xs" onclick="quickAddToCart({{ $prod->id }})" {{ $prod->qty <= 0 ? 'disabled' : '' }}>
+                            <button class="btn btn-add-cart" onclick="quickAddToCart({{ $prod->id }})" {{ $prod->qty <= 0 ? 'disabled' : '' }}>
                                 <i class="bx bx-shopping-bag fs-5"></i>
                                 <span>{{ __('Add to Cart') }}</span>
                             </button>
