@@ -283,7 +283,7 @@
                         </div>
                         <h5 class="fw-bold mb-0 text-dark">{{ __('Filter Catalog') }}</h5>
                     </div>
-                    @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only', 'sort']))
+                    @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'color', 'colors', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only', 'sort']))
                         <a href="{{ route('storefront.shop') }}" class="small text-danger fw-bold text-decoration-none">
                             <i class="bx bx-rotate-left me-0.5"></i>{{ __('Reset') }}
                         </a>
@@ -367,6 +367,48 @@
                                     @php $isSelected = in_array($sz, $selectedSizes); @endphp
                                     <a href="{{ $isSelected ? request()->fullUrlWithQuery(['size' => null, 'sizes' => array_diff($selectedSizes, [$sz]) ?: null]) : request()->fullUrlWithQuery(['size' => $sz]) }}" class="badge rounded-pill px-3 py-1.5 text-decoration-none fw-bold {{ $isSelected ? 'bg-primary text-white shadow-xs' : 'bg-light text-dark border' }}" style="font-size: 11.5px; transition: all 0.2s;">
                                         {{ $sz }} {{ $isSelected ? '✓' : '' }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Color & Swatches Options Filter -->
+                    @if(!empty($filterConfig['show_color']) && !empty($filterConfig['color_options']))
+                        <div class="mb-4">
+                            <div class="filter-section-title d-flex justify-content-between align-items-center">
+                                <span>{{ __('Color & Shade') }}</span>
+                                @if(request('color') || request('colors'))
+                                    <a href="{{ request()->fullUrlWithQuery(['color' => null, 'colors' => null]) }}" class="text-danger small text-decoration-none fw-normal">{{ __('Clear') }}</a>
+                                @endif
+                            </div>
+                            <div class="d-flex flex-wrap gap-1.5">
+                                @php
+                                    $availableColors = array_map('trim', explode(',', $filterConfig['color_options']));
+                                    $selectedColors = (array) (request('colors') ?: (request('color') ? [request('color')] : []));
+                                    $colorMap = [
+                                        'Red' => '#EF4444',
+                                        'Blue' => '#3B82F6',
+                                        'Green' => '#10B981',
+                                        'Yellow' => '#F59E0B',
+                                        'Black' => '#0F172A',
+                                        'White' => '#FFFFFF',
+                                        'Orange' => '#F97316',
+                                        'Pink' => '#EC4899',
+                                        'Purple' => '#8B5CF6',
+                                        'Gold' => '#EAB308',
+                                        'Silver' => '#94A3B8',
+                                    ];
+                                @endphp
+                                @foreach($availableColors as $col)
+                                    @php
+                                        $isSelected = in_array($col, $selectedColors);
+                                        $hex = $colorMap[$col] ?? '#4F46E5';
+                                    @endphp
+                                    <a href="{{ $isSelected ? request()->fullUrlWithQuery(['color' => null, 'colors' => array_diff($selectedColors, [$col]) ?: null]) : request()->fullUrlWithQuery(['color' => $col]) }}" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1.5 {{ $isSelected ? 'bg-primary text-white shadow-xs' : 'bg-light text-dark border' }}" title="{{ $col }}" style="font-size: 11.5px; transition: all 0.2s;">
+                                        <span class="rounded-circle border" style="width: 12px; height: 12px; background-color: {{ $hex }}; display: inline-block;"></span>
+                                        <span class="fw-bold">{{ $col }}</span>
+                                        @if($isSelected)<span>✓</span>@endif
                                     </a>
                                 @endforeach
                             </div>
@@ -512,7 +554,7 @@
                 </div>
 
                 <!-- Active Filter Chips Bar -->
-                @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only']))
+                @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'color', 'colors', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only']))
                     <div class="d-flex align-items-center flex-wrap gap-1.5 pt-3 mt-3 border-top">
                         <span class="small text-muted fw-bold me-1"><i class="bx bx-check-circle text-primary"></i> {{ __('Active Filters:') }}</span>
                         
@@ -547,6 +589,15 @@
                             @foreach($szList as $sz)
                                 <a href="{{ request()->fullUrlWithQuery(['size' => null, 'sizes' => array_diff($szList, [$sz]) ?: null]) }}" class="active-filter-pill" style="background: #F0FDF4; color: #15803D; border-color: #BBF7D0;">
                                     📏 {{ __('Size:') }} {{ $sz }} <i class="bx bx-x fs-6"></i>
+                                </a>
+                            @endforeach
+                        @endif
+
+                        @if(request('color') || request('colors'))
+                            @php $colList = (array)(request('colors') ?: [request('color')]); @endphp
+                            @foreach($colList as $col)
+                                <a href="{{ request()->fullUrlWithQuery(['color' => null, 'colors' => array_diff($colList, [$col]) ?: null]) }}" class="active-filter-pill" style="background: #FAF5FF; color: #7E22CE; border-color: #E9D5FF;">
+                                    🎨 {{ __('Color:') }} {{ $col }} <i class="bx bx-x fs-6"></i>
                                 </a>
                             @endforeach
                         @endif

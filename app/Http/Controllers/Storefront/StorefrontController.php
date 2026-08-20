@@ -117,11 +117,12 @@ class StorefrontController extends Controller
      */
     public function shop(Request $request)
     {
-        $filterConfig = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [
+        $defaults = [
             'show_search'      => true,
             'show_category'    => true,
             'show_brand'       => true,
             'show_size'        => true,
+            'show_color'       => true,
             'show_price'       => true,
             'show_rating'      => true,
             'show_stock'       => true,
@@ -132,10 +133,14 @@ class StorefrontController extends Controller
             'brand_display'    => 'scroll_list',
             'size_options'     => 'Small, Medium, Large, XL, XXL, 250g, 500g, 1kg, 5kg, 500ml, 1L, 2L',
             'size_display'     => 'pills',
+            'color_options'    => 'Red, Blue, Green, Yellow, Black, White, Orange, Pink, Purple, Gold',
+            'color_display'    => 'swatches',
             'dietary_tags'     => 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal',
             'quick_filter_bar' => true,
             'grid_list_toggle' => true,
         ];
+        $saved = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [];
+        $filterConfig = array_merge($defaults, $saved);
 
         $query = Product::where('is_active', true)->with(['category', 'variants']);
 
@@ -186,6 +191,25 @@ class StorefrontController extends Controller
                           ->orWhereHas('variants', function ($vq) use ($s) {
                               $vq->where('name', 'LIKE', "%{$s}%")
                                  ->orWhere('sku', 'LIKE', "%{$s}%");
+                          });
+                    }
+                }
+            });
+        }
+
+        // Color Filter (e.g. Red, Blue, Green, Black, White, Gold)
+        if ($colors = $request->input('colors') ?: $request->input('color')) {
+            $colorList = is_array($colors) ? $colors : explode(',', $colors);
+            $query->where(function ($q) use ($colorList) {
+                foreach ($colorList as $c) {
+                    $c = trim($c);
+                    if (!empty($c)) {
+                        $q->orWhere('name', 'LIKE', "%{$c}%")
+                          ->orWhere('description', 'LIKE', "%{$c}%")
+                          ->orWhere('attributes', 'LIKE', "%{$c}%")
+                          ->orWhereHas('variants', function ($vq) use ($c) {
+                              $vq->where('name', 'LIKE', "%{$c}%")
+                                 ->orWhere('sku', 'LIKE', "%{$c}%");
                           });
                     }
                 }
@@ -531,6 +555,7 @@ class StorefrontController extends Controller
             'success'    => true,
             'message'    => "{$product->name} added to cart!",
             'totalItems' => $totalItems,
+            'cartCount'  => $totalItems,
         ]);
     }
 

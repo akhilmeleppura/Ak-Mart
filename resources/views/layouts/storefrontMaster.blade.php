@@ -516,17 +516,19 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({ product_id: productId, qty: 1 })
             })
             .then(res => res.json())
             .then(data => {
-                if (data.cartCount !== undefined) {
+                const count = data.cartCount !== undefined ? data.cartCount : (data.totalItems !== undefined ? data.totalItems : null);
+                if (count !== null) {
                     const badge = document.getElementById('cartBadge');
                     if (badge) {
-                        badge.textContent = data.cartCount;
-                        badge.classList.add('animate__animated', 'animate__rubberBand');
+                        badge.textContent = count;
+                        badge.style.display = '';
                     }
                 }
                 showNotification(data.message || 'Product added to cart!', 'success');

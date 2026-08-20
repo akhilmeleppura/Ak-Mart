@@ -173,6 +173,36 @@
                         </div>
                     </div>
 
+                    <!-- 3.6. Color & Swatches Module -->
+                    <div class="p-3 border rounded-3 mb-3 bg-light bg-opacity-50">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="fs-4 text-danger"><i class="bx bx-palette"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ __('Color & Visual Swatches Filter') }}</h6>
+                                    <small class="text-muted">{{ __('Enables customers to filter catalog products by color or shade') }}</small>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch fs-4">
+                                <input class="form-check-input" type="checkbox" name="show_color" value="1" {{ !empty($filterConfig['show_color']) ? 'checked' : '' }}>
+                            </div>
+                        </div>
+                        <div class="row g-2 mt-2 pt-2 border-top">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">{{ __('Display Style') }}</label>
+                                <select name="color_display" class="form-select form-select-sm">
+                                    <option value="swatches" {{ ($filterConfig['color_display'] ?? '') === 'swatches' ? 'selected' : '' }}>{{ __('Color Circles / Swatches') }}</option>
+                                    <option value="pills" {{ ($filterConfig['color_display'] ?? '') === 'pills' ? 'selected' : '' }}>{{ __('Color Badges / Pills') }}</option>
+                                    <option value="checkboxes" {{ ($filterConfig['color_display'] ?? '') === 'checkboxes' ? 'selected' : '' }}>{{ __('Checkbox List') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">{{ __('Available Colors (Comma-Separated)') }}</label>
+                                <input type="text" name="color_options" class="form-control form-control-sm" value="{{ $filterConfig['color_options'] ?? 'Red, Blue, Green, Yellow, Black, White, Orange, Pink, Purple, Gold' }}">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 4. Price Dual Slider Module -->
                     <div class="p-3 border rounded-3 mb-3 bg-light bg-opacity-50">
                         <div class="d-flex justify-content-between align-items-center mb-2">

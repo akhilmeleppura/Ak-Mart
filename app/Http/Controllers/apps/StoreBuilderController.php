@@ -243,11 +243,12 @@ class StoreBuilderController extends Controller
      */
     public function filters()
     {
-        $filterConfig = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [
+        $defaults = [
             'show_search'      => true,
             'show_category'    => true,
             'show_brand'       => true,
             'show_size'        => true,
+            'show_color'       => true,
             'show_price'       => true,
             'show_rating'      => true,
             'show_stock'       => true,
@@ -258,10 +259,14 @@ class StoreBuilderController extends Controller
             'brand_display'    => 'scroll_list',
             'size_options'     => 'Small, Medium, Large, XL, XXL, 250g, 500g, 1kg, 5kg, 500ml, 1L, 2L',
             'size_display'     => 'pills',
+            'color_options'    => 'Red, Blue, Green, Yellow, Black, White, Orange, Pink, Purple, Gold',
+            'color_display'    => 'swatches',
             'dietary_tags'     => 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal',
             'quick_filter_bar' => true,
             'grid_list_toggle' => true,
         ];
+        $saved = json_decode(StoreSetting::get('storefront_filter_config', '{}'), true) ?: [];
+        $filterConfig = array_merge($defaults, $saved);
 
         $availableBrands = Product::whereNotNull('brand')->where('brand', '!=', '')->distinct()->orderBy('brand')->pluck('brand');
         $totalProducts = Product::where('is_active', true)->count();
@@ -280,6 +285,7 @@ class StoreBuilderController extends Controller
             'show_category'    => $request->boolean('show_category'),
             'show_brand'       => $request->boolean('show_brand'),
             'show_size'        => $request->boolean('show_size'),
+            'show_color'       => $request->boolean('show_color'),
             'show_price'       => $request->boolean('show_price'),
             'show_rating'      => $request->boolean('show_rating'),
             'show_stock'       => $request->boolean('show_stock'),
@@ -290,6 +296,8 @@ class StoreBuilderController extends Controller
             'brand_display'    => $request->input('brand_display', 'scroll_list'),
             'size_options'     => $request->input('size_options', 'Small, Medium, Large, XL, XXL, 250g, 500g, 1kg, 5kg, 500ml, 1L, 2L'),
             'size_display'     => $request->input('size_display', 'pills'),
+            'color_options'    => $request->input('color_options', 'Red, Blue, Green, Yellow, Black, White, Orange, Pink, Purple, Gold'),
+            'color_display'    => $request->input('color_display', 'swatches'),
             'dietary_tags'     => $request->input('dietary_tags', 'Organic, Gluten-Free, Vegan, Dairy-Free, Sugar-Free, Non-GMO, Halal'),
             'quick_filter_bar' => $request->boolean('quick_filter_bar'),
             'grid_list_toggle' => $request->boolean('grid_list_toggle'),
