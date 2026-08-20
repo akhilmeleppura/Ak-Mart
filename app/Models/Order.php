@@ -26,6 +26,7 @@ class Order extends Model
         'gift_card_code',
         'gift_card_amount',
         'store_credit_amount',
+        'driver_id',
     ];
 
     protected function casts(): array
@@ -81,5 +82,10 @@ class Order extends Model
     public function deliverySlot()
     {
         return $this->belongsTo(DeliverySlot::class, 'delivery_slot_id');
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
     }
 }

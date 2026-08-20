@@ -148,6 +148,18 @@ Route::prefix('store')->name('storefront.')->group(function () {
 });
 
 // -----------------------------------------------------------------------
+// Driver Portal (Authenticated Driver)
+// -----------------------------------------------------------------------
+Route::middleware(['auth:sanctum', 'verified'])
+    ->prefix('driver')
+    ->name('driver.')
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Driver\DriverDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/orders/assign/{order}', [\App\Http\Controllers\Driver\DriverOrderController::class, 'assign'])->name('orders.assign');
+        Route::post('/orders/status', [\App\Http\Controllers\Driver\DriverOrderController::class, 'updateStatus'])->name('orders.status');
+    });
+
+// -----------------------------------------------------------------------
 // Customer Account Portal (Authenticated)
 // -----------------------------------------------------------------------
 Route::middleware(['auth:sanctum', 'verified'])->prefix('customer/portal')->name('customer.')->group(function () {

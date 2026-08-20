@@ -43,6 +43,9 @@ class User extends Authenticatable
         'post_code',
         'country',
         'locale',
+        'role',
+        'referral_code',
+        'referred_by',
     ];
 
     /**
@@ -106,9 +109,22 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * Determine if user is a delivery driver.
+     */
+    public function isDriver(): bool
+    {
+        return $this->role === 'driver' || (method_exists($this, 'hasRole') && $this->hasRole('Driver'));
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function driverOrders()
+    {
+        return $this->hasMany(Order::class, 'driver_id');
     }
 
     public function reviews()
