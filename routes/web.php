@@ -118,6 +118,7 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Storefront\StorefrontController::class, 'index'])->name('home');
     Route::get('/shop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'shop'])->name('shop');
     Route::get('/search-suggestions', [\App\Http\Controllers\Storefront\StorefrontController::class, 'searchSuggestions'])->name('search.suggestions');
+    Route::get('/search_suggestions', [\App\Http\Controllers\Storefront\StorefrontController::class, 'searchSuggestions'])->name('search_suggestions');
     Route::get('/product/{id}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'product'])->name('product');
     Route::get('/cart', [\App\Http\Controllers\Storefront\StorefrontController::class, 'cart'])->name('cart');
     Route::post('/cart/add', [\App\Http\Controllers\Storefront\StorefrontController::class, 'addToCart'])->name('cart.add');

@@ -497,7 +497,7 @@
                     return;
                 }
                 searchTimeout = setTimeout(() => {
-                    fetch(`{{ route('storefront.search_suggestions') }}?q=${encodeURIComponent(q)}`)
+                    fetch(`{{ route('storefront.search.suggestions') }}?q=${encodeURIComponent(q)}`)
                         .then(res => res.json())
                         .then(data => {
                             if (data.suggestions && data.suggestions.length > 0) {
