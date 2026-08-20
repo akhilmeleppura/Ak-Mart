@@ -46,9 +46,10 @@
 | **Smart URL Product Importer** | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Anti-SSRF | **WORKING** | P1 Core |
 | **AI Copilot (Descriptions & SEO)** | N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ API Key Enc. | **WORKING** | P2 Advanced |
 | **Email Template Engine (Dynamic Placeholders)**| N/A | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Blade Escape | **WORKING** | P1 Core |
-| **Outbound Email Dispatch Queue on Order Place** | N/A | ⚠️ Config Only | ⚠️ Mailer Exists | ✅ Templates DB | N/A | N/A | N/A | N/A | **PARTIAL** | P1 Core |
-| **WhatsApp Business Cloud API Configuration** | N/A | ✅ Working | ⚠️ Config Storage | ✅ Settings DB | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Masked Token | **PARTIAL** | P1 Core |
-| **Outbound WhatsApp Auto-Dispatch on Order Place** | N/A | ❌ Provider Unset | ❌ No Outbound Job | N/A | N/A | N/A | N/A | N/A | **MISSING** | P2 Advanced |
+| **Outbound Email Dispatch Queue on Order Place** | N/A | ✅ Working | ✅ Dispatched | ✅ Templates DB | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Mail Guard | **WORKING** | P1 Core |
+| **WhatsApp Business Cloud API Configuration** | N/A | ✅ Working | ✅ Cloud Adapter | ✅ Settings DB | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ Masked Token | **WORKING** | P1 Core |
+| **Outbound WhatsApp Auto-Dispatch & Webhooks** | N/A | ✅ Working | ✅ Live Events | ✅ CommLogs DB | ✅ Working | ✅ Working | ✅ 6 Langs | ✅ HMAC Handshake | **WORKING** | P1 Core |
+| **SaaS Dunning & Multi-Tenant Vendor Support** | N/A | ✅ Working | ✅ Dunning Engine | ✅ Tickets & Dunning | ✅ Admin & Vendor | ✅ Working | ✅ 6 Langs | ✅ Branch Guard | **WORKING** | P1 Core |
 | **Multi-Language (EN, ML, HI, AR RTL, FR, DE)** | ✅ Working | ✅ Working | ✅ Working | ✅ Session DB | ✅ Working | ✅ Working | ✅ 100% 6 Langs| ✅ Sanitized | **WORKING** | P0 Critical |
 
 ---

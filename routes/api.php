@@ -9,6 +9,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/payment/webhook', [\App\Http\Controllers\apps\PaymentWebhookController::class, 'handle']);
+Route::get('/whatsapp/webhook', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'verifyWhatsAppWebhook']);
+Route::post('/whatsapp/webhook', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'handleWhatsAppWebhook']);
 
 // Storefront RESTful API v1
 Route::prefix('v1')->group(function () {

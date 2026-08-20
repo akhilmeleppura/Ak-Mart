@@ -681,7 +681,7 @@ class StorefrontController extends Controller
             }
 
             // Award Referrer Bonus ($10 Store Credit) if referred by friend
-            if ($refCode = session()->get('referred_by_code')) {
+            if ($refCode = session()->get('referred_by_code') ?: $request->input('referred_by_code')) {
                 $referrer = User::where('referral_code', $refCode)->first();
                 if ($referrer && $referrer->id !== $user?->id) {
                     $sc = StoreCredit::firstOrCreate(['user_id' => $referrer->id], ['balance' => 0]);
@@ -692,6 +692,30 @@ class StorefrontController extends Controller
                     }
                     session()->forget('referred_by_code');
                 }
+            }
+
+            // Automated Outbound Notifications (Email & WhatsApp Cloud API)
+            try {
+                $commService = app(\App\Services\CommunicationService::class);
+                $trackingUrl = route('storefront.track', ['order_number' => $orderNumber]);
+                $commVars = [
+                    'customer_name'   => $request->customer_name,
+                    'order_number'    => $orderNumber,
+                    'order_total'     => number_format($orderTotal, 2),
+                    'tracking_url'    => $trackingUrl,
+                    'delivery_method' => $order->is_pickup ? 'Store Pickup' : 'Home Delivery',
+                    'store_name'      => config('app.name', 'AK-Mart'),
+                ];
+
+                if (!empty($request->customer_email)) {
+                    $commService->send('email', $request->customer_email, 'order_confirmation', $commVars);
+                }
+
+                if (!empty($request->customer_phone)) {
+                    $commService->send('whatsapp', $request->customer_phone, 'order_confirmation', $commVars);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Outbound order communication error: " . $e->getMessage());
             }
 
             // Clear Cart

@@ -72,6 +72,37 @@ class DriverOrderController extends Controller
 
         event(new OrderStatusUpdated($order));
 
+        // Automated Omnichannel Notifications for Order Status Progression
+        try {
+            $customer = $order->customer;
+            $recipientEmail = $customer?->email;
+            $recipientPhone = $customer?->phone;
+            $customerName = $customer?->name ?? 'Valued Customer';
+            $trackingUrl = route('storefront.track', ['order_number' => $order->order_number]);
+            $commService = app(\App\Services\CommunicationService::class);
+
+            $vars = [
+                'customer_name'   => $customerName,
+                'order_number'    => $order->order_number,
+                'order_total'     => number_format($order->total_amount, 2),
+                'carrier'         => 'AK-Mart Express Courier (' . (Auth::user()?->name ?? 'Driver') . ')',
+                'tracking_number' => $order->order_number,
+                'tracking_url'    => $trackingUrl,
+                'status'          => ucfirst(str_replace('_', ' ', $newStatus)),
+                'store_name'      => config('app.name', 'AK-Mart'),
+            ];
+
+            if ($newStatus === 'in_transit' || $newStatus === 'picked_up') {
+                if ($recipientEmail) $commService->send('email', $recipientEmail, 'order_shipped', $vars);
+                if ($recipientPhone) $commService->send('whatsapp', $recipientPhone, 'order_shipped', $vars);
+            } elseif (in_array($newStatus, ['delivered', 'completed'])) {
+                if ($recipientEmail) $commService->send('email', $recipientEmail, 'order_confirmation', $vars);
+                if ($recipientPhone) $commService->send('whatsapp', $recipientPhone, 'order_confirmation', $vars);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Driver status communication failure: " . $e->getMessage());
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,

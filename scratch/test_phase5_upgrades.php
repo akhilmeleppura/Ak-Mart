@@ -17,7 +17,10 @@ echo " TESTING PHASE 5 VIRAL REFERRALS & PRICE DROP WATCHER\n";
 echo "========================================================\n\n";
 
 $controller = app(StorefrontController::class);
-$referrer = User::first();
+$referrer = User::firstOrCreate(
+    ['email' => 'ambassador.ref@akmart.test'],
+    ['name' => 'Referral Ambassador', 'password' => bcrypt('secret123'), 'referral_code' => 'AK-AMBASSADOR-99']
+);
 Auth::login($referrer);
 
 // 1. Test Price Drop Alert
@@ -50,6 +53,10 @@ if (isset($referralData['referralLink']) && isset($referralData['user'])) {
 }
 
 // 3. Test Viral Referral Order Reward Engine ($10 Referral Credit)
+if (empty($referrer->referral_code)) {
+    $referrer->referral_code = 'AK-' . strtoupper(bin2hex(random_bytes(3)));
+    $referrer->save();
+}
 $refCode = $referrer->referral_code;
 $initialCredit = StoreCredit::where('user_id', $referrer->id)->value('balance') ?: 0;
 
@@ -60,6 +67,7 @@ session()->put('referred_by_code', $refCode);
 session()->put('cart', [
     2 => ['id' => 2, 'name' => 'Golden Drop Olive Oil 1L', 'price' => 18.50, 'qty' => 1, 'sku' => 'POS-SKU-100', 'image' => '']
 ]);
+session()->save();
 
 $friendEmail = 'friend_' . uniqid() . '@example.com';
 $reqFriendCheckout = Request::create('/store/checkout/process', 'POST', [
@@ -68,6 +76,7 @@ $reqFriendCheckout = Request::create('/store/checkout/process', 'POST', [
     'customer_phone'   => '+15554443322',
     'shipping_address' => '456 Elm St, Metro Area',
     'payment_method'   => 'cod',
+    'referred_by_code' => $refCode,
 ]);
 
 $controller->processCheckout($reqFriendCheckout);

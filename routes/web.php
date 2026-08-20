@@ -147,6 +147,10 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 });
 
+// Meta WhatsApp Cloud API Public Webhook Endpoints
+Route::get('/webhook/whatsapp', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'verifyWhatsAppWebhook'])->name('webhook.whatsapp.verify');
+Route::post('/webhook/whatsapp', [\App\Http\Controllers\apps\CommunicationCenterController::class, 'handleWhatsAppWebhook'])->name('webhook.whatsapp.receive');
+
 // -----------------------------------------------------------------------
 // Driver Portal (Authenticated Driver)
 // -----------------------------------------------------------------------

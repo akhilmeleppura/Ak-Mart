@@ -131,4 +131,48 @@ class CommunicationCenterController extends Controller
 
         return redirect()->back()->with('success', "Campaign '{$campaign->name}' queued for {$recipientCount} recipients!");
     }
+
+    /**
+     * Meta WhatsApp Cloud API Webhook Verification Endpoint (GET).
+     */
+    public function verifyWhatsAppWebhook(Request $request)
+    {
+        $verifyToken = config('services.whatsapp.verify_token', 'akmart_meta_cloud_secret');
+        $mode = $request->query('hub_mode');
+        $token = $request->query('hub_verify_token');
+        $challenge = $request->query('hub_challenge');
+
+        if ($mode === 'subscribe' && $token === $verifyToken) {
+            return response($challenge, 200);
+        }
+
+        return response('Forbidden', 403);
+    }
+
+    /**
+     * Meta WhatsApp Cloud API Webhook Event Receiver Endpoint (POST).
+     */
+    public function handleWhatsAppWebhook(Request $request)
+    {
+        $payload = $request->all();
+        \Illuminate\Support\Facades\Log::info("WhatsApp Webhook Event Received:", $payload);
+
+        // Process message statuses (sent, delivered, read)
+        if (isset($payload['entry'][0]['changes'][0]['value']['statuses'])) {
+            $statuses = $payload['entry'][0]['changes'][0]['value']['statuses'];
+            foreach ($statuses as $statusObj) {
+                $statusName = $statusObj['status'] ?? 'delivered';
+                $recipientId = $statusObj['recipient_id'] ?? null;
+                if ($recipientId) {
+                    CommunicationLog::where('channel', 'whatsapp')
+                        ->where('recipient', 'like', "%{$recipientId}%")
+                        ->latest()
+                        ->take(1)
+                        ->update(['status' => $statusName]);
+                }
+            }
+        }
+
+        return response()->json(['status' => 'EVENT_RECEIVED'], 200);
+    }
 }
