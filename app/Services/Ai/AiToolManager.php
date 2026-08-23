@@ -241,6 +241,130 @@ class AiToolManager
     }
 
     /**
+     * Tool: Comparative Sales Period Analysis
+     */
+    public function getSalesComparison(string $current = 'this_month', string $previous = 'last_month', ?int $branchId = null): array
+    {
+        $currentRange = match ($current) {
+            'today'       => [Carbon::today()->startOfDay(), Carbon::now()->endOfDay()],
+            'this_week'   => [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()],
+            'this_month'  => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()],
+            'this_year'   => [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()],
+            default       => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()],
+        };
+
+        $previousRange = match ($previous) {
+            'yesterday'   => [Carbon::yesterday()->startOfDay(), Carbon::yesterday()->endOfDay()],
+            'last_week'   => [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()],
+            'last_month'  => [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()],
+            'last_year'   => [Carbon::now()->subYear()->startOfYear(), Carbon::now()->subYear()->endOfYear()],
+            default       => [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()],
+        };
+
+        $currentQuery = Order::whereBetween('created_at', $currentRange);
+        $prevQuery = Order::whereBetween('created_at', $previousRange);
+
+        if ($branchId) {
+            $currentQuery->where('branch_id', $branchId);
+            $prevQuery->where('branch_id', $branchId);
+        }
+
+        $currentSales = (float)$currentQuery->sum('total_amount');
+        $currentOrders = $currentQuery->count();
+        $currentAov = $currentOrders > 0 ? round($currentSales / $currentOrders, 2) : 0;
+
+        $prevSales = (float)$prevQuery->sum('total_amount');
+        $prevOrders = $prevQuery->count();
+        $prevAov = $prevOrders > 0 ? round($prevSales / $prevOrders, 2) : 0;
+
+        $diffAmount = round($currentSales - $prevSales, 2);
+        $diffPct = $prevSales > 0 ? round(($diffAmount / $prevSales) * 100, 1) : ($currentSales > 0 ? 100 : 0);
+
+        return [
+            'current_period'  => [
+                'name'         => str_replace('_', ' ', ucfirst($current)),
+                'sales'        => $currentSales,
+                'sales_formatted' => '$' . number_format($currentSales, 2),
+                'orders'       => $currentOrders,
+                'aov'          => $currentAov,
+            ],
+            'previous_period' => [
+                'name'         => str_replace('_', ' ', ucfirst($previous)),
+                'sales'        => $prevSales,
+                'sales_formatted' => '$' . number_format($prevSales, 2),
+                'orders'       => $prevOrders,
+                'aov'          => $prevAov,
+            ],
+            'difference'      => [
+                'amount'       => $diffAmount,
+                'percentage'   => $diffPct,
+                'direction'    => $diffAmount >= 0 ? 'up' : 'down',
+            ],
+        ];
+    }
+
+    /**
+     * Tool: Authoritative Inventory Asset Valuation
+     */
+    public function getInventoryValuation(?int $branchId = null): array
+    {
+        $query = Product::where('is_active', true);
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        $totalUnits = (int)$query->sum('qty');
+        $retailValue = (float)$query->select(DB::raw('SUM(qty * price) as val'))->value('val');
+        $estimatedCost = round($retailValue * 0.60, 2); // 60% standard cost ratio
+
+        return [
+            'total_units'          => $totalUnits,
+            'retail_value'         => $retailValue,
+            'retail_value_formatted' => '$' . number_format($retailValue, 2),
+            'estimated_cost_value' => $estimatedCost,
+            'estimated_cost_formatted' => '$' . number_format($estimatedCost, 2),
+        ];
+    }
+
+    /**
+     * Tool: Category Revenue Distribution
+     */
+    public function getCategorySales(): array
+    {
+        $categories = \App\Models\Category::withCount('products')->get();
+        $summary = [];
+
+        foreach ($categories as $cat) {
+            $sales = (float)OrderItem::whereHas('product', fn($q) => $q->where('category_id', $cat->id))->sum('total');
+            $summary[] = [
+                'category_id'   => $cat->id,
+                'category_name' => $cat->name,
+                'total_sales'   => $sales,
+                'product_count' => $cat->products_count,
+            ];
+        }
+
+        usort($summary, fn($a, $b) => $b['total_sales'] <=> $a['total_sales']);
+        return ['categories' => $summary];
+    }
+
+    /**
+     * Tool: Traceable Stock Movements from Immutable Ledger
+     */
+    public function getRecentStockMovements(int $limit = 5): array
+    {
+        return StockMovement::with('product')->latest()->take($limit)->get()->map(function ($m) {
+            return [
+                'product'   => $m->product?->name ?? 'Product #' . $m->product_id,
+                'change'    => ($m->quantity > 0 ? '+' : '') . $m->quantity,
+                'type'      => $m->type,
+                'reason'    => $m->reason,
+                'timestamp' => $m->created_at->toDateTimeString(),
+            ];
+        })->toArray();
+    }
+
+    /**
      * Tool: Verified Store Policy
      */
     public function getStorePolicy(string $topic = 'returns'): string

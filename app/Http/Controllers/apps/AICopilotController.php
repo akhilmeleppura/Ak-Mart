@@ -63,6 +63,27 @@ class AICopilotController extends Controller
 
         // Localized Offline / Deterministic Responder with Tools
         if ($aiMode === 'manual' || empty($apiKey)) {
+            // Comparative Sales Tool
+            if (str_contains($lastMessage, 'compare') || (str_contains($lastMessage, 'month') && str_contains($lastMessage, 'last'))) {
+                $comp = $toolManager->getSalesComparison('this_month', 'last_month');
+                $arrow = $comp['difference']['direction'] === 'up' ? '📈' : '📉';
+                $reply = "📊 **Sales Comparison ({$comp['current_period']['name']} vs {$comp['previous_period']['name']})**:\n\n"
+                    . "• **{$comp['current_period']['name']}**: {$comp['current_period']['sales_formatted']} ({$comp['current_period']['orders']} orders, AOV: \${$comp['current_period']['aov']})\n"
+                    . "• **{$comp['previous_period']['name']}**: {$comp['previous_period']['sales_formatted']} ({$comp['previous_period']['orders']} orders, AOV: \${$comp['previous_period']['aov']})\n\n"
+                    . "{$arrow} **Difference**: \${$comp['difference']['amount']} ({$comp['difference']['percentage']}% {$comp['difference']['direction']})";
+                return response()->json(['success' => true, 'reply' => $reply, 'response' => $reply]);
+            }
+
+            // Inventory Valuation Tool
+            if (str_contains($lastMessage, 'valuation') || str_contains($lastMessage, 'inventory value')) {
+                $val = $toolManager->getInventoryValuation();
+                $reply = "💰 **Inventory Valuation ($branchName)**:\n\n"
+                    . "• **Total Units in Stock**: {$val['total_units']} items\n"
+                    . "• **Retail Asset Value**: {$val['retail_value_formatted']}\n"
+                    . "• **Estimated Cost Basis**: {$val['estimated_cost_formatted']}";
+                return response()->json(['success' => true, 'reply' => $reply, 'response' => $reply]);
+            }
+
             // Profit & Margin Tools
             if (str_contains($lastMessage, 'profit') || str_contains($lastMessage, 'margin')) {
                 $profit = $toolManager->getProfitReport('today');

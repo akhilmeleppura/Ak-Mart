@@ -182,4 +182,27 @@ class AiCommerceGoldenSuiteTest extends TestCase
         $resShop->assertStatus(200);
         $this->assertStringContainsString('Samsung Galaxy S24 Mobile', $resShop->json('reply'));
     }
+
+    public function test_comparative_sales_and_inventory_valuation_tools()
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Sales Comparison Test
+        $resComp = $this->postJson(route('app-ai-copilot-chat'), [
+            'messages' => [
+                ['role' => 'user', 'content' => 'Compare this month with last month']
+            ]
+        ]);
+        $resComp->assertStatus(200);
+        $this->assertStringContainsString('Sales Comparison', $resComp->json('reply'));
+
+        // 2. Inventory Valuation Test
+        $resVal = $this->postJson(route('app-ai-copilot-chat'), [
+            'messages' => [
+                ['role' => 'user', 'content' => 'What is our total inventory valuation?']
+            ]
+        ]);
+        $resVal->assertStatus(200);
+        $this->assertStringContainsString('Inventory Valuation', $resVal->json('reply'));
+    }
 }
