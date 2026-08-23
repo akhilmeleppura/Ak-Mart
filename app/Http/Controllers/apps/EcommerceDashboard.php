@@ -100,6 +100,8 @@ class EcommerceDashboard extends Controller
         $smtpConfigured = !empty(StoreSetting::get('smtp_host'));
         $whatsappConfigured = !empty(StoreSetting::get('whatsapp_phone_number_id'));
 
+        $dailyBrief = app(\App\Services\Ai\PredictiveIntelligenceService::class)->getDailyBusinessBrief(session('branch_id'));
+
         return view('content.apps.app-ecommerce-dashboard', compact(
             'totalSales',
             'totalOrders',
@@ -126,7 +128,8 @@ class EcommerceDashboard extends Controller
             'pendingPaymentsCount',
             'failedPaymentsCount',
             'smtpConfigured',
-            'whatsappConfigured'
+            'whatsappConfigured',
+            'dailyBrief'
         ));
     }
 }

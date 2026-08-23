@@ -495,6 +495,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/products/bulk-status', [EcommerceProductList::class, 'bulkStatus'])->name('app-ecommerce-product-bulk-status');
         Route::post('/products/bulk-category', [EcommerceProductList::class, 'bulkCategory'])->name('app-ecommerce-product-bulk-category');
         Route::post('/products/bulk-pricing', [EcommerceProductList::class, 'bulkPricing'])->name('app-ecommerce-product-bulk-pricing');
+        Route::post('/products/bulk-stock', [EcommerceProductList::class, 'bulkStock'])->name('app-ecommerce-product-bulk-stock');
         Route::post('/products/{id}/duplicate', [EcommerceProductList::class, 'duplicate'])->name('app-ecommerce-product-duplicate');
         Route::get('/products/categories', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
         Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index']);
@@ -579,6 +580,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/settings/notifications', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'notifications')->name('app-ecommerce-settings-notifications');
         Route::get('/app/ecommerce/settings/notifications', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->defaults('section', 'notifications');
         Route::post('/settings/notifications/save', [\App\Http\Controllers\apps\SettingsHubController::class, 'saveSection'])->defaults('section', 'notifications')->name('app-ecommerce-settings-notifications-save');
+
+        // Tax & VAT Rule Management
+        Route::get('/ecommerce/settings/taxes', [\App\Http\Controllers\apps\TaxManagementController::class, 'index'])->name('app-ecommerce-settings-taxes');
+        Route::get('/settings/taxes', [\App\Http\Controllers\apps\TaxManagementController::class, 'index']);
+        Route::post('/ecommerce/settings/taxes', [\App\Http\Controllers\apps\TaxManagementController::class, 'storeRule'])->name('app-ecommerce-settings-taxes-store');
+        Route::put('/ecommerce/settings/taxes/{id}', [\App\Http\Controllers\apps\TaxManagementController::class, 'updateRule'])->name('app-ecommerce-settings-taxes-update');
+        Route::delete('/ecommerce/settings/taxes/{id}', [\App\Http\Controllers\apps\TaxManagementController::class, 'deleteRule'])->name('app-ecommerce-settings-taxes-delete');
+        Route::post('/ecommerce/settings/taxes/{id}/toggle', [\App\Http\Controllers\apps\TaxManagementController::class, 'toggleRule'])->name('app-ecommerce-settings-taxes-toggle');
+        Route::post('/ecommerce/settings/taxes/save-global', [\App\Http\Controllers\apps\TaxManagementController::class, 'saveSettings'])->name('app-ecommerce-settings-taxes-save');
+        Route::post('/ecommerce/settings/taxes/simulate', [\App\Http\Controllers\apps\TaxManagementController::class, 'simulateTax'])->name('app-ecommerce-settings-taxes-simulate');
 
         // Modular Settings Sections & Actions
         Route::get('/settings/{section}', [\App\Http\Controllers\apps\SettingsHubController::class, 'showSection'])->name('settings.section');

@@ -117,6 +117,45 @@ class EcommerceProductList extends Controller
   }
 
   /**
+   * Bulk action: Adjust inventory stock for multiple products.
+   */
+  public function bulkStock(Request $request)
+  {
+      $request->validate([
+          'ids'        => 'required|array',
+          'ids.*'      => 'exists:products,id',
+          'adjustment' => 'required|integer',
+          'type'       => 'required|in:add,set',
+      ]);
+
+      $products = Product::whereIn('id', $request->ids)->get();
+      foreach ($products as $prod) {
+          $newQty = $request->type === 'add'
+              ? max(0, $prod->qty + $request->adjustment)
+              : max(0, $request->adjustment);
+          $diff = $newQty - $prod->qty;
+          if ($diff !== 0) {
+              \App\Models\StockMovement::record(
+                  $prod->id,
+                  $diff,
+                  $diff > 0 ? 'stock_in' : 'stock_out',
+                  'Bulk Inventory Stock Adjustment',
+                  null,
+                  $prod->branch_id,
+                  'Product',
+                  $prod->id,
+                  auth()->id()
+              );
+          }
+      }
+
+      return response()->json([
+          'success' => true,
+          'message' => count($request->ids) . ' products updated with new stock levels.'
+      ]);
+  }
+
+  /**
    * Duplicate product with new SKU.
    */
   public function duplicate($id)
@@ -129,8 +168,8 @@ class EcommerceProductList extends Controller
       ]);
 
       $clone->name = $original->name . ' (Copy)';
-      $clone->slug = Str::slug($original->name) . '-copy-' . rand(100, 999);
-      $clone->sku = 'AKM-' . strtoupper(Str::random(6));
+      $clone->slug = \Illuminate\Support\Str::slug($original->name) . '-copy-' . rand(100, 999);
+      $clone->sku = 'AKM-' . strtoupper(\Illuminate\Support\Str::random(6));
       $clone->barcode = (string) rand(100000000000, 999999999999);
       $clone->save();
 
@@ -138,7 +177,7 @@ class EcommerceProductList extends Controller
       foreach ($original->variants as $variant) {
           $cloneVar = $variant->replicate(['sku', 'barcode']);
           $cloneVar->product_id = $clone->id;
-          $cloneVar->sku = $clone->sku . '-' . Str::slug($variant->attribute_value);
+          $cloneVar->sku = $clone->sku . '-' . \Illuminate\Support\Str::slug($variant->attribute_value);
           $cloneVar->barcode = (string) rand(100000000000, 999999999999);
           $cloneVar->save();
       }

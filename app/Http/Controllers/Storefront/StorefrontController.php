@@ -166,6 +166,8 @@ class StorefrontController extends Controller
                 'trending'   => $query->where('is_trending', true),
                 'bestseller' => $query->where('is_best_seller', true),
                 'deals'      => $query->where('deal_of_the_day', true),
+                'new'        => $query->where(fn($q) => $q->where('is_new_arrival', true)->orWhere('created_at', '>=', now()->subDays(30))),
+                'under_500'  => $query->where('price', '<=', 500),
                 default      => null,
             };
         }
@@ -378,9 +380,33 @@ class StorefrontController extends Controller
                 $couponDiscount = min($subtotal, (float)$coupon['value']);
             }
         }
-        $finalTotal = max(0, $subtotal - $couponDiscount);
 
-        return view('storefront.cart', compact('cart', 'savedForLater', 'subtotal', 'coupon', 'couponDiscount', 'finalTotal'));
+        // Dynamic Tax & VAT Calculation via TaxEngineService
+        $taxEngine = app(\App\Services\TaxEngineService::class);
+        $taxResult = $taxEngine->calculateCartTax($cart, [
+            'country' => session('shipping_country', 'US'),
+            'state'   => session('shipping_state', 'CA'),
+            'zip'     => session('shipping_zip', '90210'),
+        ], Auth::user());
+
+        $taxAmount = $taxResult['total_tax'];
+        $taxBreakdown = $taxResult['tax_breakdown'];
+        $isTaxInclusive = $taxResult['is_inclusive'];
+
+        // If tax is exclusive, add to total
+        $finalTotal = max(0, $subtotal - $couponDiscount + ($isTaxInclusive ? 0 : $taxAmount));
+
+        return view('storefront.cart', compact(
+            'cart',
+            'savedForLater',
+            'subtotal',
+            'coupon',
+            'couponDiscount',
+            'taxAmount',
+            'taxBreakdown',
+            'isTaxInclusive',
+            'finalTotal'
+        ));
     }
 
     /**
@@ -632,7 +658,19 @@ class StorefrontController extends Controller
                 $couponDiscount = min($subtotal, (float)$coupon['value']);
             }
         }
-        $finalTotal = max(0, $subtotal - $couponDiscount);
+        // Dynamic Tax & VAT Calculation via TaxEngineService
+        $taxEngine = app(\App\Services\TaxEngineService::class);
+        $taxResult = $taxEngine->calculateCartTax($cart, [
+            'country' => session('shipping_country', 'US'),
+            'state'   => session('shipping_state', 'CA'),
+            'zip'     => session('shipping_zip', '90210'),
+        ], Auth::user());
+
+        $taxAmount = $taxResult['total_tax'];
+        $taxBreakdown = $taxResult['tax_breakdown'];
+        $isTaxInclusive = $taxResult['is_inclusive'];
+
+        $finalTotal = max(0, $subtotal - $couponDiscount + ($isTaxInclusive ? 0 : $taxAmount));
         $deliverySlots = DeliverySlot::where('is_active', true)->get();
 
         return view('storefront.checkout', compact(
@@ -642,6 +680,9 @@ class StorefrontController extends Controller
             'loyaltyPoints',
             'coupon',
             'couponDiscount',
+            'taxAmount',
+            'taxBreakdown',
+            'isTaxInclusive',
             'finalTotal',
             'deliverySlots'
         ));
@@ -690,7 +731,18 @@ class StorefrontController extends Controller
                 }
             }
 
-            $orderTotal = max(0, $subtotal - $couponDiscount);
+            // Dynamic Tax & VAT calculation on real address
+            $taxEngine = app(\App\Services\TaxEngineService::class);
+            $taxResult = $taxEngine->calculateCartTax($cart, [
+                'country' => $request->input('country', 'US'),
+                'state'   => $request->input('state', 'CA'),
+                'zip'     => $request->input('zip', '90210'),
+            ], Auth::user());
+
+            $taxAmount = $taxResult['total_tax'];
+            $isTaxInclusive = $taxResult['is_inclusive'];
+
+            $orderTotal = max(0, $subtotal - $couponDiscount + ($isTaxInclusive ? 0 : $taxAmount));
             $orderNumber = 'ORD-' . strtoupper(Str::random(10));
             $user = Auth::user();
 
@@ -714,6 +766,8 @@ class StorefrontController extends Controller
                 'order_number'        => $orderNumber,
                 'user_id'             => $user?->id,
                 'total_amount'        => $orderTotal,
+                'tax_amount'          => $taxAmount,
+                'tax_breakdown'       => $taxResult['tax_breakdown'],
                 'store_credit_amount' => $storeCreditUsed,
                 'delivery_slot_id'    => $request->delivery_slot_id,
                 'payment_method'      => $orderTotal == 0 ? 'store_credit' : $request->payment_method,

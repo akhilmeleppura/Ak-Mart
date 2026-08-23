@@ -35,8 +35,15 @@ class ApiController extends Controller
         $products = $query->paginate($perPage);
 
         return response()->json([
-            'status' => 'success',
-            'data'   => $products,
+            'success' => true,
+            'status'  => 'success',
+            'data'    => $products->items(),
+            'meta'    => [
+                'current_page' => $products->currentPage(),
+                'last_page'    => $products->lastPage(),
+                'per_page'     => $products->perPage(),
+                'total'        => $products->total(),
+            ],
         ]);
     }
 
@@ -47,8 +54,9 @@ class ApiController extends Controller
     {
         $categories = Category::where('is_active', true)->withCount('products')->get();
         return response()->json([
-            'status' => 'success',
-            'data'   => $categories,
+            'success' => true,
+            'status'  => 'success',
+            'data'    => $categories,
         ]);
     }
 
@@ -64,8 +72,9 @@ class ApiController extends Controller
         $availableStock = app(InventoryService::class)->getAvailableStock($product->id);
 
         return response()->json([
-            'status' => 'success',
-            'data'   => [
+            'success' => true,
+            'status'  => 'success',
+            'data'    => [
                 'product'         => $product,
                 'available_stock' => $availableStock,
             ]
@@ -81,6 +90,7 @@ class ApiController extends Controller
         $available = app(InventoryService::class)->getAvailableStock((int)$request->product_id);
 
         return response()->json([
+            'success'         => true,
             'status'          => 'success',
             'product_id'      => (int)$request->product_id,
             'available_stock' => $available,

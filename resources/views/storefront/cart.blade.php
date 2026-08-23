@@ -129,6 +129,21 @@
                         </div>
                     @endif
 
+                    <!-- VAT / Sales Tax Breakdown -->
+                    @if(isset($taxAmount) && $taxAmount > 0)
+                        <div class="d-flex justify-content-between mb-2 align-items-center">
+                            <span class="text-muted">
+                                <i class="bx bx-receipt text-primary me-1"></i>{{ __('Estimated VAT / Sales Tax') }}
+                                @if(!empty($isTaxInclusive))
+                                    <small class="text-muted">({{ __('Included in price') }})</small>
+                                @endif
+                            </span>
+                            <strong class="{{ !empty($isTaxInclusive) ? 'text-muted' : 'text-danger' }}">
+                                {{ !empty($isTaxInclusive) ? '' : '+' }}${{ number_format($taxAmount, 2) }}
+                            </strong>
+                        </div>
+                    @endif
+
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">{{ __('Estimated Delivery') }}</span>
                         <span class="text-success fw-bold">{{ __('FREE') }}</span>

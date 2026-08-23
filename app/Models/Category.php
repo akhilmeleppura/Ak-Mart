@@ -9,6 +9,8 @@ class Category extends Model
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use \App\Traits\BelongsToBranch;
 
+    protected $guarded = [];
+
     protected function casts(): array
     {
         return [

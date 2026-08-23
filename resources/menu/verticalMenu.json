@@ -77,6 +77,12 @@
       "slug": "app-store-filters"
     },
     {
+      "url": "ecommerce/settings/taxes",
+      "name": "Tax & VAT Rules",
+      "icon": "menu-icon icon-base bx bx-receipt",
+      "slug": "app-ecommerce-settings-taxes"
+    },
+    {
       "name": "Products & Catalog",
       "icon": "menu-icon icon-base bx bx-package",
       "slug": "app-ecommerce-product",

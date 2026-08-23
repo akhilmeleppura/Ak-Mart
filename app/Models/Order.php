@@ -11,23 +11,7 @@ class Order extends Model
     use HasFactory;
     use BelongsToBranch;
 
-    protected $fillable = [
-        'order_number',
-        'user_id',
-        'total_amount',
-        'payment_status',
-        'order_status',
-        'payment_method',
-        'shipping_address',
-        'billing_address',
-        'branch_id',
-        'delivery_slot_id',
-        'is_pickup',
-        'gift_card_code',
-        'gift_card_amount',
-        'store_credit_amount',
-        'driver_id',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

@@ -46,6 +46,61 @@
   </div>
 </div>
 
+@if(!empty($dailyBrief))
+<!-- 🤖 AI Daily Business Brief Card -->
+<div class="card shadow-xs border-0 mb-6 bg-light-subtle rounded-4 overflow-hidden border">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold">
+          <i class="bx bx-bot align-middle me-1"></i> {{ __('AI Daily Business Brief') }}
+        </span>
+        <span class="text-muted small"><i class="bx bx-calendar align-middle"></i> {{ $dailyBrief['date'] }}</span>
+      </div>
+      @if($dailyBrief['critical_skus_count'] > 0)
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-bold">
+          <i class="bx bx-error-alt align-middle me-1"></i> {{ $dailyBrief['critical_skus_count'] }} {{ __('SKUs Near Stockout (<5 Days Runway)') }}
+        </span>
+      @endif
+    </div>
+
+    <div class="row g-3 align-items-center">
+      <div class="col-lg-8">
+        <div class="p-3 bg-white rounded-3 border shadow-xs">
+          <p class="mb-2 fw-semibold text-heading fs-6">
+            <i class="bx bx-bulb text-warning me-1"></i> {{ $dailyBrief['ai_summary_text'] }}
+          </p>
+          <div class="d-flex flex-wrap gap-4 pt-2 border-top text-muted small">
+            <div>{{ __('Yesterday Revenue:') }} <strong class="text-dark">${{ number_format($dailyBrief['yesterday_sales'], 2) }}</strong></div>
+            <div>{{ __('Orders Processed:') }} <strong class="text-dark">{{ $dailyBrief['yesterday_orders'] }}</strong></div>
+            <div>{{ __('Average Order Value:') }} <strong class="text-dark">${{ number_format($dailyBrief['yesterday_aov'], 2) }}</strong></div>
+            <div>{{ __('Day-over-Day Trend:') }} 
+              <strong class="{{ $dailyBrief['sales_delta_pct'] >= 0 ? 'text-success' : 'text-danger' }}">
+                {{ $dailyBrief['sales_delta_pct'] >= 0 ? '+' : '' }}{{ $dailyBrief['sales_delta_pct'] }}%
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="p-3 bg-white rounded-3 border shadow-xs d-flex flex-column gap-2">
+          <div class="fw-bold small text-muted text-uppercase letter-spacing-1">{{ __('AI Quick Actions') }}</div>
+          <div class="d-flex gap-2">
+            <a href="{{ route('app-ecommerce-inventory') }}" class="btn btn-outline-warning btn-sm rounded-pill flex-grow-1">
+              <i class="bx bx-package me-1"></i> {{ __('Review Stock Risks') }}
+            </a>
+            <a href="{{ route('app-abandoned-carts') }}" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1">
+              <i class="bx bx-megaphone me-1"></i> {{ __('Run Campaign') }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
 <!-- Action Required Insight Cards -->
 <div class="row g-4 mb-6">
   @if(($lowStockCount ?? 0) > 0)
