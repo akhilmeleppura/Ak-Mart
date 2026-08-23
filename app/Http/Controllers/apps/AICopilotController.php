@@ -49,8 +49,59 @@ class AICopilotController extends Controller
 
         $lastMessage = strtolower(end($messages)['content'] ?? '');
 
-        // Localized Offline / Deterministic Responder
+        // 1. Anti-Prompt Injection & Security Guard
+        $security = \App\Services\Ai\PromptSecurityGuard::inspect($lastMessage);
+        if (!$security['safe']) {
+            return response()->json([
+                'success' => false,
+                'reply'   => '⚠️ Request denied: Potential prompt injection or unauthorized instruction detected.',
+                'response'=> '⚠️ Request denied: Potential prompt injection or unauthorized instruction detected.',
+            ], 400);
+        }
+
+        $toolManager = app(\App\Services\Ai\AiToolManager::class);
+
+        // Localized Offline / Deterministic Responder with Tools
         if ($aiMode === 'manual' || empty($apiKey)) {
+            // Profit & Margin Tools
+            if (str_contains($lastMessage, 'profit') || str_contains($lastMessage, 'margin')) {
+                $profit = $toolManager->getProfitReport('today');
+                $reply = "📊 **Profit & Margin Overview ($branchName)**:\n\n"
+                    . "• **Gross Revenue**: \${$profit['gross_revenue']}\n"
+                    . "• **Estimated COGS**: \${$profit['estimated_cogs']}\n"
+                    . "• **Operating Expenses**: \${$profit['operating_expenses']}\n"
+                    . "• **Net Profit**: \${$profit['net_profit']} ({$profit['profit_margin_pct']}% margin)";
+                return response()->json(['success' => true, 'reply' => $reply, 'response' => $reply]);
+            }
+
+            // Branch Ranking Tool
+            if (str_contains($lastMessage, 'branch') && (str_contains($lastMessage, 'highest') || str_contains($lastMessage, 'best') || str_contains($lastMessage, 'rank'))) {
+                $branches = $toolManager->getBranchRanking()['branches'];
+                $lines = ["🏢 **Branch Performance Ranking**:\n"];
+                foreach ($branches as $idx => $b) {
+                    $rank = $idx + 1;
+                    $lines[] = "{$rank}. **{$b['branch_name']}**: \$" . number_format($b['total_sales'], 2) . " ({$b['order_count']} orders)";
+                }
+                $reply = implode("\n", $lines);
+                return response()->json(['success' => true, 'reply' => $reply, 'response' => $reply]);
+            }
+
+            // Customer Lookup Tool
+            if (preg_match('/customer\s+([A-Za-z0-9@._-]+)/i', $lastMessage, $cm)) {
+                $cust = $toolManager->getCustomerSummary($cm[1]);
+                if ($cust['found']) {
+                    $reply = "👤 **Customer Summary: {$cust['name']}**\n\n"
+                        . "• **Email**: {$cust['email']}\n"
+                        . "• **Total Spent**: {$cust['spent_formatted']} ({$cust['orders_count']} orders)\n"
+                        . "• **Wallet Balance**: \${$cust['wallet_balance']}\n"
+                        . "• **Loyalty Points**: {$cust['loyalty_points']} pts\n"
+                        . "• **Member Since**: {$cust['member_since']}";
+                } else {
+                    $reply = "🔍 {$cust['message']}";
+                }
+                return response()->json(['success' => true, 'reply' => $reply, 'response' => $reply]);
+            }
+
             if ($locale === 'ml') {
                 if (str_contains($lastMessage, 'stock') || str_contains($lastMessage, 'inventory') || str_contains($lastMessage, 'സ്റ്റോക്ക്')) {
                     $reply = "⚠ **സ്റ്റോക്ക് റിപ്പോർട്ട് ($branchName)**:\n\n- കുറഞ്ഞ സ്റ്റോക്ക് (< 10): $lowStock\n- സ്റ്റോക്ക് തീർന്നവ: $outOfStock\n\n💡 കൂടുതൽ വിവരങ്ങൾക്ക് **സ്റ്റോക്കും ഇൻവെന്ററിയും** പരിശോധിക്കുക.";
