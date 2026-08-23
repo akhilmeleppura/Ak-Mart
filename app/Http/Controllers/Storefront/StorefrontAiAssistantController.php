@@ -124,7 +124,22 @@ class StorefrontAiAssistantController extends Controller
             return response()->json(['success' => true, 'reply' => $reply]);
         }
 
-        // 6. Store Policy Intents
+        // 6. Recommendation Intents: Trending / Popular
+        if (str_contains($lower, 'trending') || str_contains($lower, 'popular') || str_contains($lower, 'best seller')) {
+            $recService = app(\App\Services\Ai\RecommendationEngineService::class);
+            $trending = $recService->getTrendingProducts(4);
+            if ($trending->count() > 0) {
+                $lines = ["🔥 **Trending & Popular Right Now:**\n"];
+                foreach ($trending as $p) {
+                    $rating = $p->rating_cache ? "({$p->rating_cache} ★)" : '';
+                    $lines[] = "• **{$p->name}** — \${$p->price} {$rating} [View Product](/store/product/{$p->slug})";
+                }
+                $lines[] = "\n💡 Order today while stocks last!";
+                return response()->json(['success' => true, 'reply' => implode("\n", $lines)]);
+            }
+        }
+
+        // 7. Store Policy Intents
         if (str_contains($lower, 'return') || str_contains($lower, 'refund')) {
             return response()->json(['success' => true, 'reply' => $toolManager->getStorePolicy('returns')]);
         }
@@ -135,7 +150,7 @@ class StorefrontAiAssistantController extends Controller
             return response()->json(['success' => true, 'reply' => $toolManager->getStorePolicy('payment')]);
         }
 
-        // 7. Product Search & Shopping Recommendations
+        // 8. Product Search & Shopping Recommendations
         $products = $searchService->search($message, 4);
 
         if ($products->count() > 0) {
