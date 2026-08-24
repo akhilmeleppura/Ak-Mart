@@ -148,3 +148,394 @@ body {
 [data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
     background: #475569;
 }
+
+/* ==========================================================================
+   AK-MART UPGRADE DESIGN SYSTEM: Search, Select2, Calendars, & DataTables
+   ========================================================================== */
+
+/* 1. Modern Form Controls & Search Inputs */
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.55rem 0.95rem;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #0F172A;
+    background-color: #FFFFFF;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.15);
+    background-color: #FFFFFF;
+}
+
+.input-group-merge .form-control {
+    border-radius: 10px;
+}
+
+.input-group-text {
+    border-radius: 10px;
+    border: 1.5px solid #E2E8F0;
+    background-color: #F8FAFC;
+    color: #64748B;
+}
+
+/* Search Bar Toggler in Navbar */
+.navbar-search-wrapper {
+    min-width: 260px;
+}
+
+.navbar-search-wrapper .search-toggler {
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 25px;
+    padding: 7px 18px !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748B;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.navbar-search-wrapper .search-toggler:hover {
+    background: #FFFFFF;
+    border-color: #6366F1;
+    color: #4F46E5;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+}
+
+/* 2. Select2 Modern Styling */
+.select2-container--default .select2-selection--single {
+    height: 42px !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 10px !important;
+    padding: 6px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    background-color: #FFFFFF !important;
+    transition: all 0.2s ease;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default .select2-selection--single:focus {
+    border-color: #6366F1 !important;
+    box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.15) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #0F172A !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    padding-left: 0 !important;
+    line-height: normal !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
+    right: 8px !important;
+}
+
+.select2-dropdown {
+    border-radius: 14px !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.15) !important;
+    overflow: hidden !important;
+    padding: 6px !important;
+    background: #FFFFFF !important;
+    z-index: 1060 !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    padding: 7px 12px !important;
+    font-size: 13px !important;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: #6366F1 !important;
+    outline: none !important;
+}
+
+.select2-results__option {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    margin-bottom: 2px !important;
+    color: #334155 !important;
+    transition: all 0.15s ease;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background: #EEF2FF !important;
+    color: #4F46E5 !important;
+    font-weight: 600 !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background: #4F46E5 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* 3. Flatpickr Modern Calendar & Date Range Pickers */
+.flatpickr-calendar {
+    border-radius: 20px !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.16) !important;
+    padding: 12px !important;
+    background: #FFFFFF !important;
+    font-family: inherit !important;
+}
+
+.flatpickr-calendar:before,
+.flatpickr-calendar:after {
+    display: none !important;
+}
+
+.flatpickr-months {
+    margin-bottom: 8px !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    height: 38px !important;
+}
+
+.flatpickr-current-month {
+    font-size: 14.5px !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    padding-top: 4px !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: #EEF2FF !important;
+    color: #4F46E5 !important;
+}
+
+span.flatpickr-weekday {
+    font-weight: 700 !important;
+    font-size: 11.5px !important;
+    color: #64748B !important;
+    text-transform: uppercase !important;
+}
+
+.flatpickr-day {
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    transition: all 0.15s ease !important;
+    margin: 2px 0 !important;
+}
+
+.flatpickr-day:hover {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+}
+
+.flatpickr-day.today {
+    border: 1.5px solid #6366F1 !important;
+    color: #4F46E5 !important;
+    font-weight: 800 !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%) !important;
+    border-color: transparent !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #4338CA !important;
+    border-color: transparent !important;
+    box-shadow: -5px 0 0 rgba(99, 102, 241, 0.12), 5px 0 0 rgba(99, 102, 241, 0.12) !important;
+}
+
+/* 4. Modern Listings, DataTables, & Action Bars */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #F8FAFC !important;
+    color: #475569 !important;
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 13px 18px !important;
+    border-bottom: 1.5px solid #E2E8F0 !important;
+}
+
+.table tbody td {
+    padding: 13px 18px !important;
+    vertical-align: middle !important;
+    font-size: 13.5px !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    color: #1E293B;
+}
+
+.table tbody tr {
+    transition: background-color 0.18s ease;
+}
+
+.table-hover tbody tr:hover td {
+    background-color: #F8FAFC !important;
+}
+
+/* Modern Pagination Pills */
+.pagination {
+    gap: 4px;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 10px !important;
+    font-weight: 600;
+    font-size: 13px;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-item .page-link:hover {
+    background: #EEF2FF;
+    border-color: #C7D2FE;
+    color: #4F46E5;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%) !important;
+    border-color: transparent !important;
+    color: #FFFFFF !important;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #F8FAFC;
+    color: #94A3B8;
+    border-color: #E2E8F0;
+}
+
+/* 5. Modern Button Highlights & Action Badges */
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 0.55rem 1.15rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.btn-label-primary {
+    background: #EEF2FF !important;
+    color: #4F46E5 !important;
+    border: 1px solid #C7D2FE !important;
+}
+
+.btn-label-primary:hover {
+    background: #4F46E5 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-label-secondary {
+    background: #F1F5F9 !important;
+    color: #475569 !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+.btn-label-secondary:hover {
+    background: #E2E8F0 !important;
+    color: #1E293B !important;
+}
+
+.btn-label-success {
+    background: #ECFDF5 !important;
+    color: #059669 !important;
+    border: 1px solid #A7F3D0 !important;
+}
+
+.btn-label-success:hover {
+    background: #059669 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-label-danger {
+    background: #FEF2F2 !important;
+    color: #DC2626 !important;
+    border: 1px solid #FECACA !important;
+}
+
+.btn-label-danger:hover {
+    background: #DC2626 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-label-warning {
+    background: #FFFBEB !important;
+    color: #D97706 !important;
+    border: 1px solid #FDE68A !important;
+}
+
+.btn-label-warning:hover {
+    background: #D97706 !important;
+    color: #FFFFFF !important;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.badge {
+    padding: 5px 11px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+}
+
