@@ -715,37 +715,37 @@
     </header>
 
     <!-- Sub-Navbar: Colorful Aisle Chips -->
-    <nav class="bg-white border-bottom py-2.5 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98);">
-        <div class="container d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{{ route('storefront.home') }}" class="category-chip-link {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
+    <nav class="bg-white border-bottom py-2 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1010;">
+        <div class="container d-flex align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2 flex-nowrap overflow-x-auto pb-1 flex-grow-1" style="scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;">
+                <a href="{{ route('storefront.home') }}" class="category-chip-link flex-shrink-0 {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
                     <i class="bx bx-home-alt text-primary"></i> {{ __('Home') }}
                 </a>
-                <a href="{{ route('storefront.shop') }}" class="category-chip-link {{ request()->routeIs('storefront.shop') && !request('category') ? 'active' : '' }}">
+                <a href="{{ route('storefront.shop') }}" class="category-chip-link flex-shrink-0 {{ request()->routeIs('storefront.shop') && !request('category') ? 'active' : '' }}">
                     <i class="bx bx-grid-alt text-primary"></i> {{ __('All Catalog') }}
                 </a>
-                <a href="{{ route('storefront.buy_again') }}" class="category-chip-link text-primary fw-bold" style="background: #EEF2FF; border-color: #C7D2FE;">
+                <a href="{{ route('storefront.buy_again') }}" class="category-chip-link flex-shrink-0 text-primary fw-bold" style="background: #EEF2FF; border-color: #C7D2FE;">
                     <i class="bx bx-repeat"></i> {{ __('Buy Again') }}
                 </a>
-                <a href="{{ route('storefront.referral') }}" class="category-chip-link text-success fw-bold" style="background: #ECFDF5; border-color: #A7F3D0;">
+                <a href="{{ route('storefront.referral') }}" class="category-chip-link flex-shrink-0 text-success fw-bold" style="background: #ECFDF5; border-color: #A7F3D0;">
                     <i class="bx bx-gift"></i> {{ __('Refer & Earn $10') }}
                 </a>
-                <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="category-chip-link {{ request('category') == 1 ? 'active' : '' }}">
+                <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 1 ? 'active' : '' }}">
                     🍎 {{ __('Groceries') }}
                 </a>
-                <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="category-chip-link {{ request('category') == 2 ? 'active' : '' }}">
+                <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 2 ? 'active' : '' }}">
                     🥤 {{ __('Beverages') }}
                 </a>
-                <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="category-chip-link {{ request('category') == 3 ? 'active' : '' }}">
+                <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 3 ? 'active' : '' }}">
                     🧀 {{ __('Dairy & Eggs') }}
                 </a>
-                <a href="{{ route('storefront.shop', ['category' => 4]) }}" class="category-chip-link {{ request('category') == 4 ? 'active' : '' }}">
+                <a href="{{ route('storefront.shop', ['category' => 4]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 4 ? 'active' : '' }}">
                     🥐 {{ __('Fresh Bakery') }}
                 </a>
             </div>
-            <div>
-                <a href="{{ route('dashboard') }}" class="badge rounded-pill text-decoration-none px-3 py-2 fw-bold" style="background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;">
-                    <i class="bx bx-slider me-1"></i>{{ __('Admin Portal') }}
+            <div class="flex-shrink-0">
+                <a href="{{ route('dashboard') }}" class="badge rounded-pill text-decoration-none px-3.5 py-2 fw-bold d-inline-flex align-items-center gap-1.5 transition-all" style="background: #F1F5F9; color: #334155; border: 1.5px solid #CBD5E1; font-size: 12px;">
+                    <i class="bx bx-slider fs-6 text-primary"></i><span>{{ __('Admin Portal') }}</span>
                 </a>
             </div>
         </div>

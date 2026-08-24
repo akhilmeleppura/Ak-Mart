@@ -79,6 +79,60 @@
         transform: translateY(-3px);
         box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.06);
     }
+    /* Hero Carousel Sleek Glassmorphism Controls */
+    #heroCarousel .carousel-control-prev,
+    #heroCarousel .carousel-control-next {
+        width: 46px;
+        height: 46px;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.85;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 15;
+    }
+    #heroCarousel .carousel-control-prev {
+        left: 18px;
+    }
+    #heroCarousel .carousel-control-next {
+        right: 18px;
+    }
+    #heroCarousel .carousel-control-prev:hover,
+    #heroCarousel .carousel-control-next:hover {
+        background: rgba(79, 70, 229, 0.9);
+        border-color: #FFFFFF;
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+    .hero-slide-container {
+        padding: 48px 60px;
+    }
+    @media (max-width: 768px) {
+        .hero-slide-container {
+            padding: 32px 20px;
+        }
+        #heroCarousel .carousel-control-prev,
+        #heroCarousel .carousel-control-next {
+            display: none;
+        }
+    }
+    .hero-mascot-glow {
+        max-height: 280px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        padding: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        transition: transform 0.4s ease;
+    }
+    .hero-mascot-glow:hover {
+        transform: translateY(-4px) scale(1.03);
+    }
 </style>
 @endsection
 
@@ -87,7 +141,7 @@
 
     <!-- Hero Slider Carousel with High-Impact Visuals -->
     @if($heroSliders->isNotEmpty())
-        <div id="heroCarousel" class="carousel slide mb-5 rounded-5 overflow-hidden shadow-lg" data-bs-ride="carousel">
+        <div id="heroCarousel" class="carousel slide mb-5 rounded-5 overflow-hidden shadow-lg position-relative" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 @foreach($heroSliders as $idx => $slide)
                     <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $idx }}" class="{{ $idx === 0 ? 'active' : '' }}" aria-current="{{ $idx === 0 ? 'true' : 'false' }}"></button>
@@ -96,7 +150,7 @@
             <div class="carousel-inner">
                 @foreach($heroSliders as $idx => $slide)
                     <div class="carousel-item {{ $idx === 0 ? 'active' : '' }}" style="background: {{ $slide->bg_color ?: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%)' }}; min-height: 420px;">
-                        <div class="container p-5 text-white">
+                        <div class="hero-slide-container text-white">
                             <div class="row align-items-center py-3">
                                 <div class="col-lg-7">
                                     <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill mb-3 fw-bold shadow-xs">
@@ -114,7 +168,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-5 text-center d-none d-lg-block position-relative">
-                                    <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart Mascot" class="img-fluid drop-shadow" style="max-height: 300px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));" onerror="this.style.display='none'">
+                                    <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart Mascot" class="img-fluid hero-mascot-glow" onerror="this.style.display='none'">
                                 </div>
                             </div>
                         </div>
@@ -122,11 +176,11 @@
                 @endforeach
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <i class="bx bx-chevron-left fs-3 text-white"></i>
                 <span class="visually-hidden">{{ __('Previous') }}</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <i class="bx bx-chevron-right fs-3 text-white"></i>
                 <span class="visually-hidden">{{ __('Next') }}</span>
             </button>
         </div>
