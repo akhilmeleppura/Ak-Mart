@@ -1228,6 +1228,38 @@ class StorefrontController extends Controller
 
         return view('storefront.referral', compact('user', 'referralLink', 'referredUsers', 'earnedCredits'));
     }
+
+    /**
+     * Virtual Payment Simulator: Generate realistic test virtual card
+     */
+    public function generateVirtualCard(Request $request)
+    {
+        $brand = $request->query('brand', 'visa');
+        $card = \App\Services\Payment\VirtualPaymentSimulatorService::generateVirtualCard($brand);
+        return response()->json(['success' => true, 'card' => $card]);
+    }
+
+    /**
+     * Virtual Payment Simulator: Generate realistic test UPI & virtual phone
+     */
+    public function generateVirtualUpi(Request $request)
+    {
+        $upi = \App\Services\Payment\VirtualPaymentSimulatorService::generateVirtualUpi();
+        return response()->json(['success' => true, 'upi' => $upi]);
+    }
+
+    /**
+     * Virtual Payment Simulator: Verify 3D Secure Test OTP
+     */
+    public function verifyPaymentOtp(Request $request)
+    {
+        $otp = $request->input('otp', '');
+        $isValid = \App\Services\Payment\VirtualPaymentSimulatorService::verifyOtp($otp);
+        return response()->json([
+            'success' => $isValid,
+            'message' => $isValid ? 'Payment Verified Successfully!' : 'Invalid OTP. Enter test code 123456'
+        ]);
+    }
 }
 
 

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(BranchSessionMiddleware::class);
         $middleware->validateCsrfTokens(except: [
             '/store/ai-assistant/chat',
+            '/store/sandbox/*',
             'api/*',
             'webhook/*',
         ]);
