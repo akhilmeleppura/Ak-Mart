@@ -778,11 +778,17 @@
         <div class="container">
             <div class="row g-4 mb-5">
                 <div class="col-lg-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <div class="p-2 rounded-3 bg-primary bg-opacity-20 text-primary">
-                            <i class="bx bx-store-alt fs-4"></i>
+                    <div class="d-flex align-items-center gap-2.5 mb-3">
+                        <div class="store-logo-wrapper" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                            <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart" class="store-logo-img" onerror="this.src='{{ asset('images/brand/ak-mart-logo.svg') }}'">
                         </div>
-                        <h4 class="text-white fw-bold mb-0">AK-Mart</h4>
+                        <div class="d-flex flex-column justify-content-center">
+                            <div class="d-flex align-items-center gap-1.5">
+                                <span class="store-brand-title text-white">AK<span class="text-primary">-Mart</span></span>
+                                <span class="store-brand-badge">{{ __('SMART') }}</span>
+                            </div>
+                            <span class="store-brand-tagline text-muted">{{ __('ONLINE SUPERMARKET') }}</span>
+                        </div>
                     </div>
                     <p class="text-muted small mb-3">{{ __('Smart Management for Modern Stores. Automated mini-mart inventory, real-time POS checkouts, and express online delivery.') }}</p>
                     <p class="small text-muted mb-0">&copy; {{ date('Y') }} AK-Mart. {{ __('Built with pride by Akhil Meleppura.') }}</p>
