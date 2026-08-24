@@ -113,7 +113,7 @@ use Illuminate\Support\Facades\Route;
     <li class="nav-item dropdown me-2 me-xl-0">
       @if($canSwitch && $accessibleBranches->count() > 1)
         <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-          <i class="icon-base bx bx-store icon-md text-primary"></i>
+          <i class="icon-base bx bx-git-branch icon-md text-primary"></i>
           <span class="d-none d-md-inline-block ms-1 fw-medium">{{ App\Models\Branch\Branch::find($currentBranchId)?->name ?? __('Select Branch') }}</span>
           <i class="icon-base bx bx-chevron-down icon-xs ms-1 text-muted"></i>
         </a>
@@ -122,7 +122,7 @@ use Illuminate\Support\Facades\Route;
           @foreach($accessibleBranches as $branch)
           <li>
             <a class="dropdown-item d-flex align-items-center justify-content-between {{ $currentBranchId == $branch->id ? 'active' : '' }}" href="{{ route('branch-swap', $branch->id) }}">
-              <span><i class="icon-base bx bx-buildings me-2"></i>{{ $branch->name }}</span>
+              <span><i class="icon-base bx bx-git-branch me-2 text-primary"></i>{{ $branch->name }}</span>
               @if($currentBranchId == $branch->id)
                 <i class="icon-base bx bx-check text-success"></i>
               @endif
@@ -132,7 +132,7 @@ use Illuminate\Support\Facades\Route;
         </ul>
       @else
         <div class="nav-link d-flex align-items-center px-2 py-1 bg-label-secondary rounded">
-          <i class="icon-base bx bx-store icon-sm text-secondary me-1"></i>
+          <i class="icon-base bx bx-git-branch icon-sm text-secondary me-1"></i>
           <span class="d-none d-md-inline-block small fw-semibold text-truncate" style="max-width: 150px;">
             {{ App\Models\Branch\Branch::find($currentBranchId)?->name ?? __('Main Store') }}
           </span>

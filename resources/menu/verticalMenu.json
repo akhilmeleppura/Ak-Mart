@@ -29,7 +29,7 @@
     {
       "url": "store",
       "name": "Live Customer Store",
-      "icon": "menu-icon icon-base bx bx-store-alt",
+      "icon": "menu-icon icon-base bx bx-globe",
       "slug": "app-storefront-live",
       "target": "_blank"
     },
@@ -322,7 +322,7 @@
     },
     {
       "name": "Finance & Cash Desk",
-      "icon": "menu-icon icon-base bx bx-receipt",
+      "icon": "menu-icon icon-base bx bx-wallet-alt",
       "slug": "app-expenses-nav",
       "submenu": [
         {
@@ -349,7 +349,7 @@
     },
     {
       "name": "Vendor Operations",
-      "icon": "menu-icon icon-base bx bx-store",
+      "icon": "menu-icon icon-base bx bx-storefront",
       "slug": "app-vendor-operations",
       "submenu": [
         {
