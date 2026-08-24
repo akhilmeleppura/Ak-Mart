@@ -28,13 +28,21 @@ class OtpController extends Controller
         }
 
         $identifier = $request->session()->get('otp_pending_identifier');
+        $userId     = $request->session()->get('otp_pending_user_id');
+        $user       = $userId ? User::find($userId) : null;
         $record     = $this->otpService->getActiveRecord($identifier, 'LOGIN');
+
+        $userName   = $user?->name ?? 'AK-Mart User';
+        $userPhone  = $user?->phone ?? $identifier;
 
         $pageConfigs = ['myLayout' => 'blank'];
 
         return view('auth.verify-otp', [
             'pageConfigs'   => $pageConfigs,
             'identifier'    => $identifier,
+            'user'          => $user,
+            'userName'      => $userName,
+            'userPhone'     => $userPhone,
             'secondsLeft'   => $record?->secondsUntilResend(config('otp.resend_cooldown', 60)) ?? 0,
             'resendCount'   => $record?->resend_count ?? 0,
             'maxResends'    => config('otp.max_resends', 3),

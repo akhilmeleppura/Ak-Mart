@@ -216,10 +216,12 @@
         <i class="bx bx-mobile-alt"></i>
     </div>
 
-    <h2 class="otp-title">{{ __('Enter 6-Digit Code') }}</h2>
-    <p class="otp-subtitle">
-        {{ __('We sent a verification code to') }}<br>
-        <strong>{{ $identifier }}</strong>
+    <h2 class="otp-title">{{ __('Welcome Back,') }} {{ $userName ?? 'User' }} 👋</h2>
+    <p class="otp-subtitle mb-3">
+        {{ __('We sent a 6-digit verification code to your registered mobile number') }}<br>
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1.5 rounded-pill fw-bold font-monospace mt-1" style="font-size: 13.5px;">
+            <i class="bx bx-phone me-1"></i> {{ $userPhone ?? $identifier }}
+        </span>
     </p>
 
     {{-- Realistic SMS Floating Notification Banner --}}
@@ -229,7 +231,7 @@
                 <div class="d-flex align-items-center gap-2.5">
                     <span class="fs-3">📲</span>
                     <div>
-                        <strong class="d-block text-dark" style="font-size: 12.5px;">SMS Notification • Just Now</strong>
+                        <strong class="d-block text-dark" style="font-size: 12.5px;">SMS Alert to {{ $userName ?? 'User' }} • Just Now</strong>
                         <span class="small text-muted">Your Login OTP is <strong class="text-primary font-monospace fs-6">{{ $demoOtp }}</strong></span>
                     </div>
                 </div>
