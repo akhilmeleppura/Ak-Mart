@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->web(LocaleMiddleware::class);
         $middleware->web(BranchSessionMiddleware::class);
+        $middleware->validateCsrfTokens(except: [
+            '/store/ai-assistant/chat',
+            'api/*',
+            'webhook/*',
+        ]);
         $middleware->redirectTo(
             guests: '/login',
             users: '/dashboard'
