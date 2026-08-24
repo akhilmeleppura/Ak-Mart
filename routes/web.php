@@ -540,6 +540,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Management
         Route::get('/reviews', [EcommerceManageReviews::class, 'index'])->name('app-ecommerce-manage-reviews');
         Route::get('/app/ecommerce/manage/reviews', [EcommerceManageReviews::class, 'index']);
+        Route::post('/reviews', [EcommerceManageReviews::class, 'store'])->name('app-ecommerce-manage-reviews.store');
+        Route::put('/reviews/{id}', [EcommerceManageReviews::class, 'update'])->name('app-ecommerce-manage-reviews.update');
+        Route::delete('/reviews/{id}', [EcommerceManageReviews::class, 'destroy'])->name('app-ecommerce-manage-reviews.destroy');
         Route::get('/referrals', [EcommerceReferrals::class, 'index'])->name('app-ecommerce-referrals');
         Route::get('/app/ecommerce/referrals', [EcommerceReferrals::class, 'index']);
         
