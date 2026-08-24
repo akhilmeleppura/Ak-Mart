@@ -121,7 +121,7 @@
       "slug": "app-inventory-group",
       "submenu": [
         {
-          "url": "vendor/inventory",
+          "url": "inventory",
           "name": "Stock Level Overview",
           "slug": "app-vendor-inventory"
         },
@@ -178,7 +178,7 @@
           "slug": "app-fulfillment"
         },
         {
-          "url": "vendor/returns",
+          "url": "returns",
           "name": "Returns & Refunds",
           "slug": "app-vendor-returns"
         },
@@ -314,7 +314,7 @@
           "slug": "app-ecommerce-manage-reviews"
         },
         {
-          "url": "vendor/support",
+          "url": "support",
           "name": "Support Tickets",
           "slug": "app-vendor-support"
         }
@@ -473,7 +473,7 @@
       "slug": "app-user-access",
       "submenu": [
         {
-          "url": "admin/users/list",
+          "url": "admin/users",
           "name": "User Management",
           "slug": "laravel-example-user-management"
         },

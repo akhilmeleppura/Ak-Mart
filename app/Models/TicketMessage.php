@@ -12,4 +12,9 @@ class TicketMessage extends Model
     {
         return $this->belongsTo(SupportTicket::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

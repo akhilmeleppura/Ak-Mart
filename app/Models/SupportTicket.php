@@ -12,4 +12,19 @@ class SupportTicket extends Model
     {
         return $this->hasMany(TicketMessage::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(\App\Models\Branch\Branch::class);
+    }
 }

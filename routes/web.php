@@ -331,6 +331,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/payment-settings', [\App\Http\Controllers\apps\Vendor\PaymentSettingsController::class, 'store'])->name('app-vendor-payment-settings-save');
     });
 
+    // Clean Root Route Aliases for Returns & Support
+    Route::get('/returns', [\App\Http\Controllers\apps\Vendor\ReturnRequestController::class, 'index']);
+    Route::post('/returns/{returnRequest}', [\App\Http\Controllers\apps\Vendor\ReturnRequestController::class, 'updateStatus']);
+    Route::get('/support', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'index']);
+    Route::get('/support/{ticket}', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'show']);
+    Route::post('/support/{ticket}/reply', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'reply']);
+    Route::post('/support/{ticket}/status', [\App\Http\Controllers\apps\Vendor\SupportTicketController::class, 'updateStatus']);
+
     Route::post('/app/vendor/pos/checkout', [\App\Http\Controllers\apps\Vendor\PosController::class, 'checkout']);
 
     // Catalog Scanner & Duplicate Detection
