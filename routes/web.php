@@ -144,6 +144,7 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::get('/returns', [\App\Http\Controllers\Storefront\StorefrontController::class, 'returns'])->name('returns');
     Route::post('/returns/submit', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReturn'])->name('returns.submit');
     Route::post('/product/{id}/price-drop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'setPriceAlert'])->name('product.price_drop');
+    Route::get('/referral', [\App\Http\Controllers\Storefront\StorefrontController::class, 'referralProgram'])->name('referral');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::post('/ai-assistant/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai.chat');
     
