@@ -333,9 +333,11 @@
           </div>
 
           <!-- Quick Fill Demo Accounts -->
-          <div class="mb-3 p-2.5 bg-light rounded-3 border">
-            <div class="d-flex justify-content-between align-items-center mb-1.5">
-              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Quick 1-Click Access:') }}</small>
+          <div class="mb-3 p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="fw-bold text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                <i class="bx bx-user-check me-1 text-primary"></i>{{ __('Quick 1-Click Access:') }}
+              </small>
               <span class="badge bg-warning text-dark fw-bold px-2 py-0.5" style="font-size: 0.68rem;"><i class="bx bxs-crown me-1"></i>{{ __('Demo') }}</span>
             </div>
             <div class="d-flex flex-wrap gap-1.5">
@@ -350,6 +352,9 @@
               </span>
               <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('cashier@ak-mart.com', 'password')">
                 <i class="bx bx-terminal text-success me-1 fs-6"></i> {{ __('Cashier') }}
+              </span>
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('customer@example.com', 'password')">
+                <i class="bx bx-user text-secondary me-1 fs-6"></i> {{ __('Customer') }}
               </span>
             </div>
           </div>

@@ -132,7 +132,9 @@ class LoginBasic extends Controller
             'otp_session_token'      => $record->session_token,
         ]);
 
-        return redirect()->route('auth.otp.show')->with('status', __('A 6-digit verification code has been sent to :email', ['email' => $identifier]));
+        return redirect()->route('auth.otp.show')
+            ->with('status', __('A 6-digit verification code has been sent to :email', ['email' => $identifier]))
+            ->with('demo_plain_otp', $plainOtp);
     }
 }
 
