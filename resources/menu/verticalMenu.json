@@ -27,31 +27,6 @@
       "slug": "app-vendor-pos"
     },
     {
-      "name": "AI & Chat Hub",
-      "icon": "menu-icon icon-base bx bx-bot",
-      "slug": "app-ai-hub-nav",
-      "submenu": [
-        {
-          "url": "settings/ai",
-          "name": "AI Copilot & Settings",
-          "slug": "app-ecommerce-settings-ai"
-        },
-        {
-          "url": "chat",
-          "name": "Live Chat & Support",
-          "slug": "app-chat"
-        },
-        {
-          "url": "calendar",
-          "name": "Appointments Calendar",
-          "slug": "app-calendar"
-        }
-      ]
-    },
-    {
-      "menuHeader": "Store Management"
-    },
-    {
       "url": "store",
       "name": "Live Customer Store",
       "icon": "menu-icon icon-base bx bx-store-alt",
@@ -59,31 +34,10 @@
       "target": "_blank"
     },
     {
-      "url": "store-management/sliders",
-      "name": "Hero Sliders & Banners",
-      "icon": "menu-icon icon-base bx bx-carousel",
-      "slug": "app-sliders"
+      "menuHeader": "Catalog & Merchandising"
     },
     {
-      "url": "store-management/merchandising",
-      "name": "Merchandising Board",
-      "icon": "menu-icon icon-base bx bx-star",
-      "slug": "app-merchandising"
-    },
-    {
-      "url": "store-management/filters",
-      "name": "Advanced Filters & Facets",
-      "icon": "menu-icon icon-base bx bx-slider-alt",
-      "slug": "app-store-filters"
-    },
-    {
-      "url": "ecommerce/settings/taxes",
-      "name": "Tax & VAT Rules",
-      "icon": "menu-icon icon-base bx bx-receipt",
-      "slug": "app-ecommerce-settings-taxes"
-    },
-    {
-      "name": "Products & Catalog",
+      "name": "Products & Attributes",
       "icon": "menu-icon icon-base bx bx-package",
       "slug": "app-ecommerce-product",
       "submenu": [
@@ -96,16 +50,6 @@
           "url": "products/create",
           "name": "Add Product",
           "slug": "app-ecommerce-product-add"
-        },
-        {
-          "url": "products/categories",
-          "name": "Category List",
-          "slug": "app-ecommerce-product-category"
-        },
-        {
-          "url": "products/categories/tree",
-          "name": "Category Visual Tree",
-          "slug": "app-ecommerce-category-tree"
         },
         {
           "url": "products/attributes",
@@ -126,10 +70,59 @@
           "url": "catalog/importer",
           "name": "Smart Product Importer",
           "slug": "app-product-importer"
+        }
+      ]
+    },
+    {
+      "name": "Category Management",
+      "icon": "menu-icon icon-base bx bx-category",
+      "slug": "app-ecommerce-category-group",
+      "submenu": [
+        {
+          "url": "products/categories",
+          "name": "Category List",
+          "slug": "app-ecommerce-product-category"
         },
         {
+          "url": "products/categories/tree",
+          "name": "Visual Tree (Drag & Drop)",
+          "slug": "app-ecommerce-category-tree"
+        }
+      ]
+    },
+    {
+      "name": "Merchandising & Layout",
+      "icon": "menu-icon icon-base bx bx-carousel",
+      "slug": "app-store-merchandising-group",
+      "submenu": [
+        {
+          "url": "store-management/sliders",
+          "name": "Hero Sliders & Banners",
+          "slug": "app-sliders"
+        },
+        {
+          "url": "store-management/merchandising",
+          "name": "Merchandising Board",
+          "slug": "app-merchandising"
+        },
+        {
+          "url": "store-management/filters",
+          "name": "Advanced Filters & Facets",
+          "slug": "app-store-filters"
+        }
+      ]
+    },
+    {
+      "menuHeader": "Inventory & Procurement"
+    },
+    {
+      "name": "Inventory & Warehouses",
+      "icon": "menu-icon icon-base bx bx-buildings",
+      "slug": "app-inventory-group",
+      "submenu": [
+        {
           "url": "vendor/inventory",
-          "name": "Inventory & Stock",
+          "name": "Stock Level Overview",
           "slug": "app-vendor-inventory"
         },
         {
@@ -144,12 +137,19 @@
         },
         {
           "url": "inventory/abc-analysis",
-          "name": "ABC & Dead Stock",
+          "name": "ABC & Dead Stock Analysis",
           "slug": "app-inventory-abc"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Suppliers & Purchasing",
+      "icon": "menu-icon icon-base bx bx-cart-download",
+      "slug": "app-purchasing-group",
+      "submenu": [
         {
           "url": "suppliers",
-          "name": "Suppliers",
+          "name": "Supplier Directory",
           "slug": "app-suppliers"
         },
         {
@@ -160,7 +160,10 @@
       ]
     },
     {
-      "name": "Sales & Fulfillment",
+      "menuHeader": "Sales & Fulfillment"
+    },
+    {
+      "name": "Orders & Shipping",
       "icon": "menu-icon icon-base bx bx-cart-alt",
       "slug": "app-ecommerce-sales",
       "submenu": [
@@ -181,43 +184,8 @@
         },
         {
           "url": "logistics/shipping",
-          "name": "Shipping Methods",
+          "name": "Shipping Methods & Rates",
           "slug": "app-logistics-shipping"
-        },
-        {
-          "url": "coupons",
-          "name": "Coupons & Promos",
-          "slug": "app-ecommerce-coupon-list"
-        },
-        {
-          "url": "marketing/abandoned-carts",
-          "name": "Abandoned Carts",
-          "slug": "app-abandoned-carts"
-        },
-        {
-          "url": "marketing/feeds",
-          "name": "Omnichannel Feeds",
-          "slug": "app-feeds"
-        },
-        {
-          "url": "marketing/newsletters",
-          "name": "Newsletter Subscribers",
-          "slug": "app-newsletter-subscribers"
-        },
-        {
-          "url": "communication",
-          "name": "Communication Center",
-          "slug": "app-communication-center"
-        },
-        {
-          "url": "communication/email-templates",
-          "name": "Email Templates",
-          "slug": "app-email-templates"
-        },
-        {
-          "url": "communication/whatsapp-config",
-          "name": "WhatsApp Cloud API",
-          "slug": "app-whatsapp-config"
         }
       ]
     },
@@ -239,46 +207,94 @@
       ]
     },
     {
-      "name": "Finance & Cash Desk",
-      "icon": "menu-icon icon-base bx bx-receipt",
-      "slug": "app-expenses-nav",
+      "menuHeader": "Marketing & AI Hub"
+    },
+    {
+      "name": "AI & Smart Copilot",
+      "icon": "menu-icon icon-base bx bx-bot",
+      "slug": "app-ai-hub-nav",
       "submenu": [
         {
-          "url": "expenses",
-          "name": "Expense Ledger",
-          "slug": "app-expenses"
+          "url": "settings/ai",
+          "name": "AI Settings & Store Chatbot",
+          "slug": "app-ecommerce-settings-ai"
         },
         {
-          "url": "finance/pos-register",
-          "name": "POS Shift Register",
-          "slug": "app-pos-register"
+          "url": "chat",
+          "name": "Live Chat & Support",
+          "slug": "app-chat"
         },
         {
-          "url": "finance/accounting-export",
-          "name": "Accounting & GST Exports",
-          "slug": "app-accounting-export"
+          "url": "calendar",
+          "name": "Appointments Calendar",
+          "slug": "app-calendar"
+        }
+      ]
+    },
+    {
+      "name": "Marketing & Audience",
+      "icon": "menu-icon icon-base bx bx-paper-plane",
+      "slug": "app-marketing-group",
+      "submenu": [
+        {
+          "url": "marketing/newsletters",
+          "name": "Newsletter & Subscribers",
+          "slug": "app-newsletter-subscribers"
+        },
+        {
+          "url": "coupons",
+          "name": "Coupons & Promos",
+          "slug": "app-ecommerce-coupon-list"
         },
         {
           "url": "gift-cards",
           "name": "Gift Cards & Vouchers",
           "slug": "app-gift-cards"
+        },
+        {
+          "url": "marketing/abandoned-carts",
+          "name": "Abandoned Carts Recovery",
+          "slug": "app-abandoned-carts"
+        },
+        {
+          "url": "marketing/feeds",
+          "name": "Omnichannel Feeds (Google/Meta)",
+          "slug": "app-feeds"
         }
       ]
     },
     {
-      "name": "Automation & Rules",
-      "icon": "menu-icon icon-base bx bx-cog",
-      "slug": "app-automation-nav",
+      "name": "Communications",
+      "icon": "menu-icon icon-base bx bx-chat",
+      "slug": "app-communication-group",
       "submenu": [
         {
+          "url": "communication",
+          "name": "Unified Communication Center",
+          "slug": "app-communication-center"
+        },
+        {
+          "url": "communication/email-templates",
+          "name": "Email Templates",
+          "slug": "app-email-templates"
+        },
+        {
+          "url": "communication/whatsapp-config",
+          "name": "WhatsApp Cloud API",
+          "slug": "app-whatsapp-config"
+        },
+        {
           "url": "automation",
-          "name": "Workflow Rules",
+          "name": "Workflow Automation Rules",
           "slug": "app-automation"
         }
       ]
     },
     {
-      "name": "Customers & Support",
+      "menuHeader": "Finance & Customers"
+    },
+    {
+      "name": "Customers & CRM",
       "icon": "menu-icon icon-base bx bx-user-circle",
       "slug": "app-ecommerce-customers",
       "submenu": [
@@ -305,8 +321,35 @@
       ]
     },
     {
+      "name": "Finance & Cash Desk",
+      "icon": "menu-icon icon-base bx bx-receipt",
+      "slug": "app-expenses-nav",
+      "submenu": [
+        {
+          "url": "expenses",
+          "name": "Expense Ledger",
+          "slug": "app-expenses"
+        },
+        {
+          "url": "finance/pos-register",
+          "name": "POS Shift Register",
+          "slug": "app-pos-register"
+        },
+        {
+          "url": "ecommerce/settings/taxes",
+          "name": "Tax & VAT Rules",
+          "slug": "app-ecommerce-settings-taxes"
+        },
+        {
+          "url": "finance/accounting-export",
+          "name": "Accounting & GST Exports",
+          "slug": "app-accounting-export"
+        }
+      ]
+    },
+    {
       "name": "Vendor Operations",
-      "icon": "menu-icon icon-base bx bx-store-alt",
+      "icon": "menu-icon icon-base bx bx-store",
       "slug": "app-vendor-operations",
       "submenu": [
         {
@@ -346,7 +389,7 @@
       "menuHeader": "SaaS Platform & Admin"
     },
     {
-      "name": "Platform Admin",
+      "name": "Platform Management",
       "icon": "menu-icon icon-base bx bx-line-chart",
       "slug": "app-saas-platform",
       "submenu": [
@@ -394,7 +437,14 @@
           "url": "developer/webhooks",
           "name": "Developer Webhooks",
           "slug": "app-developer-webhooks"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Security & Health",
+      "icon": "menu-icon icon-base bx bx-shield-quarter",
+      "slug": "app-system-security-group",
+      "submenu": [
         {
           "url": "system/health",
           "name": "System Health",
