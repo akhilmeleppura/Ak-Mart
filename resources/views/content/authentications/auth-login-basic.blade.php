@@ -341,19 +341,19 @@
               <span class="badge bg-warning text-dark fw-bold px-2 py-0.5" style="font-size: 0.68rem;"><i class="bx bxs-crown me-1"></i>{{ __('Demo') }}</span>
             </div>
             <div class="d-flex flex-wrap gap-1.5">
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('supreme@ak-mart.com', 'supreme123')" style="border-color: #F59E0B !important; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%) !important;">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('supreme')" style="border-color: #F59E0B !important; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%) !important;">
                 <i class="bx bxs-crown text-warning me-1 fs-6"></i> <strong class="text-dark">{{ __('Supreme') }}</strong>
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('admin@ak-mart.com', 'password')">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('admin')">
                 <i class="bx bx-shield-quarter text-primary me-1 fs-6"></i> {{ __('Admin') }}
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('manager@ak-mart.com', 'password')">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('manager')">
                 <i class="bx bx-briefcase text-info me-1 fs-6"></i> {{ __('Manager') }}
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('cashier@ak-mart.com', 'password')">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('cashier')">
                 <i class="bx bx-terminal text-success me-1 fs-6"></i> {{ __('Cashier') }}
               </span>
-              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('customer@example.com', 'password')">
+              <span class="badge bg-white border text-dark demo-role-pill shadow-xs d-inline-flex align-items-center py-1.5 px-2" onclick="fillDemo('customer')">
                 <i class="bx bx-user text-secondary me-1 fs-6"></i> {{ __('Customer') }}
               </span>
             </div>
@@ -435,6 +435,16 @@
 </div>
 
 <script>
+  const demoAccounts = {
+    supreme: { email: 'supreme@ak-mart.com', phone: '+1-800-555-0100', pass: 'supreme123' },
+    admin:   { email: 'admin@ak-mart.com',   phone: '+1-800-555-0101', pass: 'password' },
+    manager: { email: 'manager@ak-mart.com', phone: '+1-800-555-0102', pass: 'password' },
+    cashier: { email: 'cashier@ak-mart.com', phone: '+1-800-555-0103', pass: 'password' },
+    customer:{ email: 'customer@example.com',phone: '+1-800-555-0104', pass: 'password' }
+  };
+
+  let activeDemoKey = 'supreme';
+
   function switchLoginMode(mode) {
     const pwBtn = document.getElementById('modePasswordBtn');
     const otpBtn = document.getElementById('modeOtpBtn');
@@ -457,9 +467,14 @@
       submitBtnText.textContent = @json(__('Send OTP Verification Code'));
       submitBtnIcon.className = 'bx bx-mobile-alt ms-1 fs-5 align-middle';
       otpHelpText.style.display = 'block';
-      emailLabel.textContent = @json(__('Mobile Number or Email'));
-      emailInput.placeholder = @json(__('e.g. +91 9876543210 or admin@ak-mart.com'));
+      emailLabel.textContent = @json(__('Registered Mobile Number'));
+      emailInput.placeholder = @json(__('e.g. +1-800-555-0100'));
       emailIcon.className = 'bx bx-phone fs-5';
+
+      // Auto-switch to active demo phone number
+      if (demoAccounts[activeDemoKey]) {
+        emailInput.value = demoAccounts[activeDemoKey].phone;
+      }
     } else {
       pwBtn.classList.add('active');
       otpBtn.classList.remove('active');
@@ -470,9 +485,36 @@
       submitBtnIcon.className = 'bx bx-right-arrow-alt ms-1 fs-5 align-middle';
       otpHelpText.style.display = 'none';
       emailLabel.textContent = @json(__('Email or Username'));
-      emailInput.placeholder = 'admin@ak-mart.com';
+      emailInput.placeholder = 'supreme@ak-mart.com';
       emailIcon.className = 'bx bx-envelope fs-5';
+
+      // Auto-switch to active demo email
+      if (demoAccounts[activeDemoKey]) {
+        emailInput.value = demoAccounts[activeDemoKey].email;
+        if (pwInput) pwInput.value = demoAccounts[activeDemoKey].pass;
+      }
     }
+  }
+
+  function fillDemo(key) {
+    activeDemoKey = key;
+    const currentMode = document.getElementById('login_mode').value;
+    const acc = demoAccounts[key];
+    if (!acc) return;
+
+    const emailInput = document.getElementById('email');
+    const pwInput = document.getElementById('password');
+
+    if (currentMode === 'otp') {
+      emailInput.value = acc.phone;
+    } else {
+      emailInput.value = acc.email;
+      if (pwInput) pwInput.value = acc.pass;
+    }
+    
+    // Quick highlight effect
+    emailInput.classList.add('is-valid');
+    setTimeout(() => emailInput.classList.remove('is-valid'), 1200);
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -497,16 +539,5 @@
       });
     }
   });
-
-  function fillDemo(email, password) {
-    document.getElementById('email').value = email;
-    const pwInput = document.getElementById('password');
-    if (pwInput) pwInput.value = password;
-    
-    // Quick highlight effect
-    const emailInput = document.getElementById('email');
-    emailInput.classList.add('is-valid');
-    setTimeout(() => emailInput.classList.remove('is-valid'), 1200);
-  }
 </script>
 @endsection

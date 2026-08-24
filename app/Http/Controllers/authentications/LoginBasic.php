@@ -71,13 +71,25 @@ class LoginBasic extends Controller
         ]);
 
         $identifier = trim($request->input('email'));
-        $fieldType  = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : (is_numeric($identifier) ? 'phone' : 'name');
+        $digitsOnly = preg_replace('/\D/', '', $identifier);
 
-        $user = User::where($fieldType, $identifier)->first();
+        $user = null;
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $identifier)->first();
+        } else {
+            $user = User::where('phone', $identifier)
+                ->orWhere('phone', 'LIKE', "%{$identifier}%")
+                ->orWhere('email', $identifier)
+                ->orWhere('name', $identifier)
+                ->when(strlen($digitsOnly) >= 7, function ($q) use ($digitsOnly) {
+                    $q->orWhere('phone', 'LIKE', "%{$digitsOnly}%");
+                })
+                ->first();
+        }
 
         if (! $user) {
             return back()->withErrors([
-                'email' => __('No account found matching this identifier.'),
+                'email' => __('No account found matching this mobile number or email.'),
             ])->onlyInput('email');
         }
 
