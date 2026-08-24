@@ -50,19 +50,24 @@ trait BelongsToBranch
 
     protected static function resolveBranchId(): ?int
     {
-        // 1. Check authenticated user (most secure)
-        if (auth()->check() && auth()->user()->branch_id) {
-            return auth()->user()->branch_id;
+        // 1. Check session state (active user selection)
+        if (session()->has('branch_id')) {
+            return (int) session()->get('branch_id');
         }
 
-        // 2. Check session (for web panel state)
-        if (session()->has('branch_id')) {
-            return session()->get('branch_id');
+        // 2. Check authenticated user database record
+        if (auth()->check() && auth()->user()->branch_id) {
+            return (int) auth()->user()->branch_id;
         }
 
         // 3. Check custom header (for API/Mobile app requests)
         if (request()->hasHeader('X-Branch-ID')) {
             return (int) request()->header('X-Branch-ID');
+        }
+
+        // 4. Check persistent cookie
+        if (request()->hasCookie('akmart_branch_id')) {
+            return (int) request()->cookie('akmart_branch_id');
         }
 
         return null;

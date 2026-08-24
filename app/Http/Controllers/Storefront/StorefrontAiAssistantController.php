@@ -15,6 +15,14 @@ class StorefrontAiAssistantController extends Controller
 {
     public function chat(Request $request, AiToolManager $toolManager, SemanticSearchService $searchService, ShippingService $shippingService)
     {
+        $botEnabled = \App\Models\StoreSetting::get('store_ai_chatbot_enabled', '1');
+        if ($botEnabled == '0') {
+            return response()->json([
+                'success' => false,
+                'reply'   => '⚠️ The AI Shopping Assistant is currently disabled by store administration.',
+            ], 403);
+        }
+
         $request->validate([
             'message' => 'required|string|max:500',
         ]);

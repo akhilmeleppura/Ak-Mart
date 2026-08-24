@@ -239,7 +239,7 @@ class ForgotPasswordOtpController extends Controller
         // Clear all reset session data
         $request->session()->forget(['pw_reset_identifier', 'pw_reset_authorized', 'pw_reset_channel']);
 
-        return redirect()->route('auth-login-basic')
+        return redirect()->route('login')
             ->with('success', __('Password reset successfully. You can now sign in with your new password.'));
     }
 

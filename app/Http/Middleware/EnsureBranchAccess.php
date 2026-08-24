@@ -16,12 +16,7 @@ class EnsureBranchAccess
         $user = $request->user();
 
         // Supreme Admins & Super Admins can access and switch to any branch across the platform
-        if ($user && (
-            $user->is_supreme_admin == 1 ||
-            $user->is_super_admin == 1 ||
-            $user->user_type === 'super_admin' ||
-            (method_exists($user, 'hasRole') && ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('admin')))
-        )) {
+        if ($user && method_exists($user, 'canSwitchBranch') && $user->canSwitchBranch()) {
             return $next($request);
         }
 
@@ -29,13 +24,17 @@ class EnsureBranchAccess
 
         // If user is restricted to a specific branch
         if ($user && isset($user->branch_id) && $user->branch_id !== null) {
-            
+            // Keep session aligned with their locked branch
+            if (session('branch_id') != $user->branch_id) {
+                session(['branch_id' => (int) $user->branch_id]);
+            }
+
             // If they are trying to switch or access another branch
-            if ($targetBranchId && $user->branch_id != $targetBranchId) {
-                if ($request->ajax()) {
+            if ($targetBranchId && (int)$user->branch_id !== (int)$targetBranchId) {
+                if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['message' => 'Unauthorized branch access.'], 403);
                 }
-                abort(403, 'You do not have access to this branch.');
+                return redirect()->back()->with('error', __('You do not have access to this branch.'));
             }
         }
 

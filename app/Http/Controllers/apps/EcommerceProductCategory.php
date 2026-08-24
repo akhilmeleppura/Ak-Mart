@@ -97,4 +97,123 @@ class EcommerceProductCategory extends Controller
     $category->delete();
     return response()->json(['success' => true, 'message' => 'Category deleted.']);
   }
+
+  public function treeView()
+  {
+    $totalCategories = Category::count();
+    $mainCategoriesCount = Category::whereNull('parent_id')->count();
+    $subCategoriesCount = Category::whereNotNull('parent_id')->count();
+    $allCategories = Category::with(['parent', 'children'])->orderBy('name')->get();
+    $parentCategories = Category::whereNull('parent_id')->with('children')->get();
+
+    return view('content.apps.app-ecommerce-category-tree', compact(
+      'totalCategories',
+      'mainCategoriesCount',
+      'subCategoriesCount',
+      'parentCategories',
+      'allCategories'
+    ));
+  }
+
+  public function treeData()
+  {
+    $categories = Category::withCount('products')->orderBy('name')->get();
+    $tree = $this->buildJsTree($categories, null);
+    return response()->json($tree);
+  }
+
+  private function buildJsTree($categories, $parentId = null)
+  {
+    $branch = [];
+    $nodes = $categories->where('parent_id', $parentId);
+
+    foreach ($nodes as $node) {
+      $children = $this->buildJsTree($categories, $node->id);
+      $hasChildren = !empty($children);
+      $isRoot = empty($parentId);
+      
+      // Determine Icon based on hierarchy depth & children
+      if ($isRoot) {
+        $icon = $hasChildren ? 'icon-base bx bx-folder-open text-primary' : 'icon-base bx bx-folder text-primary';
+      } else {
+        $icon = $hasChildren ? 'icon-base bx bx-folder text-warning' : 'icon-base bx bx-git-branch text-success';
+      }
+
+      $item = [
+        'id' => (string) $node->id,
+        'text' => $node->name . ' <span class="badge bg-label-primary rounded-pill ms-1 font-monospace" style="font-size: 10px;">' . $node->products_count . ' items</span>',
+        'icon' => $icon,
+        'state' => ['opened' => true],
+        'data' => [
+          'id'             => $node->id,
+          'name'           => $node->name,
+          'slug'           => $node->slug,
+          'description'    => $node->description ?? '',
+          'parent_id'      => $node->parent_id,
+          'products_count' => $node->products_count,
+          'has_children'   => $hasChildren,
+          'is_root'        => $isRoot,
+        ],
+      ];
+
+      if ($hasChildren) {
+        $item['children'] = $children;
+      }
+
+      $branch[] = $item;
+    }
+
+    return $branch;
+  }
+
+  public function moveNode(Request $request)
+  {
+    $request->validate([
+      'id'        => 'required|exists:categories,id',
+      'parent_id' => 'nullable',
+    ]);
+
+    $nodeId = (int) $request->id;
+    $parentId = ($request->parent_id === '#' || empty($request->parent_id)) ? null : (int) $request->parent_id;
+
+    if ($parentId) {
+      if ($nodeId === $parentId) {
+        return response()->json(['success' => false, 'message' => 'A category cannot be its own parent.'], 422);
+      }
+
+      // Prevent circular hierarchy (cannot move parent inside its own descendant)
+      $movingCategory = Category::findOrFail($nodeId);
+      $descendantIds = array_map('intval', $movingCategory->getAllCategoryIds());
+
+      if (in_array($parentId, $descendantIds, true)) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Cannot move a parent category inside one of its own subcategories (Circular Dependency).'
+        ], 422);
+      }
+    }
+
+    $category = Category::findOrFail($nodeId);
+    $category->update([
+      'parent_id' => $parentId,
+    ]);
+
+    $total = Category::count();
+    $mainCount = Category::whereNull('parent_id')->count();
+    $subCount = Category::whereNotNull('parent_id')->count();
+
+    $actionMsg = $parentId 
+      ? "Category '{$category->name}' is now a subcategory under " . (Category::find($parentId)?->name ?? 'parent') . "!"
+      : "Category '{$category->name}' promoted to Main Top-Level Aisle!";
+
+    return response()->json([
+      'success' => true,
+      'message' => $actionMsg,
+      'stats'   => [
+        'total' => $total,
+        'main'  => $mainCount,
+        'sub'   => $subCount,
+      ]
+    ]);
+  }
 }

@@ -218,13 +218,34 @@ $isEdit = isset($product);
           <div class="d-flex justify-content-between align-items-center">
             <div class="mb-6 col ecommerce-select2-dropdown">
               <label class="form-label mb-1" for="category-org">
-                <span>{{ __('Category') }}</span>
+                <span>{{ __('Category / Subcategory') }}</span>
               </label>
-              <select id="category-org" name="category_id" class="select2 form-select" data-placeholder="{{ __('Select Category') }}">
+              <select id="category-org" name="category_id" class="select2 form-select" data-placeholder="{{ __('Select Category or Subcategory') }}">
                 <option value="">{{ __('Select Category') }}</option>
-                @foreach($categories as $category)
-                <option value="{{ $category->id }}" {{ $isEdit && $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                @endforeach
+                @if(isset($parentCategories) && $parentCategories->count() > 0)
+                  @foreach($parentCategories as $parent)
+                    @if($parent->children->count() > 0)
+                      <optgroup label="📁 {{ $parent->name }}">
+                        <option value="{{ $parent->id }}" {{ $isEdit && $product->category_id == $parent->id ? 'selected' : '' }}>
+                          {{ $parent->name }} (Main Category)
+                        </option>
+                        @foreach($parent->children as $child)
+                          <option value="{{ $child->id }}" {{ $isEdit && $product->category_id == $child->id ? 'selected' : '' }}>
+                            &nbsp;&nbsp;↳ {{ $child->name }}
+                          </option>
+                        @endforeach
+                      </optgroup>
+                    @else
+                      <option value="{{ $parent->id }}" {{ $isEdit && $product->category_id == $parent->id ? 'selected' : '' }}>
+                        📁 {{ $parent->name }}
+                      </option>
+                    @endif
+                  @endforeach
+                @else
+                  @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ $isEdit && $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                  @endforeach
+                @endif
               </select>
             </div>
           </div>

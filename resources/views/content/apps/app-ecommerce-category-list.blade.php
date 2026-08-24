@@ -42,11 +42,17 @@
 
 @section('content')
 <div class="card mb-6">
-  <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-    <h5 class="card-title mb-0">{{ __('Categories') }}</h5>
-    <div class="d-flex align-items-center gap-3">
-        <div class="w-px-250">
-            <input type="text" class="form-control date-picker" placeholder="{{ __('Filter by Date Range') }}" id="dateRange" />
+  <div class="card-header border-bottom d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <h5 class="card-title mb-0">{{ __('Categories') }}</h5>
+      <span class="badge bg-label-primary rounded-pill small">{{ __('Table View') }}</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('app-ecommerce-category-tree') }}" class="btn btn-outline-primary">
+          <i class="icon-base bx bx-git-repo-forked me-1"></i> {{ __('Visual Tree (Drag & Drop)') }}
+        </a>
+        <div class="w-px-200">
+            <input type="text" class="form-control date-picker" placeholder="{{ __('Filter by Date') }}" id="dateRange" />
         </div>
     </div>
   </div>

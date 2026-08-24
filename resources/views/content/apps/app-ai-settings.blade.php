@@ -98,6 +98,61 @@
                         </div>
                     </div>
 
+                    <!-- Storefront AI Shopping Assistant Bot Settings -->
+                    <div class="card mb-6 border-primary border-opacity-25 shadow-xs">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-primary bg-opacity-10 py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="icon-base bx bx-bot fs-4 text-primary"></i>
+                                <h5 class="card-title m-0 text-primary fw-bold">{{ __('Storefront AI Shopping Assistant (Customer Chatbot)') }}</h5>
+                            </div>
+                            <span class="badge bg-primary text-white">{{ __('Customer Facing') }}</span>
+                        </div>
+                        <div class="card-body pt-4">
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_enabled">{{ __('Storefront Chatbot Status') }}</label>
+                                    @php $storeAiEnabled = $settings['store_ai_chatbot_enabled'] ?? '1'; @endphp
+                                    <select id="store_ai_chatbot_enabled" name="store_ai_chatbot_enabled" class="select2 form-select">
+                                        <option value="1" {{ $storeAiEnabled == '1' ? 'selected' : '' }}>{{ __('Active (Display Floating Chat Widget)') }}</option>
+                                        <option value="0" {{ $storeAiEnabled == '0' ? 'selected' : '' }}>{{ __('Disabled (Hide Chat Widget)') }}</option>
+                                    </select>
+                                    <span class="form-text text-muted small">{{ __('Toggle to show or hide the AI assistant icon in the customer storefront.') }}</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_name">{{ __('Bot Name in Storefront') }}</label>
+                                    <input type="text" class="form-control" id="store_ai_chatbot_name" name="store_ai_chatbot_name" value="{{ $settings['store_ai_chatbot_name'] ?? 'AK-Mart Assistant' }}" placeholder="AK-Mart Assistant" />
+                                    <span class="form-text text-muted small">{{ __('The name displayed in the chatbot header.') }}</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_position">{{ __('Widget Screen Position') }}</label>
+                                    @php $storeAiPos = $settings['store_ai_chatbot_position'] ?? 'bottom-right'; @endphp
+                                    <select id="store_ai_chatbot_position" name="store_ai_chatbot_position" class="select2 form-select">
+                                        <option value="bottom-right" {{ $storeAiPos == 'bottom-right' ? 'selected' : '' }}>{{ __('Bottom Right (Standard)') }}</option>
+                                        <option value="bottom-left" {{ $storeAiPos == 'bottom-left' ? 'selected' : '' }}>{{ __('Bottom Left') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_persona">{{ __('Assistant Personality Mode') }}</label>
+                                    @php $storeAiPersona = $settings['store_ai_chatbot_persona'] ?? 'friendly_assistant'; @endphp
+                                    <select id="store_ai_chatbot_persona" name="store_ai_chatbot_persona" class="select2 form-select">
+                                        <option value="friendly_assistant" {{ $storeAiPersona == 'friendly_assistant' ? 'selected' : '' }}>{{ __('Friendly Supermarket Assistant (Balanced & Helpful)') }}</option>
+                                        <option value="discount_finder" {{ $storeAiPersona == 'discount_finder' ? 'selected' : '' }}>{{ __('Bargain & Coupon Hunter (Proactive Deals)') }}</option>
+                                        <option value="concise_support" {{ $storeAiPersona == 'concise_support' ? 'selected' : '' }}>{{ __('Fast & Concise Concierge') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_greeting">{{ __('Default Welcome & Greeting Message') }}</label>
+                                    <textarea class="form-control" id="store_ai_chatbot_greeting" name="store_ai_chatbot_greeting" rows="2" placeholder="Greeting text when a customer opens the bot">{{ $settings['store_ai_chatbot_greeting'] ?? "👋 Hi! I am your AK-Mart Shopping Assistant. I can help you search products, track orders, find discount coupons, and check delivery options. What can I do for you?" }}</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label mb-1" for="store_ai_chatbot_quick_prompts">{{ __('Quick Action Prompt Chips (Comma-separated)') }}</label>
+                                    <input type="text" class="form-control" id="store_ai_chatbot_quick_prompts" name="store_ai_chatbot_quick_prompts" value="{{ $settings['store_ai_chatbot_quick_prompts'] ?? 'Track Order, Available Coupons, Trending Products, Delivery Pincode' }}" placeholder="Track Order, Available Coupons, Trending Products, Delivery Pincode" />
+                                    <span class="form-text text-muted small">{{ __('Clickable shortcut buttons presented to the customer above the input field.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="d-flex justify-content-end gap-4">

@@ -154,9 +154,15 @@ class StorefrontController extends Controller
             });
         }
 
-        // Category Filter
+        // Category Filter (Includes subcategories automatically)
         if ($categoryId = $request->input('category')) {
-            $query->where('category_id', $categoryId);
+            $cat = Category::find($categoryId);
+            if ($cat) {
+                $allCatIds = $cat->getAllCategoryIds();
+                $query->whereIn('category_id', $allCatIds);
+            } else {
+                $query->where('category_id', $categoryId);
+            }
         }
 
         // Merchandising Collections
@@ -265,7 +271,11 @@ class StorefrontController extends Controller
         };
 
         $products = $query->paginate(12)->withQueryString();
-        $categories = Category::where('is_active', true)->withCount('products')->get();
+        $categories = Category::where('is_active', true)
+            ->whereNull('parent_id')
+            ->with(['children' => fn($q) => $q->where('is_active', true)->withCount('products')])
+            ->withCount('products')
+            ->get();
         $availableBrands = Product::whereNotNull('brand')->where('brand', '!=', '')->distinct()->orderBy('brand')->pluck('brand');
         $brandCounts = Product::whereNotNull('brand')->where('brand', '!=', '')->selectRaw('brand, count(*) as count')->groupBy('brand')->pluck('count', 'brand');
 
@@ -767,7 +777,7 @@ class StorefrontController extends Controller
                 'user_id'             => $user?->id,
                 'total_amount'        => $orderTotal,
                 'tax_amount'          => $taxAmount,
-                'tax_breakdown'       => $taxResult['tax_breakdown'],
+                'tax_breakdown'       => $taxResult['tax_breakdown'] ?? [],
                 'store_credit_amount' => $storeCreditUsed,
                 'delivery_slot_id'    => $request->delivery_slot_id,
                 'payment_method'      => $orderTotal == 0 ? 'store_credit' : $request->payment_method,

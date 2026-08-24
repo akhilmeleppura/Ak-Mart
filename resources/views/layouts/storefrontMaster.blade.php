@@ -69,52 +69,147 @@
 
         /* Frosted Glass Header */
         .store-header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+            border-bottom: 1px solid #E2E8F0;
             position: sticky;
             top: 0;
             z-index: 1020;
-            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 20px -5px rgba(15, 23, 42, 0.05);
             transition: all 0.25s ease;
+        }
+
+        /* Brand Logo */
+        .store-brand-link {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .store-brand-link:hover {
+            transform: translateY(-1px);
+        }
+        .store-logo-wrapper {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #F0FDF4 0%, #EFF6FF 100%);
+            border: 1.5px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .store-brand-link:hover .store-logo-wrapper {
+            border-color: #6366F1;
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.18);
+            transform: scale(1.04);
+        }
+        .store-logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .store-brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.6px;
+            color: #0F172A;
+            font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        .store-brand-badge {
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+        .store-brand-tagline {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #64748B;
+            margin-top: 3px;
+            line-height: 1;
         }
 
         /* Highlighted Search Bar */
         .search-container-box {
             position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .search-icon-wrapper {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6366F1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 3;
         }
         .search-pill-input {
-            border: 2px solid #E2E8F0;
+            width: 100%;
+            height: 46px;
+            border: 1.5px solid #E2E8F0;
             background: #F8FAFC;
-            border-radius: 35px;
-            padding: 11px 22px 11px 48px;
-            font-size: 14px;
+            border-radius: 9999px;
+            padding: 0 115px 0 46px;
+            font-size: 13.5px;
             font-weight: 500;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             color: #0F172A;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+        .search-pill-input::placeholder {
+            color: #94A3B8;
+            font-weight: 400;
+            font-size: 13.5px;
         }
         .search-pill-input:focus {
             background: #FFFFFF;
             border-color: #4F46E5;
-            box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12), 0 8px 20px -4px rgba(79, 70, 229, 0.08);
             outline: none;
         }
         .search-btn-highlight {
-            background: var(--ak-primary-gradient);
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 36px;
+            padding: 0 18px;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
             color: #FFFFFF;
             border: none;
-            border-radius: 30px;
-            padding: 7px 18px;
+            border-radius: 9999px;
             font-size: 13px;
             font-weight: 700;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 3;
         }
         .search-btn-highlight:hover {
-            transform: scale(1.04);
-            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+            transform: translateY(-50%) scale(1.02);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
             color: #FFFFFF;
+        }
+        .search-btn-highlight:active {
+            transform: translateY(-50%) scale(0.98);
         }
 
         /* Action Buttons & Badges */
@@ -313,6 +408,210 @@
             margin-top: 80px;
             border-top: 1px solid #1E293B;
         }
+
+        /* Storefront AI Chatbot Floating Widget */
+        .store-ai-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1060;
+            font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        .store-ai-widget.pos-left {
+            right: auto;
+            left: 24px;
+        }
+        .store-ai-toggle-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .store-ai-toggle-btn:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5);
+            color: #FFFFFF;
+        }
+        .store-ai-pulse-dot {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 13px;
+            height: 13px;
+            background: #10B981;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            animation: aiPulse 2s infinite;
+        }
+        @keyframes aiPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .store-ai-window {
+            position: absolute;
+            bottom: 68px;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 32px);
+            height: 520px;
+            max-height: calc(100vh - 120px);
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1061;
+        }
+        .store-ai-widget.pos-left .store-ai-window {
+            right: auto;
+            left: 0;
+        }
+        .store-ai-window.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+        .store-ai-header {
+            background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E40AF 100%);
+            color: #FFFFFF;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .store-ai-body {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #F8FAFC;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .store-ai-msg {
+            max-width: 86%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 13.5px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .store-ai-msg.bot {
+            align-self: flex-start;
+            background: #FFFFFF;
+            color: #0F172A;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border-bottom-left-radius: 4px;
+        }
+        .store-ai-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            color: #FFFFFF;
+            border-bottom-right-radius: 4px;
+        }
+        .store-ai-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .store-ai-chip-btn {
+            background: #EFF6FF;
+            color: #2563EB;
+            border: 1px solid #BFDBFE;
+            border-radius: 20px;
+            padding: 5px 11px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .store-ai-chip-btn:hover {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-color: #2563EB;
+        }
+        .store-ai-footer {
+            padding: 12px;
+            background: #FFFFFF;
+            border-top: 1px solid #E2E8F0;
+        }
+        .store-ai-input-wrap {
+            display: flex;
+            align-items: center;
+            background: #F1F5F9;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 30px;
+            padding: 4px 6px 4px 14px;
+            transition: all 0.2s;
+        }
+        .store-ai-input-wrap:focus-within {
+            border-color: #4F46E5;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .store-ai-input {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            flex-grow: 1;
+            outline: none;
+            color: #0F172A;
+        }
+        .store-ai-send-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #4F46E5;
+            color: #FFFFFF;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .store-ai-send-btn:hover {
+            background: #3B82F6;
+            transform: scale(1.05);
+        }
+        .store-ai-msg table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+        .store-ai-msg th, .store-ai-msg td {
+            border: 1px solid #E2E8F0;
+            padding: 4px 8px;
+            text-align: left;
+        }
+        .store-ai-msg th {
+            background: #F1F5F9;
+            font-weight: 700;
+        }
+        .store-ai-msg a {
+            color: #4F46E5;
+            font-weight: 600;
+            text-decoration: underline;
+        }
     </style>
     @yield('styles')
 </head>
@@ -351,28 +650,40 @@
     <header class="store-header py-3">
         <div class="container d-flex justify-content-between align-items-center gap-3">
             <!-- Brand Logo -->
-            <a href="{{ route('storefront.home') }}" class="d-flex align-items-center gap-2.5 text-decoration-none">
-                <div class="p-2 rounded-4 shadow-xs" style="background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border: 1px solid #C7D2FE;">
-                    <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart" height="42" onerror="this.src='{{ asset('assets/img/favicon/favicon.ico') }}'">
+            <a href="{{ route('storefront.home') }}" class="store-brand-link d-flex align-items-center gap-2.5 text-decoration-none">
+                <div class="store-logo-wrapper">
+                    <img src="{{ asset('images/brand/ak-mart-cartoon-logo.png') }}" alt="AK-Mart" class="store-logo-img" onerror="this.src='{{ asset('images/brand/ak-mart-logo.svg') }}'">
                 </div>
-                <div class="d-flex flex-column">
-                    <span class="fs-3 fw-bolder lh-1" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AK-Mart</span>
-                    <span class="text-muted" style="font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">Smart Supermarket</span>
+                <div class="d-flex flex-column justify-content-center">
+                    <div class="d-flex align-items-center gap-1.5">
+                        <span class="store-brand-title">AK<span class="text-primary">-Mart</span></span>
+                        <span class="store-brand-badge">{{ __('SMART') }}</span>
+                    </div>
+                    <span class="store-brand-tagline">{{ __('ONLINE SUPERMARKET') }}</span>
                 </div>
             </a>
 
             <!-- Search Bar with Live Suggestions Dropdown -->
-            <div class="position-relative flex-grow-1 mx-3 d-none d-md-block" style="max-width: 600px;">
-                <form action="{{ route('storefront.shop') }}" method="GET">
+            <div class="position-relative flex-grow-1 mx-3 d-none d-md-block" style="max-width: 620px;">
+                <form action="{{ route('storefront.shop') }}" method="GET" class="m-0">
                     <div class="search-container-box">
-                        <i class="bx bx-search position-absolute top-50 start-0 translate-middle-y ms-3.5 fs-5 text-primary"></i>
-                        <input type="text" name="q" id="storeSearchInput" class="form-control search-pill-input pe-5" placeholder="{{ __('Search 5,000+ groceries, organic produce, dairy, snacks...') }}" value="{{ request('q') }}" autocomplete="off">
-                        <button class="search-btn-highlight position-absolute top-50 end-0 translate-middle-y me-1.5" type="submit">
-                            {{ __('Search') }}
+                        <span class="search-icon-wrapper">
+                            <i class="bx bx-search fs-5"></i>
+                        </span>
+                        <input type="text" 
+                               name="q" 
+                               id="storeSearchInput" 
+                               class="form-control search-pill-input" 
+                               placeholder="{{ __('Search 5,000+ fresh groceries, produce, dairy & snacks...') }}" 
+                               value="{{ request('q') }}" 
+                               autocomplete="off">
+                        <button class="search-btn-highlight" type="submit">
+                            <span>{{ __('Search') }}</span>
+                            <i class="bx bx-right-arrow-alt fs-5"></i>
                         </button>
                     </div>
                 </form>
-                <div id="searchSuggestionsBox" class="position-absolute start-0 w-100 bg-white border rounded-4 shadow-lg p-2 d-none" style="top: 115%; z-index: 1050; max-height: 380px; overflow-y: auto;"></div>
+                <div id="searchSuggestionsBox" class="position-absolute start-0 w-100 bg-white border rounded-4 shadow-xl p-2 d-none" style="top: calc(100% + 8px); z-index: 1050; max-height: 380px; overflow-y: auto; border: 1px solid #E2E8F0 !important;"></div>
             </div>
 
             <!-- Action Buttons: Compare, Wishlist & Cart -->
@@ -656,6 +967,189 @@
             setTimeout(() => toast.remove(), 3200);
         }
     </script>
+
+    @php
+        $storeAiEnabled = \App\Models\StoreSetting::get('store_ai_chatbot_enabled', '1');
+        $storeAiName = \App\Models\StoreSetting::get('store_ai_chatbot_name', 'AK-Mart Assistant');
+        $storeAiGreeting = \App\Models\StoreSetting::get('store_ai_chatbot_greeting', "👋 Hi! I am your AK-Mart Shopping Assistant. How can I help you find groceries, track an order, or find discount coupons today?");
+        $storeAiPromptsStr = \App\Models\StoreSetting::get('store_ai_chatbot_quick_prompts', 'Track Order, Available Coupons, Trending Products, Delivery Pincode');
+        $storeAiPrompts = array_filter(array_map('trim', explode(',', $storeAiPromptsStr)));
+        $storeAiPos = \App\Models\StoreSetting::get('store_ai_chatbot_position', 'bottom-right');
+    @endphp
+
+    @if($storeAiEnabled == '1')
+    <!-- Storefront AI Shopping Assistant Floating Widget -->
+    <div class="store-ai-widget {{ $storeAiPos === 'bottom-left' ? 'pos-left' : '' }}" id="storeAiWidget">
+        <!-- Floating Trigger Button -->
+        <button class="store-ai-toggle-btn" id="storeAiToggleBtn" title="Chat with {{ $storeAiName }}" aria-label="Open AI Shopping Assistant">
+            <i class="bx bx-bot fs-3 text-white" id="storeAiToggleIcon"></i>
+            <span class="store-ai-pulse-dot"></span>
+        </button>
+
+        <!-- Expandable Chat Window -->
+        <div class="store-ai-window" id="storeAiWindow">
+            <!-- Header -->
+            <div class="store-ai-header">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="position-relative">
+                        <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center shadow-xs" style="width: 34px; height: 34px;">
+                            <i class="bx bx-bot fs-5"></i>
+                        </div>
+                        <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white" style="width: 10px; height: 10px;"></span>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 text-white fw-bold fs-6 lh-1">{{ $storeAiName }}</h6>
+                        <small class="text-white-50" style="font-size: 11px;">{{ __('Shopping Assistant') }} &bull; <span class="text-success">{{ __('Online') }}</span></small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                    <button type="button" class="btn btn-sm text-white p-1 opacity-75" id="storeAiClearBtn" title="{{ __('Clear Chat') }}"><i class="bx bx-trash small"></i></button>
+                    <button type="button" class="btn btn-sm text-white p-1 opacity-75" id="storeAiCloseBtn" title="{{ __('Close') }}"><i class="bx bx-x fs-5"></i></button>
+                </div>
+            </div>
+
+            <!-- Chat Message Thread -->
+            <div class="store-ai-body" id="storeAiMessages">
+                <!-- Welcome Bot Message -->
+                <div class="store-ai-msg bot">
+                    {!! nl2br(e($storeAiGreeting)) !!}
+                    @if(!empty($storeAiPrompts))
+                        <div class="store-ai-chips mt-2">
+                            @foreach($storeAiPrompts as $prompt)
+                                <button type="button" class="store-ai-chip-btn" onclick="sendAiPrompt('{{ addslashes($prompt) }}')">{{ $prompt }}</button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Footer Input -->
+            <div class="store-ai-footer">
+                <form id="storeAiChatForm" onsubmit="event.preventDefault(); handleAiChatSubmit();" class="m-0">
+                    <div class="store-ai-input-wrap">
+                        <input type="text" id="storeAiInput" class="store-ai-input" placeholder="{{ __('Ask about groceries, coupons, orders...') }}" autocomplete="off">
+                        <button type="submit" class="store-ai-send-btn" id="storeAiSendBtn" title="Send Message">
+                            <i class="bx bx-send"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const widget = document.getElementById('storeAiWidget');
+            const toggleBtn = document.getElementById('storeAiToggleBtn');
+            const windowEl = document.getElementById('storeAiWindow');
+            const closeBtn = document.getElementById('storeAiCloseBtn');
+            const clearBtn = document.getElementById('storeAiClearBtn');
+            const messagesEl = document.getElementById('storeAiMessages');
+            const inputEl = document.getElementById('storeAiInput');
+            const toggleIcon = document.getElementById('storeAiToggleIcon');
+
+            if (!widget || !toggleBtn || !windowEl) return;
+
+            function toggleChat() {
+                const isOpen = windowEl.classList.toggle('open');
+                if (isOpen) {
+                    toggleIcon.className = 'bx bx-x fs-3 text-white';
+                    inputEl.focus();
+                } else {
+                    toggleIcon.className = 'bx bx-bot fs-3 text-white';
+                }
+            }
+
+            toggleBtn.addEventListener('click', toggleChat);
+            if (closeBtn) closeBtn.addEventListener('click', toggleChat);
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    messagesEl.innerHTML = `
+                        <div class="store-ai-msg bot">
+                            {!! addslashes(nl2br(e($storeAiGreeting))) !!}
+                            @if(!empty($storeAiPrompts))
+                                <div class="store-ai-chips mt-2">
+                                    @foreach($storeAiPrompts as $prompt)
+                                        <button type="button" class="store-ai-chip-btn" onclick="sendAiPrompt('{{ addslashes($prompt) }}')">{{ $prompt }}</button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    `;
+                });
+            }
+
+            window.sendAiPrompt = function(promptText) {
+                inputEl.value = promptText;
+                handleAiChatSubmit();
+            };
+
+            window.handleAiChatSubmit = function() {
+                const text = inputEl.value.trim();
+                if (!text) return;
+
+                // Append user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'store-ai-msg user';
+                userMsg.textContent = text;
+                messagesEl.appendChild(userMsg);
+                inputEl.value = '';
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+
+                // Append typing indicator
+                const typingMsg = document.createElement('div');
+                typingMsg.className = 'store-ai-msg bot';
+                typingMsg.id = 'storeAiTyping';
+                typingMsg.innerHTML = '<span class="spinner-grow spinner-grow-sm text-primary me-1"></span> <small class="text-muted">{{ __("Thinking...") }}</small>';
+                messagesEl.appendChild(typingMsg);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+
+                fetch('{{ route("storefront.ai.chat") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ message: text })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const typing = document.getElementById('storeAiTyping');
+                    if (typing) typing.remove();
+
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'store-ai-msg bot';
+                    
+                    let replyHtml = data.reply || data.response || '{{ __("I didn\'t understand that. Could you try asking in a different way?") }}';
+                    
+                    // Simple Markdown Parsing
+                    replyHtml = replyHtml
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-primary fw-bold">$1</a>')
+                        .replace(/\n/g, '<br>');
+
+                    botMsg.innerHTML = replyHtml;
+                    messagesEl.appendChild(botMsg);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                })
+                .catch(err => {
+                    const typing = document.getElementById('storeAiTyping');
+                    if (typing) typing.remove();
+
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'store-ai-msg bot text-danger';
+                    botMsg.textContent = '⚠️ Sorry, I could not process your message right now. Please try again.';
+                    messagesEl.appendChild(botMsg);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                });
+            };
+        });
+    </script>
+    @endif
+
     @yield('scripts')
 </body>
 </html>

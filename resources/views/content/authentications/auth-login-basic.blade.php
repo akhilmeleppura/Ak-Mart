@@ -370,7 +370,7 @@
             </div>
           @endif
 
-          <form id="formAuthentication" action="{{ route('auth-login-basic-store') }}" method="POST">
+          <form id="formAuthentication" action="{{ route('login.store') }}" method="POST">
             @csrf
             <input type="hidden" name="login_mode" id="login_mode" value="password">
 

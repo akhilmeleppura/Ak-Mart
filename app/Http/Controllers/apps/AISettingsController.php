@@ -62,6 +62,21 @@ class AISettingsController extends Controller
             // ignore
         }
 
+        // Storefront AI Shopping Assistant Bot Settings
+        $storeAiEnabled = $request->input('store_ai_chatbot_enabled', '1');
+        $storeAiName = $request->input('store_ai_chatbot_name', 'AK-Mart Assistant');
+        $storeAiGreeting = $request->input('store_ai_chatbot_greeting', "👋 Hi! I am your AK-Mart Shopping Assistant. I can help you search products, track orders, find discount coupons, and check delivery options. What can I do for you?");
+        $storeAiQuickPrompts = $request->input('store_ai_chatbot_quick_prompts', 'Track Order, Available Coupons, Trending Products, Delivery Pincode');
+        $storeAiPosition = $request->input('store_ai_chatbot_position', 'bottom-right');
+        $storeAiPersona = $request->input('store_ai_chatbot_persona', 'friendly_assistant');
+
+        StoreSetting::set('store_ai_chatbot_enabled', $storeAiEnabled);
+        StoreSetting::set('store_ai_chatbot_name', $storeAiName);
+        StoreSetting::set('store_ai_chatbot_greeting', $storeAiGreeting);
+        StoreSetting::set('store_ai_chatbot_quick_prompts', $storeAiQuickPrompts);
+        StoreSetting::set('store_ai_chatbot_position', $storeAiPosition);
+        StoreSetting::set('store_ai_chatbot_persona', $storeAiPersona);
+
         return redirect()->back()->with('success', 'AI & Copilot Settings saved successfully!');
     }
 }

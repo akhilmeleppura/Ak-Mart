@@ -15,7 +15,8 @@ class EcommerceProductAdd extends Controller
   public function index()
   {
     $categories = Category::all();
-    return view('content.apps.app-ecommerce-product-add', compact('categories'));
+    $parentCategories = Category::whereNull('parent_id')->with('children')->get();
+    return view('content.apps.app-ecommerce-product-add', compact('categories', 'parentCategories'));
   }
 
   public function store(Request $request)
@@ -99,7 +100,8 @@ class EcommerceProductAdd extends Controller
   {
     $product    = Product::with('variants')->findOrFail($id);
     $categories = Category::all();
-    return view('content.apps.app-ecommerce-product-add', compact('product', 'categories'));
+    $parentCategories = Category::whereNull('parent_id')->with('children')->get();
+    return view('content.apps.app-ecommerce-product-add', compact('product', 'categories', 'parentCategories'));
   }
 
   public function update(Request $request, $id)

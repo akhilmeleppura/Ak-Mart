@@ -40,7 +40,7 @@
             <h4 class="mb-1">Reset Password 🔒</h4>
             <p class="mb-6"><span class="fw-medium">Your new password must be different from previously used
                 passwords</span></p>
-            <form id="formAuthentication" action="{{ url('auth/login-basic') }}" method="GET">
+            <form id="formAuthentication" action="{{ route('login') }}" method="GET">
               <div class="mb-6 form-password-toggle form-control-validation">
                 <label class="form-label" for="password">New Password</label>
                 <div class="input-group input-group-merge">
@@ -61,7 +61,7 @@
               </div>
               <button class="btn btn-primary d-grid w-100 mb-6">Set new password</button>
               <div class="text-center">
-                <a href="{{ url('auth/login-basic') }}">
+                <a href="{{ route('login') }}">
                   <i class="icon-base bx bx-chevron-left scaleX-n1-rtl me-1 align-top"></i>
                   Back to login
                 </a>

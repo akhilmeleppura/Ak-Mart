@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\LocaleMiddleware;
+use App\Http\Middleware\BranchSessionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
         $middleware->web(LocaleMiddleware::class);
+        $middleware->web(BranchSessionMiddleware::class);
+        $middleware->redirectTo(
+            guests: '/login',
+            users: '/dashboard'
+        );
         $middleware->alias([
             'branch.access' => \App\Http\Middleware\EnsureBranchAccess::class,
             'tenant.subscription' => \App\Http\Middleware\EnsureActiveSubscription::class,

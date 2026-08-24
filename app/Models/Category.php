@@ -38,6 +38,46 @@ class Category extends Model
 
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Category::class, 'parent_id')->with('children');
+    }
+
+    public function scopeParents($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    public function scopeSubcategories($query)
+    {
+        return $query->whereNotNull('parent_id');
+    }
+
+    public function isParent(): bool
+    {
+        return is_null($this->parent_id);
+    }
+
+    public function isSubcategory(): bool
+    {
+        return !is_null($this->parent_id);
+    }
+
+    /**
+     * Get all category IDs including self and all recursive children.
+     */
+    public function getAllCategoryIds(): array
+    {
+        $ids = [$this->id];
+        foreach ($this->children as $child) {
+            $ids = array_merge($ids, $child->getAllCategoryIds());
+        }
+        return array_unique($ids);
+    }
+
+    /**
+     * Hierarchical display name (e.g., "Beverages > Fruit Juices")
+     */
+    public function getHierarchyNameAttribute(): string
+    {
+        return $this->parent ? "{$this->parent->name} > {$this->name}" : $this->name;
     }
 }

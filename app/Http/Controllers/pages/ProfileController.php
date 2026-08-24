@@ -24,7 +24,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         if (!$user) {
-            return redirect()->route('auth-login-basic');
+            return redirect()->route('login');
         }
 
         $branch = null;
@@ -64,7 +64,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         if (!$user) {
-            return redirect()->route('auth-login-basic');
+            return redirect()->route('login');
         }
 
         $branch = $user->branch_id ? Branch::find($user->branch_id) : null;

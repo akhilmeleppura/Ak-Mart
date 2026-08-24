@@ -17,9 +17,13 @@ class Order extends Model
     {
         return [
             'total_amount'        => 'decimal:2',
-            'gift_card_amount'   => 'decimal:2',
+            'tax_amount'          => 'decimal:2',
+            'tax_breakdown'       => 'array',
+            'gift_card_amount'    => 'decimal:2',
             'store_credit_amount' => 'decimal:2',
+            'discount_amount'     => 'decimal:2',
             'is_pickup'           => 'boolean',
+            'metadata'            => 'array',
         ];
     }
 

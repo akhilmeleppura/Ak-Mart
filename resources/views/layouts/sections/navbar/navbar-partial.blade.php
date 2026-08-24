@@ -102,20 +102,43 @@ use Illuminate\Support\Facades\Route;
     <!--/ Language -->
     
     <!-- Branch Switcher -->
+    @php
+      $authUser = Auth::user();
+      $currentBranchId = session('branch_id') ?? $authUser?->branch_id ?? request()->cookie('akmart_branch_id', 1);
+      $accessibleBranches = $authUser && method_exists($authUser, 'accessibleBranches') 
+          ? $authUser->accessibleBranches() 
+          : \App\Models\Branch\Branch::all();
+      $canSwitch = $authUser && method_exists($authUser, 'canSwitchBranch') ? $authUser->canSwitchBranch() : true;
+    @endphp
     <li class="nav-item dropdown me-2 me-xl-0">
-      <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-        <i class="icon-base bx bx-store icon-md"></i>
-        <span class="d-none d-md-inline-block ms-1">{{ App\Models\Branch\Branch::find(session('branch_id'))?->name ?? __('Select Branch') }}</span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        @foreach(App\Models\Branch\Branch::all() as $branch)
-        <li>
-          <a class="dropdown-item {{ session('branch_id') == $branch->id ? 'active' : '' }}" href="{{ route('branch-swap', $branch->id) }}">
-            <span>{{ $branch->name }}</span>
-          </a>
-        </li>
-        @endforeach
-      </ul>
+      @if($canSwitch && $accessibleBranches->count() > 1)
+        <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+          <i class="icon-base bx bx-store icon-md text-primary"></i>
+          <span class="d-none d-md-inline-block ms-1 fw-medium">{{ App\Models\Branch\Branch::find($currentBranchId)?->name ?? __('Select Branch') }}</span>
+          <i class="icon-base bx bx-chevron-down icon-xs ms-1 text-muted"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li class="dropdown-header small text-uppercase text-muted">{{ __('Available Branches') }}</li>
+          @foreach($accessibleBranches as $branch)
+          <li>
+            <a class="dropdown-item d-flex align-items-center justify-content-between {{ $currentBranchId == $branch->id ? 'active' : '' }}" href="{{ route('branch-swap', $branch->id) }}">
+              <span><i class="icon-base bx bx-buildings me-2"></i>{{ $branch->name }}</span>
+              @if($currentBranchId == $branch->id)
+                <i class="icon-base bx bx-check text-success"></i>
+              @endif
+            </a>
+          </li>
+          @endforeach
+        </ul>
+      @else
+        <div class="nav-link d-flex align-items-center px-2 py-1 bg-label-secondary rounded">
+          <i class="icon-base bx bx-store icon-sm text-secondary me-1"></i>
+          <span class="d-none d-md-inline-block small fw-semibold text-truncate" style="max-width: 150px;">
+            {{ App\Models\Branch\Branch::find($currentBranchId)?->name ?? __('Main Store') }}
+          </span>
+          <i class="icon-base bx bx-lock-alt icon-xs ms-1 text-muted" title="{{ __('Branch locked to your user profile') }}"></i>
+        </div>
+      @endif
     </li>
     <!--/ Branch Switcher -->
 

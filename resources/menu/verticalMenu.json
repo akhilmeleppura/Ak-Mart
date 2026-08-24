@@ -103,6 +103,11 @@
           "slug": "app-ecommerce-product-category"
         },
         {
+          "url": "products/categories/tree",
+          "name": "Category Visual Tree",
+          "slug": "app-ecommerce-category-tree"
+        },
+        {
           "url": "products/attributes",
           "name": "EAV Attributes",
           "slug": "app-attributes"
@@ -193,6 +198,11 @@
           "url": "marketing/feeds",
           "name": "Omnichannel Feeds",
           "slug": "app-feeds"
+        },
+        {
+          "url": "marketing/newsletters",
+          "name": "Newsletter Subscribers",
+          "slug": "app-newsletter-subscribers"
         },
         {
           "url": "communication",

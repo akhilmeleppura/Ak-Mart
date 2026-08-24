@@ -2,6 +2,120 @@
 
 @section('title', __('Shopping Cart') . ' — AK-Mart')
 
+@section('styles')
+<style>
+    .cart-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    .cart-table th {
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748B;
+        background: #F8FAFC;
+        padding: 14px 16px;
+        border-bottom: 1.5px solid #E2E8F0;
+    }
+    .cart-table td {
+        padding: 18px 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .cart-table tr:last-child td {
+        border-bottom: none;
+    }
+    .cart-prod-img {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        border-radius: 14px;
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        object-fit: contain;
+        padding: 4px;
+        transition: transform 0.2s ease;
+    }
+    .cart-prod-img:hover {
+        transform: scale(1.05);
+    }
+    .cart-prod-name {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #0F172A;
+        line-height: 1.35;
+        margin-bottom: 4px;
+    }
+    .cart-qty-stepper {
+        display: inline-flex;
+        align-items: center;
+        background: #F1F5F9;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 9999px;
+        padding: 3px 5px;
+        gap: 2px;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .cart-qty-stepper:hover {
+        border-color: #CBD5E1;
+        background: #EEF2FF;
+    }
+    .cart-qty-btn {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        border-radius: 50%;
+        border: none;
+        background: #FFFFFF;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0;
+        line-height: 1;
+    }
+    .cart-qty-btn:hover {
+        background: #4F46E5;
+        color: #FFFFFF;
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
+    }
+    .cart-qty-btn:active {
+        transform: scale(0.92);
+    }
+    .cart-qty-val {
+        width: 38px;
+        min-width: 38px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-weight: 800;
+        font-size: 14.5px;
+        color: #0F172A;
+        outline: none;
+        padding: 0;
+    }
+    .cart-price-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: #475569;
+    }
+    .cart-total-text {
+        font-size: 16px;
+        font-weight: 800;
+        color: #4F46E5;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container">
     <h3 class="fw-bold mb-4"><i class="bx bx-shopping-bag text-primary me-2"></i> {{ __('Your Grocery Basket') }}</h3>
@@ -18,16 +132,16 @@
     @else
         <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card p-3 border shadow-xs rounded-4">
+                <div class="card p-0 border shadow-xs rounded-4 overflow-hidden">
                     <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead class="table-light">
+                        <table class="table cart-table align-middle mb-0">
+                            <thead>
                                 <tr>
-                                    <th>{{ __('Product') }}</th>
-                                    <th>{{ __('Price') }}</th>
-                                    <th class="text-center" style="width: 140px;">{{ __('Quantity') }}</th>
-                                    <th class="text-end">{{ __('Total') }}</th>
-                                    <th></th>
+                                    <th style="min-width: 260px;">{{ __('Product') }}</th>
+                                    <th style="min-width: 90px;">{{ __('Price') }}</th>
+                                    <th class="text-center" style="min-width: 140px;">{{ __('Quantity') }}</th>
+                                    <th class="text-end" style="min-width: 100px;">{{ __('Total') }}</th>
+                                    <th class="text-end" style="min-width: 140px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -35,27 +149,39 @@
                                     <tr id="cartRow-{{ $id }}">
                                         <td>
                                             <div class="d-flex align-items-center gap-3">
-                                                <img src="{{ $item['image'] ? asset($item['image']) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $item['name'] }}" width="50" height="50" class="rounded object-fit-contain bg-light p-1">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold">{{ $item['name'] }}</h6>
-                                                    <small class="text-muted">SKU: {{ $item['sku'] ?? 'N/A' }}</small>
+                                                <img src="{{ $item['image'] ? asset($item['image']) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" 
+                                                     alt="{{ $item['name'] }}" 
+                                                     class="cart-prod-img">
+                                                <div style="max-width: 320px;">
+                                                    <h6 class="cart-prod-name">{{ $item['name'] }}</h6>
+                                                    <span class="badge bg-light text-muted border small font-monospace">SKU: {{ $item['sku'] ?? 'N/A' }}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>${{ number_format($item['price'], 2) }}</td>
                                         <td>
-                                            <div class="input-group input-group-sm">
-                                                <button class="btn btn-outline-secondary" onclick="changeQty({{ $id }}, -1)">-</button>
-                                                <input type="text" class="form-control text-center" id="cartQty-{{ $id }}" value="{{ $item['qty'] }}" readonly>
-                                                <button class="btn btn-outline-secondary" onclick="changeQty({{ $id }}, 1)">+</button>
+                                            <span class="cart-price-text">${{ number_format($item['price'], 2) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="cart-qty-stepper">
+                                                <button type="button" class="cart-qty-btn" onclick="changeQty({{ $id }}, -1)" title="{{ __('Decrease') }}">
+                                                    <i class="bx bx-minus"></i>
+                                                </button>
+                                                <input type="text" class="cart-qty-val" id="cartQty-{{ $id }}" value="{{ $item['qty'] }}" readonly>
+                                                <button type="button" class="cart-qty-btn" onclick="changeQty({{ $id }}, 1)" title="{{ __('Increase') }}">
+                                                    <i class="bx bx-plus"></i>
+                                                </button>
                                             </div>
                                         </td>
-                                        <td class="text-end fw-bold text-primary" id="rowTotal-{{ $id }}">${{ number_format($item['price'] * $item['qty'], 2) }}</td>
+                                        <td class="text-end">
+                                            <span class="cart-total-text" id="rowTotal-{{ $id }}">${{ number_format($item['price'] * $item['qty'], 2) }}</span>
+                                        </td>
                                         <td class="text-end text-nowrap">
                                             <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 px-2.5 py-1 text-nowrap small" onclick="saveForLaterAjax({{ $id }})" title="{{ __('Save for Later') }}">
                                                 <i class="bx bx-bookmark align-middle"></i> {{ __('Save for Later') }}
                                             </button>
-                                            <button class="btn btn-sm btn-link text-danger p-0" onclick="removeCartItem({{ $id }})" title="{{ __('Remove') }}"><i class="bx bx-trash fs-5"></i></button>
+                                            <button class="btn btn-sm btn-link text-danger p-0 ms-1" onclick="removeCartItem({{ $id }})" title="{{ __('Remove') }}">
+                                                <i class="bx bx-trash fs-5 align-middle"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -209,11 +335,13 @@ function applyCouponAjax() {
 
 function changeQty(productId, delta) {
     const input = document.getElementById('cartQty-' + productId);
-    let qty = parseInt(input.value) + delta;
+    let current = parseInt(input.value) || 1;
+    let qty = current + delta;
     if (qty <= 0) {
         removeCartItem(productId);
         return;
     }
+    input.value = qty;
     updateCartAjax(productId, qty);
 }
 

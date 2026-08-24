@@ -308,13 +308,26 @@
                     <!-- Aisle / Category Filter -->
                     @if(!empty($filterConfig['show_category']))
                         <div class="mb-4">
-                            <div class="filter-section-title">{{ __('Aisle Category') }}</div>
+                            <div class="filter-section-title">{{ __('Aisle Category & Subcategory') }}</div>
                             <select name="category" class="form-select form-select-sm rounded-3 bg-light border-0 fw-semibold" onchange="document.getElementById('catalogFilterForm').submit()">
                                 <option value="">{{ __('All Aisles') }} ({{ $products->total() }})</option>
                                 @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                        {{ $cat->name }} ({{ $cat->products_count }})
-                                    </option>
+                                    @if($cat->children && $cat->children->count() > 0)
+                                        <optgroup label="📁 {{ $cat->name }}">
+                                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                                {{ $cat->name }} (All {{ $cat->products_count }})
+                                            </option>
+                                            @foreach($cat->children as $sub)
+                                                <option value="{{ $sub->id }}" {{ request('category') == $sub->id ? 'selected' : '' }}>
+                                                    &nbsp;&nbsp;↳ {{ $sub->name }} ({{ $sub->products_count }})
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @else
+                                        <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                            📁 {{ $cat->name }} ({{ $cat->products_count }})
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>

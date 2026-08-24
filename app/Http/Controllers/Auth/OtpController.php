@@ -23,7 +23,7 @@ class OtpController extends Controller
     {
         // Ensure there's a pending OTP session
         if (! $request->session()->has('otp_pending_identifier')) {
-            return redirect()->route('auth-login-basic')
+            return redirect()->route('login')
                 ->withErrors(['email' => __('Session expired. Please login again.')]);
         }
 
@@ -55,7 +55,7 @@ class OtpController extends Controller
         ]);
 
         if (! $request->session()->has('otp_pending_identifier')) {
-            return redirect()->route('auth-login-basic')
+            return redirect()->route('login')
                 ->withErrors(['email' => __('Session expired. Please login again.')]);
         }
 
@@ -98,7 +98,7 @@ class OtpController extends Controller
         $user = User::find($userId);
 
         if (! $user) {
-            return redirect()->route('auth-login-basic')
+            return redirect()->route('login')
                 ->withErrors(['email' => __('Authentication failed. Please login again.')]);
         }
 
@@ -115,9 +115,14 @@ class OtpController extends Controller
 
         Auth::login($user, $remember);
 
+        // Restore user's saved branch into session
+        $branchId = $user->branch_id ?? (int) $request->cookie('akmart_branch_id', 1);
+        $request->session()->put('branch_id', $branchId);
+
         RateLimiter::clear($rateLimitKey);
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('dashboard'))
+            ->withCookie(cookie()->forever('akmart_branch_id', $branchId));
     }
 
     // -----------------------------------------------------------------
@@ -203,13 +208,13 @@ class OtpController extends Controller
             'otp_session_token',
         ]);
 
-        return redirect()->route('auth-login-basic')
+        return redirect()->route('login')
             ->withErrors(['email' => __('Too many incorrect attempts. Please login again.')]);
     }
 
     private function handleNotFound(Request $request): \Illuminate\Http\RedirectResponse
     {
-        return redirect()->route('auth-login-basic')
+        return redirect()->route('login')
             ->withErrors(['email' => __('No active verification code found. Please login again.')]);
     }
 }

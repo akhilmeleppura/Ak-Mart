@@ -106,7 +106,7 @@ $activeClass = in_array($currentRouteName, $activeRoutes) ? 'active' : '';
                   </div>
                   <ul class="nav flex-column">
                     <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="{{ url('/auth/login-basic') }}" target="_blank">
+                      <a class="nav-link mega-dropdown-link" href="{{ route('login') }}" target="_blank">
                         <i class="icon-base bx bx-radio-circle me-1"></i>
                         Login (Basic)
                       </a>

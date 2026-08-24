@@ -53,7 +53,12 @@ class LoginBasic extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        // Restore user's saved branch into session
+        $branchId = $user->branch_id ?? (int) $request->cookie('akmart_branch_id', 1);
+        $request->session()->put('branch_id', $branchId);
+
+        return redirect()->intended(route('dashboard'))
+            ->withCookie(cookie()->forever('akmart_branch_id', $branchId));
     }
 
     /**
@@ -85,7 +90,7 @@ class LoginBasic extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('auth-login-basic')
+        return redirect()->route('login')
             ->with('success', __('You have been successfully logged out.'));
     }
 

@@ -141,6 +141,42 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class);
     }
+
+    /**
+     * Determine if the user has permission to switch branches or view all branches.
+     */
+    public function canSwitchBranch(): bool
+    {
+        return $this->isSuperAdmin() || (method_exists($this, 'can') && $this->can('switch-branch'));
+    }
+
+    /**
+     * Determine if user has access to a specific branch.
+     */
+    public function canAccessBranch(int $branchId): bool
+    {
+        if ($this->canSwitchBranch()) {
+            return true;
+        }
+
+        return (int) $this->branch_id === (int) $branchId;
+    }
+
+    /**
+     * Get list of branches accessible to this user.
+     */
+    public function accessibleBranches()
+    {
+        if ($this->canSwitchBranch()) {
+            return \App\Models\Branch\Branch::all();
+        }
+
+        if ($this->branch_id) {
+            return \App\Models\Branch\Branch::where('id', $this->branch_id)->get();
+        }
+
+        return \App\Models\Branch\Branch::take(1)->get();
+    }
 }
 
 

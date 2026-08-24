@@ -146,7 +146,7 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/product/{id}/price-drop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'setPriceAlert'])->name('product.price_drop');
     Route::get('/referral', [\App\Http\Controllers\Storefront\StorefrontController::class, 'referralProgram'])->name('referral');
     Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
-    Route::post('/ai-assistant/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai_assistant.chat');
+    Route::post('/ai-assistant/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai.chat');
 });
 
 // Meta WhatsApp Cloud API Public Webhook Endpoints
@@ -423,6 +423,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/feeds/meta.csv', [\App\Http\Controllers\apps\ProductFeedController::class, 'metaCsv'])->name('app-feeds-meta');
     Route::get('/feeds/tiktok.json', [\App\Http\Controllers\apps\ProductFeedController::class, 'tikTokJson'])->name('app-feeds-tiktok');
 
+    // Newsletter & Audience Management
+    Route::get('/marketing/newsletters', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'index'])->name('app-newsletter-subscribers');
+    Route::post('/marketing/newsletters', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'store'])->name('app-newsletter-subscribers.store');
+    Route::post('/marketing/newsletters/{id}/toggle', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'toggleStatus'])->name('app-newsletter-subscribers.toggle');
+    Route::delete('/marketing/newsletters/{id}', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'destroy'])->name('app-newsletter-subscribers.destroy');
+    Route::get('/marketing/newsletters/export', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'exportCsv'])->name('app-newsletter-subscribers.export');
+    Route::post('/marketing/newsletters/send-campaign', [\App\Http\Controllers\apps\NewsletterSubscriberController::class, 'sendCampaign'])->name('app-newsletter-subscribers.campaign');
+
     // Developer Webhooks Hub
     Route::get('/developer/webhooks', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'index'])->name('app-developer-webhooks');
     Route::post('/developer/webhooks', [\App\Http\Controllers\apps\DeveloperWebhookController::class, 'store'])->name('app-developer-webhooks-store');
@@ -500,6 +508,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/products/{id}/duplicate', [EcommerceProductList::class, 'duplicate'])->name('app-ecommerce-product-duplicate');
         Route::get('/products/categories', [EcommerceProductCategory::class, 'index'])->name('app-ecommerce-product-category');
         Route::get('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'index']);
+        Route::get('/products/categories/tree', [EcommerceProductCategory::class, 'treeView'])->name('app-ecommerce-category-tree');
+        Route::get('/app/ecommerce/product/category/tree', [EcommerceProductCategory::class, 'treeView']);
+        Route::get('/products/categories/tree-data', [EcommerceProductCategory::class, 'treeData'])->name('app-ecommerce-category-tree-data');
+        Route::post('/products/categories/move-node', [EcommerceProductCategory::class, 'moveNode'])->name('app-ecommerce-category-move-node');
         Route::post('/products/categories', [EcommerceProductCategory::class, 'store'])->name('app-ecommerce-category-add');
         Route::post('/app/ecommerce/product/category', [EcommerceProductCategory::class, 'store']);
         Route::put('/products/categories/{id}', [EcommerceProductCategory::class, 'update'])->name('app-ecommerce-category-update');
@@ -734,11 +746,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
 });
 
-// Authentication Routes (Public)
-Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
+// Clean & Professional Authentication Routes
+Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+Route::post('/login', [LoginBasic::class, 'store'])->name('login.store');
+Route::get('/register', [RegisterBasic::class, 'index'])->name('register');
+
+// Backward-compatible Aliases
+Route::get('/auth/login-basic', function () {
+    return redirect()->route('login');
+})->name('auth-login-basic');
 Route::post('/auth/login-basic', [LoginBasic::class, 'store'])->name('auth-login-basic-store');
-Route::post('/login', [LoginBasic::class, 'store'])->name('login-store');
-Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
+Route::get('/auth/register-basic', function () {
+    return redirect()->route('register');
+})->name('auth-register-basic');
 
 // Public Billing Webhooks
 Route::post('/saas/billing/webhook', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'webhook'])->name('billing-webhook');
