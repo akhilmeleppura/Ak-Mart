@@ -32,12 +32,12 @@
                                         <div class="d-flex justify-content-start align-items-center">
                                             <div class="avatar-wrapper">
                                                 <div class="avatar avatar-sm me-2">
-                                                    <span class="avatar-initial rounded-circle bg-label-primary">{{ strtoupper(substr($ticket->user->name, 0, 1)) }}</span>
+                                                    <span class="avatar-initial rounded-circle bg-label-primary">{{ strtoupper(substr($ticket->user?->name ?? 'U', 0, 1)) }}</span>
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-column">
-                                                <span class="text-body text-truncate fw-semibold">{{ $ticket->user->name }}</span>
-                                                <small class="text-muted">{{ $ticket->user->email }}</small>
+                                                <span class="text-body text-truncate fw-semibold">{{ $ticket->user?->name ?? __('Guest Customer') }}</span>
+                                                <small class="text-muted">{{ $ticket->user?->email ?? __('N/A') }}</small>
                                             </div>
                                         </div>
                                     </td>

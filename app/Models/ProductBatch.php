@@ -16,6 +16,8 @@ class ProductBatch extends Model
         'expiry_date',
         'cost_price',
         'qty',
+        'reserved_qty',
+        'status',
         'is_active',
     ];
 

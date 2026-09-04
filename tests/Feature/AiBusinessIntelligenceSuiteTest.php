@@ -112,7 +112,7 @@ class AiBusinessIntelligenceSuiteTest extends TestCase
             'total_amount'   => 1000.00,
             'payment_status' => 'paid',
             'order_status'   => 'completed',
-            'created_at'     => Carbon::now()->startOfMonth()->addDays(2),
+            'created_at'     => Carbon::now()->startOfMonth()->addHours(2),
         ]);
 
         $comp = $biService->comparePeriods('month');

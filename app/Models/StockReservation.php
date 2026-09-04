@@ -12,9 +12,12 @@ class StockReservation extends Model
     protected $fillable = [
         'product_id',
         'product_variant_id',
+        'product_batch_id',
         'warehouse_id',
         'order_id',
         'session_id',
+        'idempotency_key',
+        'reason',
         'qty',
         'status',
         'expires_at',

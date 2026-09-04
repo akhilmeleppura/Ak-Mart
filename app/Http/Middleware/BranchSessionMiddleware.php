@@ -56,8 +56,10 @@ class BranchSessionMiddleware
         // Ensure user DB record has a branch assigned if missing
         if ($request->user() && empty($request->user()->branch_id)) {
             try {
-                $request->user()->branch_id = $branchId;
-                $request->user()->saveQuietly();
+                if ($branchId && Branch::where('id', $branchId)->exists()) {
+                    $request->user()->branch_id = $branchId;
+                    $request->user()->saveQuietly();
+                }
             } catch (\Throwable $e) {}
         }
 

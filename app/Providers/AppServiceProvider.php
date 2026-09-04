@@ -46,5 +46,11 @@ class AppServiceProvider extends ServiceProvider
             }
             return [];
         });
+
+        // Register Enterprise Domain Event Listeners
+        \Illuminate\Support\Facades\Event::listen(\App\Events\OrderCreated::class, [\App\Listeners\SendOrderNotificationListener::class, 'handle']);
+        \Illuminate\Support\Facades\Event::listen(\App\Events\OrderPaid::class, [\App\Listeners\SendOrderNotificationListener::class, 'handle']);
+        \Illuminate\Support\Facades\Event::listen(\App\Events\OrderPaid::class, [\App\Listeners\SyncOrderLedgerListener::class, 'handle']);
+        \Illuminate\Support\Facades\Event::listen(\App\Events\OrderCancelled::class, [\App\Listeners\SyncOrderLedgerListener::class, 'handle']);
     }
 }

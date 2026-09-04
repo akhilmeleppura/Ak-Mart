@@ -43,7 +43,11 @@ trait BelongsToBranch
 
             $branchId = static::resolveBranchId();
             if ($branchId) {
-                $builder->where($builder->getModel()->getTable() . '.branch_id', $branchId);
+                $table = $builder->getModel()->getTable();
+                $builder->where(function ($sub) use ($table, $branchId) {
+                    $sub->where($table . '.branch_id', $branchId)
+                        ->orWhereNull($table . '.branch_id');
+                });
             }
         });
     }

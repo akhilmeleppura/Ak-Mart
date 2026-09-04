@@ -612,6 +612,47 @@
             font-weight: 600;
             text-decoration: underline;
         }
+
+        /* RTL (Right-to-Left) Localization Styles */
+        [dir="rtl"] {
+            text-align: right;
+        }
+        [dir="rtl"] .search-icon-wrapper {
+            left: auto;
+            right: 16px;
+        }
+        [dir="rtl"] .search-pill-input {
+            padding: 0 46px 0 115px;
+            text-align: right;
+        }
+        [dir="rtl"] .search-btn-highlight {
+            right: auto;
+            left: 5px;
+        }
+        [dir="rtl"] .store-ai-widget {
+            right: auto;
+            left: 24px;
+        }
+        [dir="rtl"] .store-ai-window {
+            right: auto;
+            left: 0;
+        }
+        [dir="rtl"] .store-ai-widget.pos-left {
+            left: auto;
+            right: 24px;
+        }
+        [dir="rtl"] .store-ai-widget.pos-left .store-ai-window {
+            left: auto;
+            right: 0;
+        }
+        [dir="rtl"] .dropdown-menu-end {
+            --bs-position: start;
+            left: 0 !important;
+            right: auto !important;
+        }
+        [dir="rtl"] .store-ai-msg th, [dir="rtl"] .store-ai-msg td {
+            text-align: right;
+        }
     </style>
     @yield('styles')
 </head>
@@ -629,6 +670,25 @@
                 </span>
             </div>
             <div class="d-flex align-items-center gap-3">
+                <!-- Multilingual Language Switcher -->
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-sm text-white dropdown-toggle p-0 d-flex align-items-center gap-1 border-0 shadow-none bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 12px; font-weight: 600;">
+                        <i class="bx bx-globe text-info"></i>
+                        <span>{{ ['en' => 'English', 'ml' => 'മലയാളം', 'hi' => 'हिन्दी', 'ar' => 'العربية', 'fr' => 'Français', 'de' => 'Deutsch', 'ta' => 'தமிழ்', 'kn' => 'ಕನ್ನಡ', 'it' => 'Italiano'][app()->getLocale()] ?? 'English' }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-1" style="min-width: 175px; z-index: 1050; font-size: 13px;">
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'en' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/en') }}"><span>🇬🇧 English</span><span class="small opacity-75">EN</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ml' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ml') }}"><span>🇮🇳 മലയാളം</span><span class="small opacity-75">ML</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'hi' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/hi') }}"><span>🇮🇳 हिन्दी</span><span class="small opacity-75">HI</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ar' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ar') }}"><span>🇦🇪 العربية</span><span class="small opacity-75">AR</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'fr' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/fr') }}"><span>🇫🇷 Français</span><span class="small opacity-75">FR</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'de' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/de') }}"><span>🇩🇪 Deutsch</span><span class="small opacity-75">DE</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ta' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ta') }}"><span>🇮🇳 தமிழ்</span><span class="small opacity-75">TA</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'kn' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/kn') }}"><span>🇮🇳 ಕನ್ನಡ</span><span class="small opacity-75">KN</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'it' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/it') }}"><span>🇮🇹 Italiano</span><span class="small opacity-75">IT</span></a></li>
+                    </ul>
+                </div>
+                <span class="text-muted">•</span>
                 <a href="{{ route('storefront.track') }}" class="small"><i class="bx bx-package me-1 text-primary"></i>{{ __('Track Order') }}</a>
                 @if(Auth::check())
                     <a href="{{ route('customer.dashboard') }}" class="small text-white fw-bold"><i class="bx bx-user-circle text-success me-1"></i>{{ Auth::user()->name }}</a>

@@ -1756,5 +1756,8 @@
     "with": "with",
     "your order": "your order",
     "zero-sales SKUs (60+ days)": "zero-sales SKUs (60+ days)",
-    "✓ Zero Critical Errors": "✓ Zero Critical Errors"
+    "✓ Zero Critical Errors": "✓ Zero Critical Errors",
+    "Active Period End:": "Active Period End:",
+    "Billed monthly with instant access to all included features.": "Billed monthly with instant access to all included features.",
+    "Your transaction is encrypted. Billing is calculated server-side and recorded in your invoices.": "Your transaction is encrypted. Billing is calculated server-side and recorded in your invoices."
 }

@@ -13,7 +13,7 @@
                     </a>
                     <div>
                         <h5 class="card-title mb-0">{{ $ticket->subject }}</h5>
-                        <small class="text-muted">{{ __('Ticket') }} #{{ $ticket->id }} — {{ __('Customer:') }} {{ $ticket->user->name }}</small>
+                        <small class="text-muted">{{ __('Ticket') }} #{{ $ticket->id }} — {{ __('Customer:') }} {{ $ticket->user?->name ?? __('Customer') }}</small>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
@@ -36,7 +36,7 @@
                                 <div class="p-3 rounded {{ $isMe ? 'bg-primary text-white' : 'bg-white border' }}">
                                     <p class="mb-0">{{ $msg->message }}</p>
                                 </div>
-                                <small class="text-muted mt-1" style="font-size: 10px;">{{ $msg->user->name }} • {{ $msg->created_at->format('H:i') }}</small>
+                                <small class="text-muted mt-1" style="font-size: 10px;">{{ $msg->user?->name ?? __('User') }} • {{ $msg->created_at->format('H:i') }}</small>
                             </div>
                         </div>
                     @endforeach

@@ -19,7 +19,7 @@ class SyncTranslationsCommand extends Command
 
         $en = json_decode(file_get_contents($enPath), true) ?: [];
 
-        $locales = ['ml', 'hi', 'ar', 'fr', 'de'];
+        $locales = ['ml', 'hi', 'ar', 'fr', 'de', 'ta', 'kn', 'it'];
 
         foreach ($locales as $locale) {
             $path = base_path("lang/{$locale}.json");

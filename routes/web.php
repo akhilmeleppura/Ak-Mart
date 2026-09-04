@@ -127,11 +127,14 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/checkout/process', [\App\Http\Controllers\Storefront\StorefrontController::class, 'processCheckout'])->name('checkout.process');
     Route::get('/order/confirmed/{orderNumber}', [\App\Http\Controllers\Storefront\StorefrontController::class, 'orderConfirmation'])->name('order.confirmation');
     Route::get('/track', [\App\Http\Controllers\Storefront\StorefrontController::class, 'trackOrder'])->name('track');
+    Route::get('/order/{orderNumber}/invoice', [\App\Http\Controllers\Storefront\StorefrontController::class, 'invoice'])->name('order.invoice');
     Route::post('/product/{id}/review', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReview'])->name('review.submit');
     Route::get('/wishlist', [\App\Http\Controllers\Storefront\StorefrontController::class, 'wishlist'])->name('wishlist');
     Route::post('/wishlist/toggle', [\App\Http\Controllers\Storefront\StorefrontController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::post('/coupon/apply', [\App\Http\Controllers\Storefront\StorefrontController::class, 'applyCoupon'])->name('coupon.apply');
     Route::post('/coupon/remove', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeCoupon'])->name('coupon.remove');
+    Route::get('/coupon/available', [\App\Http\Controllers\Storefront\StorefrontController::class, 'availableCoupons'])->name('coupon.available');
+    Route::post('/coupon/auto-apply-best', [\App\Http\Controllers\Storefront\StorefrontController::class, 'autoApplyBestCoupon'])->name('coupon.auto_apply_best');
     Route::post('/cart/save-for-later', [\App\Http\Controllers\Storefront\StorefrontController::class, 'saveForLater'])->name('cart.save_for_later');
     Route::post('/cart/move-to-cart', [\App\Http\Controllers\Storefront\StorefrontController::class, 'moveToCartFromSaved'])->name('cart.move_to_cart');
     Route::post('/cart/remove-saved', [\App\Http\Controllers\Storefront\StorefrontController::class, 'removeSaved'])->name('cart.remove_saved');
@@ -145,8 +148,9 @@ Route::prefix('store')->name('storefront.')->group(function () {
     Route::post('/returns/submit', [\App\Http\Controllers\Storefront\StorefrontController::class, 'submitReturn'])->name('returns.submit');
     Route::post('/product/{id}/price-drop', [\App\Http\Controllers\Storefront\StorefrontController::class, 'setPriceAlert'])->name('product.price_drop');
     Route::get('/referral', [\App\Http\Controllers\Storefront\StorefrontController::class, 'referralProgram'])->name('referral');
-    Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
-    Route::post('/ai-assistant/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai.chat');
+    Route::post('/newsletter/subscribe', [\App\Http\Controllers\Storefront\StorefrontController::class, 'subscribeNewsletter'])->name('newsletter.subscribe');
+    Route::post('/ai-assistant/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai_assistant.chat');
+    Route::post('/ai/chat', [\App\Http\Controllers\Storefront\StorefrontAiAssistantController::class, 'chat'])->name('ai.chat');
     
     // Virtual Payment Sandbox & Number Generator API
     Route::get('/sandbox/generate-virtual-card', [\App\Http\Controllers\Storefront\StorefrontController::class, 'generateVirtualCard'])->name('sandbox.generate_card');
@@ -467,6 +471,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/system/health', [\App\Http\Controllers\apps\SystemHealthController::class, 'index'])->name('app-system-health');
     Route::get('/system/backups', [\App\Http\Controllers\apps\BackupController::class, 'index'])->name('app-backups');
     Route::post('/system/backups/create', [\App\Http\Controllers\apps\BackupController::class, 'createSnapshot'])->name('app-backups-create');
+    Route::get('/system/backups/{id}/download', [\App\Http\Controllers\apps\BackupController::class, 'download'])->name('app-backups-download');
+    Route::delete('/system/backups/{id}', [\App\Http\Controllers\apps\BackupController::class, 'destroy'])->name('app-backups-destroy');
     Route::get('/system/security-center', [\App\Http\Controllers\apps\SecurityCenterController::class, 'index'])->name('app-security-center');
 
     // Suppliers Management
@@ -758,6 +764,31 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/billing/invoices/{id}/preview', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'invoicePreview'])->name('billing-invoice-preview');
     Route::get('/billing/invoices/{id}/print', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'invoicePreview'])->name('billing-invoice-print');
 
+    // Production Gap: Order Management Actions
+    Route::post('/app/ecommerce/order/{id}/cancel', [\App\Http\Controllers\apps\EcommerceOrderList::class, 'cancel'])->name('app-ecommerce-order-cancel');
+    Route::post('/app/ecommerce/order/{id}/add-note', [\App\Http\Controllers\apps\EcommerceOrderList::class, 'addNote'])->name('app-ecommerce-order-note');
+    Route::post('/app/ecommerce/order/{id}/reschedule', [\App\Http\Controllers\apps\EcommerceOrderList::class, 'reschedule'])->name('app-ecommerce-order-reschedule');
+
+    // Production Gap: Warehouse Picking & Packing Subsystem
+    Route::get('/admin/fulfillment/picking', [\App\Http\Controllers\apps\WarehousePickingController::class, 'index'])->name('admin-fulfillment-picking');
+    Route::post('/admin/fulfillment/picking/start/{id}', [\App\Http\Controllers\apps\WarehousePickingController::class, 'startPicking'])->name('admin-fulfillment-picking-start');
+    Route::post('/admin/fulfillment/picking/verify-item/{id}', [\App\Http\Controllers\apps\WarehousePickingController::class, 'verifyItem'])->name('admin-fulfillment-picking-verify');
+    Route::post('/admin/fulfillment/picking/complete/{id}', [\App\Http\Controllers\apps\WarehousePickingController::class, 'completePicking'])->name('admin-fulfillment-picking-complete');
+    Route::post('/admin/fulfillment/packing/package/{id}', [\App\Http\Controllers\apps\WarehousePickingController::class, 'createPackage'])->name('admin-fulfillment-packing-package');
+    Route::post('/admin/fulfillment/dispatch/{id}', [\App\Http\Controllers\apps\WarehousePickingController::class, 'dispatch'])->name('admin-fulfillment-dispatch');
+
+    // Production Gap: RMA Returns & Credit Notes Subsystem
+    Route::get('/admin/returns/rma', [\App\Http\Controllers\apps\ReturnsManagementController::class, 'index'])->name('admin-returns-rma');
+    Route::get('/admin/returns/rma/{id}', [\App\Http\Controllers\apps\ReturnsManagementController::class, 'show'])->name('admin-returns-rma-show');
+    Route::post('/admin/returns/rma/{id}/inspect', [\App\Http\Controllers\apps\ReturnsManagementController::class, 'inspect'])->name('admin-returns-rma-inspect');
+    Route::post('/admin/returns/rma/{id}/refund', [\App\Http\Controllers\apps\ReturnsManagementController::class, 'refund'])->name('admin-returns-rma-refund');
+
+    // Production Gap: Batch & Expiry Management Subsystem
+    Route::get('/admin/inventory/batches', [\App\Http\Controllers\apps\BatchManagementController::class, 'index'])->name('admin-inventory-batches');
+    Route::post('/admin/inventory/batches/store', [\App\Http\Controllers\apps\BatchManagementController::class, 'store'])->name('admin-inventory-batches-store');
+    Route::post('/admin/inventory/batches/sweep-expired', [\App\Http\Controllers\apps\BatchManagementController::class, 'sweepExpired'])->name('admin-inventory-batches-sweep');
+    Route::post('/admin/inventory/batches/simulate-fefo', [\App\Http\Controllers\apps\BatchManagementController::class, 'simulateFefo'])->name('admin-inventory-batches-fefo');
+
     // Secure Logout
     Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
 });
@@ -768,13 +799,9 @@ Route::post('/login', [LoginBasic::class, 'store'])->name('login.store');
 Route::get('/register', [RegisterBasic::class, 'index'])->name('register');
 
 // Backward-compatible Aliases
-Route::get('/auth/login-basic', function () {
-    return redirect()->route('login');
-})->name('auth-login-basic');
+Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 Route::post('/auth/login-basic', [LoginBasic::class, 'store'])->name('auth-login-basic-store');
-Route::get('/auth/register-basic', function () {
-    return redirect()->route('register');
-})->name('auth-register-basic');
+Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 
 // Public Billing Webhooks
 Route::post('/saas/billing/webhook', [\App\Http\Controllers\apps\SaaS\SubscriptionController::class, 'webhook'])->name('billing-webhook');

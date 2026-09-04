@@ -49,21 +49,23 @@ class NotificationSeeder extends Seeder
 
         foreach ($users as $user) {
             foreach ($notifications as $n) {
+                $deterministicId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(md5("notif-user-{$user->id}-{$n['type']}"), 4));
+
                 DB::table('notifications')->updateOrInsert(
                     [
-                        'id' => Str::uuid()->toString(),
+                        'id' => $deterministicId,
+                    ],
+                    [
                         'type' => 'App\\Notifications\\' . Str::studly($n['type']),
                         'notifiable_type' => 'App\\Models\\User',
                         'notifiable_id' => $user->id,
-                    ],
-                    [
                         'data' => json_encode([
                             'title' => $n['title'],
                             'message' => $n['body'],
                             'icon' => $n['icon'],
                         ]),
-                        'read_at' => rand(0, 1) ? now()->subHours(rand(1, 48)) : null,
-                        'created_at' => now()->subHours(rand(1, 72)),
+                        'read_at' => null,
+                        'created_at' => now()->subHours(12),
                         'updated_at' => now(),
                     ]
                 );

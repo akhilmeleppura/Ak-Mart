@@ -80,15 +80,26 @@ class OtpService
     public function sendOtp(string $plainOtp, string $identifier, string $purpose, ?User $user = null): bool
     {
         try {
-            $notifiable = $user ?? new \App\Notifications\AnonymousNotifiable($identifier);
+            $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
 
-            // For logged-in users or when email is identifier, use Laravel notification
-            if ($user) {
-                $user->notify(new OtpNotification($plainOtp, $purpose));
+            if ($isEmail) {
+                // For logged-in users or when email is identifier, use Laravel notification
+                if ($user) {
+                    $user->notify(new OtpNotification($plainOtp, $purpose));
+                } else {
+                    \Illuminate\Support\Facades\Notification::route('mail', $identifier)
+                        ->notify(new OtpNotification($plainOtp, $purpose));
+                }
             } else {
-                // Send to email address directly
-                \Illuminate\Support\Facades\Notification::route('mail', $identifier)
-                    ->notify(new OtpNotification($plainOtp, $purpose));
+                // Phone number delivery via CommunicationService (WhatsApp / SMS)
+                $commService = app(\App\Services\CommunicationService::class);
+                $commService->send('whatsapp', $identifier, 'otp_verification', [
+                    'otp'           => $plainOtp,
+                    'purpose'       => $purpose,
+                    'expiry'        => (string) config('otp.expiration', 5),
+                    'store_name'    => config('app.name', 'AK-Mart'),
+                    'customer_name' => $user?->name ?? 'Customer',
+                ]);
             }
 
             return true;

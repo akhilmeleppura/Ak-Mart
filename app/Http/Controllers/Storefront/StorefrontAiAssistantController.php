@@ -101,19 +101,29 @@ class StorefrontAiAssistantController extends Controller
 
         // 4. Coupon Discovery Intent (e.g. "Do I have any coupon?", "discount codes")
         if (str_contains($lower, 'coupon') || str_contains($lower, 'promo code') || str_contains($lower, 'discount code')) {
-            $coupons = Coupon::where('is_active', true)
-                ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', now()))
-                ->take(3)
-                ->get();
+            $cart = session()->get('cart', []);
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                $subtotal += $item['price'] * $item['qty'];
+            }
 
-            if ($coupons->count() > 0) {
+            $couponService = app(\App\Services\CouponService::class);
+            $available = $couponService->getAvailableCoupons($subtotal, auth()->user());
+            $best = $couponService->getBestCoupon($subtotal, auth()->user());
+
+            if ($available->count() > 0) {
                 $lines = ["🎟️ **Available Store Coupons:**\n"];
-                foreach ($coupons as $c) {
-                    $val = $c->type === 'percentage' ? "{$c->value}% OFF" : "\${$c->value} OFF";
-                    $min = $c->min_spend ? "(Min Spend: \${$c->min_spend})" : '';
-                    $lines[] = "• **{$c->code}** — {$val} {$min}";
+                foreach ($available->take(4) as $c) {
+                    $min = $c['min_spend'] > 0 ? "(Min Spend: \${$c['min_spend']})" : '';
+                    $lines[] = "• **{$c['code']}** — {$c['value_formatted']} {$min}";
                 }
-                $lines[] = "\n💡 Apply during checkout to claim your savings!";
+
+                if ($best && $best['is_eligible'] && $subtotal > 0) {
+                    $lines[] = "\n🌟 **Smart Recommendation for Your Cart:**";
+                    $lines[] = "Use **{$best['code']}** to get the maximum discount of **{$best['discount_formatted']}** on your current cart total of $" . number_format($subtotal, 2) . "!";
+                }
+
+                $lines[] = "\n💡 You can apply them with 1-click in your cart or checkout drawer!";
                 return response()->json(['success' => true, 'reply' => implode("\n", $lines)]);
             }
         }

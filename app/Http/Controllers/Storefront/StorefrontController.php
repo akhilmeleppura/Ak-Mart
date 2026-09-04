@@ -20,6 +20,7 @@ use App\Models\DeliverySlot;
 use App\Models\PriceAlert;
 use App\Models\User;
 use App\Models\StoreSetting;
+use App\Models\ProductSlugHistory;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -292,7 +293,7 @@ class StorefrontController extends Controller
      */
     public function product($id)
     {
-        $product = Product::with([
+        $query = Product::with([
             'category',
             'variants',
             'reviews.user',
@@ -301,9 +302,22 @@ class StorefrontController extends Controller
             'relatedProducts',
             'suggestedProducts',
             'crossSells'
-        ])
-        ->where('is_active', true)
-        ->findOrFail($id);
+        ])->where('is_active', true);
+
+        if (is_numeric($id)) {
+            $product = $query->find($id);
+        } else {
+            $product = $query->where('slug', $id)->first();
+        }
+
+        if (!$product) {
+            // Check ProductSlugHistory for 301 SEO redirect on renamed products
+            $slugHistory = ProductSlugHistory::where('slug', $id)->first();
+            if ($slugHistory && $slugHistory->product && $slugHistory->product->is_active) {
+                return redirect()->route('storefront.product', $slugHistory->product->slug ?: $slugHistory->product->id, 301);
+            }
+            abort(404, 'Product not found');
+        }
 
         // Explicit admin-linked related products or fallback to same category
         $relatedProducts = $product->relatedProducts->isNotEmpty()
@@ -314,13 +328,17 @@ class StorefrontController extends Controller
                 ->take(4)
                 ->get();
 
-        // Frequently Bought Together / Suggested items configured by Admin
+        // Frequently Bought Together / Suggested items powered by AI Recommendation Engine
         $frequentlyBought = $product->suggestedProducts->isNotEmpty()
             ? $product->suggestedProducts
-            : Product::where('id', '!=', $product->id)
+            : app(\App\Services\Ai\RecommendationEngineService::class)->getFrequentlyBoughtTogether($product->id, 2);
+
+        if ($frequentlyBought->isEmpty()) {
+            $frequentlyBought = Product::where('id', '!=', $product->id)
                 ->where('is_active', true)
                 ->take(2)
                 ->get();
+        }
 
         $availableStock = app(InventoryService::class)->getAvailableStock($product->id);
 
@@ -558,7 +576,93 @@ class StorefrontController extends Controller
     public function removeCoupon()
     {
         session()->forget('coupon');
+        if (request()->ajax() || request()->wantsJson()) {
+            $cart = session()->get('cart', []);
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                $subtotal += $item['price'] * $item['qty'];
+            }
+            return response()->json([
+                'success'     => true,
+                'message'     => 'Coupon removed successfully.',
+                'subtotal'    => number_format($subtotal, 2),
+                'final_total' => number_format($subtotal, 2),
+            ]);
+        }
         return redirect()->back()->with('success', 'Coupon removed successfully.');
+    }
+
+    /**
+     * Get Available Coupons with Live Eligibility & Savings for Current Cart
+     */
+    public function availableCoupons(\App\Services\CouponService $couponService)
+    {
+        $cart = session()->get('cart', []);
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += $item['price'] * $item['qty'];
+        }
+
+        $coupons = $couponService->getAvailableCoupons($subtotal, auth()->user());
+        $best = $couponService->getBestCoupon($subtotal, auth()->user());
+        $applied = session()->get('coupon');
+
+        return response()->json([
+            'success'            => true,
+            'subtotal'           => $subtotal,
+            'subtotal_formatted' => '$' . number_format($subtotal, 2),
+            'applied_coupon'     => $applied,
+            'best_coupon'        => $best,
+            'coupons'            => $coupons,
+        ]);
+    }
+
+    /**
+     * Auto-Apply the Best Value Coupon to the Current Cart
+     */
+    public function autoApplyBestCoupon(\App\Services\CouponService $couponService)
+    {
+        $cart = session()->get('cart', []);
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += $item['price'] * $item['qty'];
+        }
+
+        if ($subtotal <= 0) {
+            return response()->json(['success' => false, 'message' => 'Your cart is empty.'], 422);
+        }
+
+        $best = $couponService->getBestCoupon($subtotal, auth()->user());
+        if (!$best) {
+            return response()->json(['success' => false, 'message' => 'No eligible coupons found for your current order amount.'], 404);
+        }
+
+        $couponModel = Coupon::find($best['id']);
+        if (!$couponModel) {
+            return response()->json(['success' => false, 'message' => 'Coupon not found.'], 404);
+        }
+
+        $discount = $couponService->calculateDiscount($couponModel, $subtotal);
+
+        session()->put('coupon', [
+            'code'     => $couponModel->code,
+            'type'     => $couponModel->type,
+            'value'    => (float)$couponModel->value,
+            'discount' => $discount,
+        ]);
+
+        $newTotal = max(0, $subtotal - $discount);
+
+        return response()->json([
+            'success'        => true,
+            'message'        => "🎉 Smart Coupon {$couponModel->code} applied! Maximum savings of $" . number_format($discount, 2) . " unlocked.",
+            'discount'       => number_format($discount, 2),
+            'discount_raw'   => $discount,
+            'subtotal'       => number_format($subtotal, 2),
+            'final_total'    => number_format($newTotal, 2),
+            'code'           => $couponModel->code,
+            'best_coupon'    => $best,
+        ]);
     }
 
     /**
@@ -772,6 +876,10 @@ class StorefrontController extends Controller
                 }
             }
 
+            $isFullyPaidByCredit = ($orderTotal == 0);
+            $finalPaymentMethod = $isFullyPaidByCredit ? 'store_credit' : $request->payment_method;
+            $initialPaymentStatus = $isFullyPaidByCredit ? 'paid' : 'pending';
+
             $order = Order::create([
                 'order_number'        => $orderNumber,
                 'user_id'             => $user?->id,
@@ -780,13 +888,20 @@ class StorefrontController extends Controller
                 'tax_breakdown'       => $taxResult['tax_breakdown'] ?? [],
                 'store_credit_amount' => $storeCreditUsed,
                 'delivery_slot_id'    => $request->delivery_slot_id,
-                'payment_method'      => $orderTotal == 0 ? 'store_credit' : $request->payment_method,
-                'payment_status'      => ($orderTotal == 0 || $request->payment_method !== 'cod') ? 'paid' : 'pending',
+                'payment_method'      => $finalPaymentMethod,
+                'payment_status'      => $initialPaymentStatus,
                 'order_status'        => 'pending',
                 'shipping_address'    => $request->shipping_address,
                 'billing_address'     => $request->shipping_address,
                 'branch_id'           => session('branch_id', 1),
             ]);
+
+            // If online payment, initiate gateway session safely
+            if (!$isFullyPaidByCredit && in_array($finalPaymentMethod, ['stripe', 'razorpay', 'sandbox_upi'])) {
+                $gatewayService = app(\App\Services\Payment\PaymentGatewayService::class);
+                $sessionData = $gatewayService->createPaymentSession($order, $finalPaymentMethod);
+                session()->put('pending_payment_session', $sessionData);
+            }
 
             foreach ($cart as $item) {
                 $product = Product::lockForUpdate()->find($item['id']);
@@ -897,6 +1012,40 @@ class StorefrontController extends Controller
         }
 
         return view('storefront.order-tracking', compact('order'));
+    }
+
+    /**
+     * Printable Official Tax Invoice
+     */
+    public function invoice($orderNumber)
+    {
+        $order = Order::with(['items.product', 'customer'])->where('order_number', trim($orderNumber))->firstOrFail();
+
+        // IDOR Protection: Prevent cross-customer unauthorized invoice access
+        if ($order->user_id) {
+            $currentUser = Auth::user();
+            if (!$currentUser) {
+                return redirect()->route('login');
+            }
+            $roles = method_exists($currentUser, 'roles') ? $currentUser->roles->pluck('name')->map('strtolower')->toArray() : [];
+            $role = strtolower($currentUser->role ?? '');
+            $isAdmin = in_array('admin', $roles) || in_array('super_admin', $roles) || in_array($role, ['admin', 'super_admin']);
+
+            if ((int)$currentUser->id !== (int)$order->user_id && !$isAdmin) {
+                abort(403, 'Unauthorized access to this order invoice.');
+            }
+        }
+
+        return view('storefront.invoice', compact('order'));
+    }
+
+    /**
+     * Storefront Newsletter Subscription
+     */
+    public function subscribeNewsletter(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        return redirect()->back()->with('success', 'Thank you for subscribing to AK-Mart flyers and exclusive offers!');
     }
 
     /**

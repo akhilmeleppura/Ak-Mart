@@ -22,11 +22,11 @@ class InternationalizationSuiteTest extends TestCase
     }
 
     /**
-     * Test 1: Language switcher works for all 6 core languages and dispatches cookie
+     * Test 1: Language switcher works for all 9 supported languages and dispatches cookie
      */
     public function test_all_supported_languages_swap_successfully(): void
     {
-        $locales = ['en', 'ml', 'hi', 'ar', 'fr', 'de'];
+        $locales = ['en', 'ml', 'hi', 'ar', 'fr', 'de', 'ta', 'kn', 'it'];
 
         foreach ($locales as $locale) {
             $response = $this->get("/lang/{$locale}");

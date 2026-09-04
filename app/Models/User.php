@@ -46,6 +46,12 @@ class User extends Authenticatable
         'role',
         'referral_code',
         'referred_by',
+        'customer_segment',
+        'rfm_score',
+        'lifetime_spend',
+        'total_orders_count',
+        'last_ordered_at',
+        'marketing_consent',
     ];
 
     /**
@@ -140,6 +146,11 @@ class User extends Authenticatable
     public function auditLogs()
     {
         return $this->hasMany(AuditLog::class);
+    }
+
+    public function customerNotes()
+    {
+        return $this->hasMany(CustomerNote::class);
     }
 
     /**

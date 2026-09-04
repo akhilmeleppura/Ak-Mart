@@ -379,6 +379,20 @@
                         <span><i class="bx bx-wallet me-1"></i> {{ __('Store Credit Applied') }}</span>
                         <strong id="storeCreditDeductionAmount">-$0.00</strong>
                     </div>
+                    <!-- Promo Code & Coupon Drawer Trigger -->
+                    <div class="mb-3 pt-2 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-1.5">
+                            <span class="small fw-semibold text-muted">{{ __('Promo Code / Voucher') }}</span>
+                            <button type="button" class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-bold small" onclick="openAvailableCouponsModal()">
+                                <i class="bx bxs-coupon me-0.5 align-middle"></i> {{ __('View Available Offers') }}
+                            </button>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="checkoutCouponInput" class="form-control text-uppercase font-monospace" placeholder="e.g. FESTIVE20" value="{{ $coupon['code'] ?? '' }}">
+                            <button class="btn btn-outline-primary fw-semibold" type="button" onclick="applyCouponCheckout()">{{ __('Apply') }}</button>
+                        </div>
+                        <div id="checkoutCouponFeedback" class="small mt-1"></div>
+                    </div>
 
                     <hr>
                     <div class="d-flex justify-content-between mb-4">
@@ -419,6 +433,8 @@
         </div>
     </div>
 </div>
+
+@include('storefront.partials.coupon-drawer')
 @endsection
 
 @section('scripts')
@@ -593,6 +609,15 @@ function toggleStoreCredit(checkbox) {
         finalTotalDisplay.textContent = `$${baseTotal.toFixed(2)}`;
         submitText.textContent = `Place Order Now • $${baseTotal.toFixed(2)}`;
     }
+}
+
+function applyCouponCheckout() {
+    const code = document.getElementById('checkoutCouponInput').value.trim();
+    if (!code) {
+        document.getElementById('checkoutCouponFeedback').innerHTML = '<span class="text-danger small">{{ __("Please enter a code.") }}</span>';
+        return;
+    }
+    applyCouponGeneral(code, 'checkoutCouponFeedback');
 }
 </script>
 @endsection

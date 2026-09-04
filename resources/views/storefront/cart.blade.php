@@ -280,14 +280,28 @@
                         <span class="fs-5 fw-bold text-primary" id="cartTotal">${{ number_format($finalTotal, 2) }}</span>
                     </div>
 
-                    <!-- Coupon Code Input Box -->
+                    <!-- Coupon Code & Smart Offers Section -->
                     <div class="mb-4">
-                        <label class="form-label small fw-semibold text-muted">{{ __('Have a promo code?') }}</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1.5">
+                            <label class="form-label small fw-semibold text-muted mb-0">{{ __('Have a promo code?') }}</label>
+                            <button type="button" class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-bold small" onclick="openAvailableCouponsModal()">
+                                <i class="bx bxs-coupon me-0.5 align-middle"></i> {{ __('View Available Offers') }}
+                            </button>
+                        </div>
                         <div class="input-group">
-                            <input type="text" id="couponCodeInput" class="form-control text-uppercase" placeholder="e.g. WELCOME10" value="{{ $coupon['code'] ?? '' }}">
+                            <input type="text" id="couponCodeInput" class="form-control text-uppercase font-monospace" placeholder="e.g. WELCOME10" value="{{ $coupon['code'] ?? '' }}">
                             <button class="btn btn-outline-primary fw-semibold" type="button" onclick="applyCouponAjax()">{{ __('Apply') }}</button>
                         </div>
                         <div id="couponFeedback" class="small mt-1"></div>
+                        
+                        @if(empty($coupon))
+                            <div class="mt-2.5 p-2 rounded-3 bg-light bg-opacity-70 border d-flex justify-content-between align-items-center small">
+                                <span class="text-muted"><i class="bx bx-sparkles text-warning me-1"></i>{{ __('Want the best discount?') }}</span>
+                                <button type="button" class="btn btn-xs btn-primary rounded-pill px-2.5 py-0.5 fw-bold" onclick="autoApplyBestCouponAjax()" style="font-size: 11px;">
+                                    {{ __('Auto-Apply Best') }}
+                                </button>
+                            </div>
+                        @endif
                     </div>
 
                     <a href="{{ route('storefront.checkout') }}" class="btn btn-primary btn-lg rounded-pill w-100 fw-bold">
@@ -298,6 +312,8 @@
         </div>
     @endif
 </div>
+
+@include('storefront.partials.coupon-drawer')
 @endsection
 
 @section('scripts')

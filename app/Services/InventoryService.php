@@ -44,32 +44,48 @@ class InventoryService
     }
 
     /**
-     * Reserve stock for a checkout session or order
+     * Reserve stock for a checkout session or order with strict row-level lock
      */
-    public function reserveStock(int $productId, int $qty, ?int $orderId = null, ?string $sessionId = null, ?int $warehouseId = null): ?StockReservation
+    public function reserveStock(int $productId, int $qty, ?int $orderId = null, ?string $sessionId = null, ?int $warehouseId = null, ?string $idempotencyKey = null, ?int $batchId = null): ?StockReservation
     {
-        return DB::transaction(function () use ($productId, $qty, $orderId, $sessionId, $warehouseId) {
+        return DB::transaction(function () use ($productId, $qty, $orderId, $sessionId, $warehouseId, $idempotencyKey, $batchId) {
+            // Check idempotency
+            if ($idempotencyKey) {
+                $existing = StockReservation::where('idempotency_key', $idempotencyKey)->first();
+                if ($existing) {
+                    return $existing;
+                }
+            }
+
+            // Lock product record to prevent race conditions
+            $product = Product::lockForUpdate()->find($productId);
+            if (!$product) {
+                return null;
+            }
+
             $available = $this->getAvailableStock($productId, $warehouseId);
             if ($available < $qty) {
                 return null;
             }
 
             if ($warehouseId) {
-                $whStock = WarehouseStock::firstOrCreate(
+                $whStock = WarehouseStock::lockForUpdate()->firstOrCreate(
                     ['warehouse_id' => $warehouseId, 'product_id' => $productId],
-                    ['qty' => $qty]
+                    ['qty' => $product->qty]
                 );
                 $whStock->increment('reserved_qty', $qty);
             }
 
             return StockReservation::create([
-                'product_id'   => $productId,
-                'warehouse_id' => $warehouseId,
-                'order_id'     => $orderId,
-                'session_id'   => $sessionId,
-                'qty'          => $qty,
-                'status'       => 'active',
-                'expires_at'   => now()->addMinutes(30),
+                'product_id'        => $productId,
+                'product_batch_id'  => $batchId,
+                'warehouse_id'      => $warehouseId,
+                'order_id'          => $orderId,
+                'session_id'        => $sessionId,
+                'qty'               => $qty,
+                'status'            => 'active',
+                'idempotency_key'   => $idempotencyKey,
+                'expires_at'        => now()->addMinutes(30),
             ]);
         });
     }

@@ -18,7 +18,7 @@ class TranslationAuditCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Audit translation completeness across all supported locales (en, ml, hi, ar, fr, de)';
+    protected $description = 'Audit translation completeness across all supported locales (en, ml, hi, ar, fr, de, ta, kn, it)';
 
     /**
      * Execute the console command.
@@ -29,7 +29,7 @@ class TranslationAuditCommand extends Command
         $this->info("   AK-MART GLOBAL TRANSLATION PARITY AUDIT       ");
         $this->info("=================================================");
 
-        $locales = ['en', 'ml', 'hi', 'ar', 'fr', 'de'];
+        $locales = ['en', 'ml', 'hi', 'ar', 'fr', 'de', 'ta', 'kn', 'it'];
         $baseFile = base_path('lang/en.json');
 
         if (!file_exists($baseFile)) {
@@ -86,7 +86,7 @@ class TranslationAuditCommand extends Command
         }
 
         $this->newLine();
-        $this->info("✓ Audit Complete. All 6 core locales checked successfully.");
+        $this->info("✓ Audit Complete. All 9 supported locales checked successfully.");
         return Command::SUCCESS;
     }
 }

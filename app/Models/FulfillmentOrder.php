@@ -45,4 +45,19 @@ class FulfillmentOrder extends Model
     {
         return $this->hasMany(FulfillmentOrderItem::class);
     }
+
+    public function packages()
+    {
+        return $this->hasMany(FulfillmentPackage::class);
+    }
+
+    public function picker()
+    {
+        return $this->belongsTo(User::class, 'picker_id');
+    }
+
+    public function packer()
+    {
+        return $this->belongsTo(User::class, 'packer_id');
+    }
 }

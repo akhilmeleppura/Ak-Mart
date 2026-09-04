@@ -97,6 +97,24 @@ use Illuminate\Support\Facades\Route;
             <span>Deutsch (German)</span>
           </a>
         </li>
+        <li>
+          <a class="dropdown-item {{ app()->getLocale() === 'ta' ? 'active' : '' }}" href="{{ url('lang/ta') }}"
+            data-language="ta" data-text-direction="ltr">
+            <span>தமிழ் (Tamil)</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item {{ app()->getLocale() === 'kn' ? 'active' : '' }}" href="{{ url('lang/kn') }}"
+            data-language="kn" data-text-direction="ltr">
+            <span>ಕನ್ನಡ (Kannada)</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item {{ app()->getLocale() === 'it' ? 'active' : '' }}" href="{{ url('lang/it') }}"
+            data-language="it" data-text-direction="ltr">
+            <span>Italiano (Italian)</span>
+          </a>
+        </li>
       </ul>
     </li>
     <!--/ Language -->
