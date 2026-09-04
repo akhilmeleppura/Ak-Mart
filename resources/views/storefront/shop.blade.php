@@ -213,6 +213,63 @@
         color: #3730A3;
     }
 
+    /* Hierarchical Category Tree & Sub-menus */
+    .sidebar-category-tree {
+        max-height: 290px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        padding-right: 4px;
+    }
+    .sidebar-category-tree::-webkit-scrollbar {
+        width: 4px;
+    }
+    .sidebar-category-tree::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+    .sidebar-cat-group {
+        border-radius: 10px;
+        margin-bottom: 3px;
+    }
+    .sidebar-cat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #1E293B;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .sidebar-cat-header:hover, .sidebar-cat-header.active {
+        background: #EEF2FF;
+        color: #4F46E5;
+    }
+    .sidebar-subcat-list {
+        list-style: none;
+        padding-left: 14px;
+        margin: 3px 0 6px;
+    }
+    .sidebar-subcat-item a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 3.5px 8px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        color: #64748B;
+        text-decoration: none;
+        transition: all 0.18s ease;
+    }
+    .sidebar-subcat-item a:hover, .sidebar-subcat-item a.active {
+        color: #4F46E5;
+        background: #F1F5F9;
+        font-weight: 600;
+    }
+
     /* Range Slider Styling */
     .custom-range-slider {
         -webkit-appearance: none;
@@ -305,31 +362,63 @@
                         </div>
                     @endif
 
-                    <!-- Aisle / Category Filter -->
+                    <!-- Aisle & Sub-Category Option Menu with Sub-menus -->
                     @if(!empty($filterConfig['show_category']))
                         <div class="mb-4">
-                            <div class="filter-section-title">{{ __('Aisle Category & Subcategory') }}</div>
-                            <select name="category" class="form-select form-select-sm rounded-3 bg-light border-0 fw-semibold" onchange="document.getElementById('catalogFilterForm').submit()">
-                                <option value="">{{ __('All Aisles') }} ({{ $products->total() }})</option>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="filter-section-title mb-0">{{ __('Aisle & Sub-Categories') }}</div>
+                                @if(request('category'))
+                                    <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="text-danger small text-decoration-none fw-normal">{{ __('Reset') }}</a>
+                                @endif
+                            </div>
+
+                            <!-- Interactive Sub-Category Option Menu Tree -->
+                            <div class="sidebar-category-tree p-2 border rounded-3 bg-light bg-opacity-40 mb-2">
+                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="sidebar-cat-header {{ !request('category') ? 'active fw-bold' : '' }}">
+                                    <span>{{ __('All Aisles & Groceries') }}</span>
+                                    <span class="badge bg-white text-muted rounded-pill border">{{ $products->total() }}</span>
+                                </a>
+
                                 @foreach($categories as $cat)
-                                    @if($cat->children && $cat->children->count() > 0)
-                                        <optgroup label="📁 {{ $cat->name }}">
-                                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                                {{ $cat->name }} (All {{ $cat->products_count }})
-                                            </option>
-                                            @foreach($cat->children as $sub)
-                                                <option value="{{ $sub->id }}" {{ request('category') == $sub->id ? 'selected' : '' }}>
-                                                    &nbsp;&nbsp;↳ {{ $sub->name }} ({{ $sub->products_count }})
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @else
-                                        <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                            📁 {{ $cat->name }} ({{ $cat->products_count }})
-                                        </option>
-                                    @endif
+                                    @php
+                                        $hasSubCats = $cat->children && $cat->children->count() > 0;
+                                        $isParentActive = request('category') == $cat->id;
+                                        $isChildActive = $hasSubCats && $cat->children->contains('id', request('category'));
+                                        $isExpanded = $isParentActive || $isChildActive;
+                                    @endphp
+                                    <div class="sidebar-cat-group">
+                                        <div class="sidebar-cat-header {{ $isParentActive ? 'active' : '' }}">
+                                            <a href="{{ request()->fullUrlWithQuery(['category' => $cat->id]) }}" class="text-decoration-none text-truncate d-flex align-items-center gap-1.5 flex-grow-1 {{ $isParentActive ? 'text-primary fw-bold' : 'text-dark' }}">
+                                                <span class="text-truncate">{{ $cat->name }}</span>
+                                            </a>
+                                            <div class="d-flex align-items-center gap-1">
+                                                <span class="badge bg-white text-muted rounded-pill border" style="font-size: 10px;">{{ $cat->products_count }}</span>
+                                                @if($hasSubCats)
+                                                    <span class="cursor-pointer text-muted px-1" data-bs-toggle="collapse" data-bs-target="#subCatCollapse_{{ $cat->id }}" aria-expanded="{{ $isExpanded ? 'true' : 'false' }}">
+                                                        <i class="bx bx-chevron-down small"></i>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        @if($hasSubCats)
+                                            <div class="collapse {{ $isExpanded ? 'show' : '' }}" id="subCatCollapse_{{ $cat->id }}">
+                                                <ul class="sidebar-subcat-list">
+                                                    @foreach($cat->children as $sub)
+                                                        @php $isSubActive = request('category') == $sub->id; @endphp
+                                                        <li class="sidebar-subcat-item">
+                                                            <a href="{{ request()->fullUrlWithQuery(['category' => $sub->id]) }}" class="{{ $isSubActive ? 'active' : '' }}">
+                                                                <span class="text-truncate">{{ $sub->name }}</span>
+                                                                <span class="badge {{ $isSubActive ? 'bg-primary text-white' : 'bg-light text-muted' }} rounded-pill" style="font-size: 9.5px;">{{ $sub->products_count }}</span>
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
                                 @endforeach
-                            </select>
+                            </div>
                         </div>
                     @endif
 
@@ -677,7 +766,7 @@
                                     </div>
 
                                     <a href="{{ route('storefront.product', $prod->id) }}" class="d-flex align-items-center justify-content-center w-100 h-100">
-                                        <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $prod->name }}">
+                                        <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" class="object-fit-contain p-2">
                                     </a>
                                 </div>
                                 

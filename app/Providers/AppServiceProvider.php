@@ -52,5 +52,20 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(\App\Events\OrderPaid::class, [\App\Listeners\SendOrderNotificationListener::class, 'handle']);
         \Illuminate\Support\Facades\Event::listen(\App\Events\OrderPaid::class, [\App\Listeners\SyncOrderLedgerListener::class, 'handle']);
         \Illuminate\Support\Facades\Event::listen(\App\Events\OrderCancelled::class, [\App\Listeners\SyncOrderLedgerListener::class, 'handle']);
+
+        // Share Category & Sub-Category Tree to all Storefront Views
+        view()->composer(['layouts.storefrontMaster', 'storefront.*'], function ($view) {
+            try {
+                $navCategories = \App\Models\Category::where('is_active', true)
+                    ->whereNull('parent_id')
+                    ->with(['children' => fn($q) => $q->where('is_active', true)->withCount('products')])
+                    ->withCount('products')
+                    ->orderBy('sort_order')
+                    ->get();
+                $view->with('navCategories', $navCategories);
+            } catch (\Throwable $e) {
+                $view->with('navCategories', collect());
+            }
+        });
     }
 }

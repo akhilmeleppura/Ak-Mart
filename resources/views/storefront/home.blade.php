@@ -344,7 +344,7 @@
                                 </div>
 
                                 <a href="{{ route('storefront.product', $prod->id) }}" class="d-flex align-items-center justify-content-center w-100 h-100">
-                                    <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/illustrations/boy-with-rocket-light.png') }}" alt="{{ $prod->name }}">
+                                    <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" class="object-fit-contain p-2">
                                 </a>
                             </div>
 

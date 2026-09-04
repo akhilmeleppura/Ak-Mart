@@ -389,6 +389,93 @@
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
         }
 
+        /* Option Menu & Flyout Sub-menus */
+        .category-dropdown-btn {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            padding: 7px 14px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .category-dropdown-btn:hover, .category-dropdown-btn.active, .category-dropdown-btn[aria-expanded="true"] {
+            background: #EEF2FF;
+            color: #4F46E5;
+            border-color: #C7D2FE;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
+        }
+        .dropdown-submenu-item {
+            position: relative;
+        }
+        .dropdown-submenu-item:hover > .dropdown-menu-sub {
+            display: block !important;
+            opacity: 1;
+            visibility: visible;
+        }
+        .dropdown-menu-sub {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: -6px;
+            min-width: 250px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+            padding: 8px;
+            z-index: 1060;
+        }
+        .mega-aisle-dropdown {
+            min-width: 290px;
+            border-radius: 18px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+            padding: 10px;
+            background: #FFFFFF;
+        }
+        .management-dropdown-menu {
+            min-width: 320px;
+            border-radius: 18px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+            padding: 12px;
+            background: #FFFFFF;
+        }
+        .mgmt-section-header {
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94A3B8;
+            padding: 6px 12px 4px;
+            margin-top: 4px;
+        }
+        .mgmt-menu-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #1E293B;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.18s ease;
+        }
+        .mgmt-menu-link:hover {
+            background: #F1F5F9;
+            color: #4F46E5;
+            transform: translateX(3px);
+        }
+
         /* High-Converting Promo Ribbon */
         .store-promo-ribbon {
             background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
@@ -774,15 +861,83 @@
         </div>
     </header>
 
-    <!-- Sub-Navbar: Colorful Aisle Chips -->
+    <!-- Sub-Navbar: Option Menus with Sub-menus & Management Hub -->
     <nav class="bg-white border-bottom py-2 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1010;">
         <div class="container d-flex align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-2 flex-nowrap overflow-x-auto pb-1 flex-grow-1" style="scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;">
+            <div class="d-flex align-items-center gap-2 flex-nowrap overflow-visible flex-grow-1">
+                
+                <!-- 1. All Departments / Categories Dropdown Menu with Sub-menus -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-xs dropdown-toggle" type="button" id="allDepartmentsDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); border: none;">
+                        <i class="bx bx-grid-alt fs-6"></i>
+                        <span>{{ __('All Departments') }}</span>
+                    </button>
+                    <ul class="dropdown-menu mega-aisle-dropdown shadow-lg border-0 py-2 mt-2" aria-labelledby="allDepartmentsDropdown">
+                        <li class="px-3 py-1 mb-1 text-muted small fw-bolder text-uppercase letter-spacing-1">
+                            {{ __('Explore Aisles & Sub-Categories') }}
+                        </li>
+                        @php
+                            $majorCats = $navCategories ?? collect();
+                            $catIconMap = [
+                                'Groceries & Staples'       => '🍎',
+                                'Beverages & Juices'        => '🥤',
+                                'Dairy & Eggs'              => '🧀',
+                                'Bakery & Bread'            => '🥐',
+                                'Snacks & Confectionery'    => '🍿',
+                                'Personal Care & Beauty'    => '🧴',
+                                'Household & Cleaning'      => '🧹',
+                                'Fresh Fruits & Vegetables' => '🥦',
+                                'Electronics & Accessories' => '🎧',
+                                'Health & Wellness'         => '💊',
+                                'Baby & Child Care'         => '👶',
+                                'Pet Supplies'              => '🐾',
+                            ];
+                        @endphp
+                        @foreach($majorCats as $cat)
+                            @php $catEmoji = $catIconMap[$cat->name] ?? '🛍️'; @endphp
+                            <li class="dropdown-submenu-item position-relative">
+                                <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 rounded-3 fw-semibold {{ request('category') == $cat->id ? 'bg-light text-primary' : '' }}" href="{{ route('storefront.shop', ['category' => $cat->id]) }}">
+                                    <span class="d-flex align-items-center gap-2">
+                                        <span>{{ $catEmoji }}</span>
+                                        <span>{{ $cat->name }}</span>
+                                    </span>
+                                    @if($cat->children && $cat->children->count() > 0)
+                                        <i class="bx bx-chevron-right text-muted small"></i>
+                                    @else
+                                        <span class="badge bg-light text-muted rounded-pill px-2" style="font-size: 11px;">{{ $cat->products_count ?? 0 }}</span>
+                                    @endif
+                                </a>
+                                @if($cat->children && $cat->children->count() > 0)
+                                    <ul class="dropdown-menu dropdown-menu-sub shadow-lg border-0 py-2">
+                                        <li class="px-3 py-1 mb-1 fw-bold text-primary small border-bottom pb-1.5">
+                                            <a href="{{ route('storefront.shop', ['category' => $cat->id]) }}" class="text-primary text-decoration-none d-flex align-items-center justify-content-between">
+                                                <span>{{ __('All') }} {{ $cat->name }}</span>
+                                                <i class="bx bx-arrow-to-right"></i>
+                                            </a>
+                                        </li>
+                                        @foreach($cat->children as $sub)
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center justify-content-between py-1.5 px-3 rounded-2 small fw-medium {{ request('category') == $sub->id ? 'active' : '' }}" href="{{ route('storefront.shop', ['category' => $sub->id]) }}">
+                                                    <span>{{ $sub->name }}</span>
+                                                    <span class="badge bg-light text-muted rounded-pill ms-2" style="font-size: 10px;">{{ $sub->products_count ?? 0 }}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </li>
+                        @endforeach
+                        <li class="border-top mt-2 pt-2">
+                            <a class="dropdown-item text-center fw-bold text-primary small py-1.5" href="{{ route('storefront.shop') }}">
+                                {{ __('View Complete Grocery Catalog →') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Shortcuts: Home, Buy Again, Refer -->
                 <a href="{{ route('storefront.home') }}" class="category-chip-link flex-shrink-0 {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
                     <i class="bx bx-home-alt text-primary"></i> {{ __('Home') }}
-                </a>
-                <a href="{{ route('storefront.shop') }}" class="category-chip-link flex-shrink-0 {{ request()->routeIs('storefront.shop') && !request('category') ? 'active' : '' }}">
-                    <i class="bx bx-grid-alt text-primary"></i> {{ __('All Catalog') }}
                 </a>
                 <a href="{{ route('storefront.buy_again') }}" class="category-chip-link flex-shrink-0 text-primary fw-bold" style="background: #EEF2FF; border-color: #C7D2FE;">
                     <i class="bx bx-repeat"></i> {{ __('Buy Again') }}
@@ -790,24 +945,105 @@
                 <a href="{{ route('storefront.referral') }}" class="category-chip-link flex-shrink-0 text-success fw-bold" style="background: #ECFDF5; border-color: #A7F3D0;">
                     <i class="bx bx-gift"></i> {{ __('Refer & Earn $10') }}
                 </a>
-                <a href="{{ route('storefront.shop', ['category' => 1]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 1 ? 'active' : '' }}">
-                    🍎 {{ __('Groceries') }}
-                </a>
-                <a href="{{ route('storefront.shop', ['category' => 2]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 2 ? 'active' : '' }}">
-                    🥤 {{ __('Beverages') }}
-                </a>
-                <a href="{{ route('storefront.shop', ['category' => 3]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 3 ? 'active' : '' }}">
-                    🧀 {{ __('Dairy & Eggs') }}
-                </a>
-                <a href="{{ route('storefront.shop', ['category' => 4]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == 4 ? 'active' : '' }}">
-                    🥐 {{ __('Fresh Bakery') }}
-                </a>
+
+                <!-- 2. Individual Categories with Sub-Menu Dropdown on Click/Hover -->
+                @php
+                    $chipCategories = $majorCats->take(5);
+                @endphp
+                @foreach($chipCategories as $c)
+                    @php
+                        $emoji = $catIconMap[$c->name] ?? '🛍️';
+                        $hasSub = $c->children && $c->children->count() > 0;
+                    @endphp
+                    @if($hasSub)
+                        <div class="dropdown flex-shrink-0">
+                            <button class="category-dropdown-btn dropdown-toggle {{ request('category') == $c->id ? 'active' : '' }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>{{ $emoji }} {{ $c->name }}</span>
+                            </button>
+                            <ul class="dropdown-menu shadow-lg border-0 py-2 mt-1" style="min-width: 230px; border-radius: 14px;">
+                                <li>
+                                    <a class="dropdown-item fw-bold text-primary py-2 px-3 small border-bottom mb-1" href="{{ route('storefront.shop', ['category' => $c->id]) }}">
+                                        {{ __('All') }} {{ $c->name }} <i class="bx bx-right-arrow-alt float-end fs-6"></i>
+                                    </a>
+                                </li>
+                                @foreach($c->children as $subCat)
+                                    <li>
+                                        <a class="dropdown-item py-1.5 px-3 small d-flex justify-content-between align-items-center {{ request('category') == $subCat->id ? 'bg-light text-primary fw-bold' : '' }}" href="{{ route('storefront.shop', ['category' => $subCat->id]) }}">
+                                            <span>{{ $subCat->name }}</span>
+                                            <span class="badge bg-light text-muted rounded-pill" style="font-size: 10px;">{{ $subCat->products_count ?? 0 }}</span>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <a href="{{ route('storefront.shop', ['category' => $c->id]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == $c->id ? 'active' : '' }}">
+                            {{ $emoji }} {{ $c->name }}
+                        </a>
+                    @endif
+                @endforeach
             </div>
-            <div class="flex-shrink-0">
-                <a href="{{ route('dashboard') }}" class="badge rounded-pill text-decoration-none px-3.5 py-2 fw-bold d-inline-flex align-items-center gap-1.5 transition-all" style="background: #F1F5F9; color: #334155; border: 1.5px solid #CBD5E1; font-size: 12px;">
-                    <i class="bx bx-slider fs-6 text-primary"></i><span>{{ __('Admin Portal') }}</span>
-                </a>
+
+            <!-- 3. Management Option with Full Sub-Menu -->
+            <div class="flex-shrink-0 dropdown">
+                <button class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 transition-all dropdown-toggle" type="button" id="managementMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" style="background: #F8FAFC; color: #1E293B; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
+                    <i class="bx bx-slider fs-6 text-primary"></i>
+                    <span>{{ __('Management') }}</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end management-dropdown-menu shadow-lg border-0 mt-2" aria-labelledby="managementMenuBtn">
+                    <div class="d-flex align-items-center gap-2 p-2 mb-2 bg-light rounded-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                            <i class="bx bx-slider-alt fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold fs-7 text-dark">{{ __('Store Management Hub') }}</h6>
+                            <span class="text-muted small" style="font-size: 11px;">{{ __('Commerce, Logistics & Security') }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Operations & POS -->
+                    <div class="mgmt-section-header">{{ __('Operations & POS') }}</div>
+                    <a href="{{ route('dashboard') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-chart text-primary fs-6"></i> {{ __('Executive Analytics') }}</span>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill">LIVE</span>
+                    </a>
+                    <a href="{{ route('app-pos-register') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-credit-card-front text-success fs-6"></i> {{ __('POS Register & Shift') }}</span>
+                    </a>
+                    <a href="{{ route('app-ecommerce-order-list') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-package text-warning fs-6"></i> {{ __('Order Management & FSM') }}</span>
+                    </a>
+
+                    <!-- Inventory & Warehouse -->
+                    <div class="mgmt-section-header">{{ __('Inventory & Logistics') }}</div>
+                    <a href="{{ route('app-warehouses') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-buildings text-info fs-6"></i> {{ __('Multi-Warehouse Stock') }}</span>
+                    </a>
+                    <a href="{{ url('/inventory/batches') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-calendar-event text-danger fs-6"></i> {{ __('FEFO Batches & Expiry') }}</span>
+                        <span class="badge bg-danger-subtle text-danger rounded-pill">FEFO</span>
+                    </a>
+                    <a href="{{ url('/warehouse/picking') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-barcode-reader text-primary fs-6"></i> {{ __('Warehouse Pick & Pack') }}</span>
+                    </a>
+                    <a href="{{ url('/admin/returns') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-undo text-warning fs-6"></i> {{ __('Customer Returns (RMA)') }}</span>
+                    </a>
+
+                    <!-- Security & Backups -->
+                    <div class="mgmt-section-header">{{ __('System & Disaster Recovery') }}</div>
+                    <a href="{{ route('app-security-center') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-shield-quarter text-success fs-6"></i> {{ __('Security Center & Audit') }}</span>
+                    </a>
+                    <a href="{{ route('app-backups') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-data text-primary fs-6"></i> {{ __('Database Snapshots') }}</span>
+                    </a>
+                    <a href="{{ route('app-communication-center') }}" class="mgmt-menu-link">
+                        <span class="d-flex align-items-center gap-2"><i class="bx bx-message-rounded-dots text-info fs-6"></i> {{ __('Email & WhatsApp Hub') }}</span>
+                    </a>
+                </div>
             </div>
+
         </div>
     </nav>
 

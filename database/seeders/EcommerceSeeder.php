@@ -140,14 +140,18 @@ class EcommerceSeeder extends Seeder
         ];
 
         $createdProducts = [];
+        $createdIdx = 0;
         foreach ($productsCatalog as $p) {
+            $createdIdx++;
             $cat = $categoryModels[$p['cat']];
+            $imgNum = ($createdIdx % 26) + 1;
             $product = Product::updateOrCreate(
                 ['slug' => Str::slug($p['name'])],
                 [
                     'name' => $p['name'],
                     'category_id' => $cat->id,
                     'branch_id' => $branch->id,
+                    'image' => "assets/img/ecommerce-images/product-{$imgNum}.png",
                     'price' => $p['price'],
                     'compare_at_price' => $p['compare'],
                     'qty' => $p['qty'],
