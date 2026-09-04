@@ -427,39 +427,52 @@
         .dropdown-submenu-item {
             position: relative;
         }
-        .dropdown-submenu-item:hover > .dropdown-menu-sub {
+        .dropdown-submenu-item:hover > .dropdown-menu-sub,
+        .dropdown-submenu-item.show > .dropdown-menu-sub {
             display: block !important;
-            opacity: 1;
-            visibility: visible;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
         }
         .dropdown-menu-sub {
             display: none;
+            position: absolute !important;
+            left: 100% !important;
+            top: 0 !important;
+            min-width: 260px !important;
+            background: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 16px !important;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18) !important;
+            padding: 8px !important;
+            z-index: 1090 !important;
+            margin-left: 2px !important;
+        }
+        .dropdown-menu-sub::before {
+            content: '';
             position: absolute;
-            left: 100%;
-            top: -6px;
-            min-width: 250px;
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 16px;
-            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
-            padding: 8px;
-            z-index: 1060;
+            top: 0;
+            left: -12px;
+            width: 14px;
+            height: 100%;
         }
         .mega-aisle-dropdown {
             min-width: 290px;
             border-radius: 18px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
             padding: 10px;
             background: #FFFFFF;
+            z-index: 1080 !important;
         }
         .management-dropdown-menu {
             min-width: 320px;
             border-radius: 18px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
             padding: 12px;
             background: #FFFFFF;
+            z-index: 1080 !important;
         }
         .mgmt-section-header {
             font-size: 10.5px;
@@ -874,7 +887,7 @@
     </header>
 
     <!-- Sub-Navbar: Option Menus with Sub-menus & Management Hub -->
-    <nav class="bg-white border-bottom py-1.5 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1010;">
+    <nav class="bg-white border-bottom py-1.5 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1060;">
         <div class="container d-flex align-items-center justify-content-between gap-2">
             
             <!-- 1. Left: All Departments Dropdown Menu with Sub-menus -->
@@ -946,8 +959,8 @@
                 </ul>
             </div>
 
-            <!-- 2. Middle: Flexible horizontally scrollable chips strip with hidden scrollbar -->
-            <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-x-auto no-scrollbar py-0.5 mx-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+            <!-- 2. Middle: Clean unclipped category chips strip with full dropdown visibility -->
+            <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-visible py-0.5 mx-1">
                 <!-- Shortcuts: Home, Buy Again, Refer -->
                 <a href="{{ route('storefront.home') }}" class="category-chip-link flex-shrink-0 text-nowrap {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
                     <i class="bx bx-home-alt text-primary"></i> {{ __('Home') }}
@@ -1473,6 +1486,68 @@
         });
     </script>
     @endif
+
+    <!-- Interactive Navbar Dropdowns & Submenu Controller -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.matchMedia('(min-width: 768px)').matches) {
+                const navDropdowns = document.querySelectorAll('nav .dropdown');
+                navDropdowns.forEach(function (dropdown) {
+                    const btn = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+                    const menu = dropdown.querySelector('.dropdown-menu');
+                    if (!btn || !menu) return;
+
+                    let timeout;
+                    dropdown.addEventListener('mouseenter', function () {
+                        clearTimeout(timeout);
+                        navDropdowns.forEach(function (other) {
+                            if (other !== dropdown) {
+                                const otherMenu = other.querySelector('.dropdown-menu');
+                                const otherBtn = other.querySelector('[data-bs-toggle="dropdown"]');
+                                if (otherMenu) otherMenu.classList.remove('show');
+                                if (otherBtn) {
+                                    otherBtn.classList.remove('show');
+                                    otherBtn.setAttribute('aria-expanded', 'false');
+                                }
+                            }
+                        });
+                        menu.classList.add('show');
+                        btn.classList.add('show');
+                        btn.setAttribute('aria-expanded', 'true');
+                    });
+
+                    dropdown.addEventListener('mouseleave', function () {
+                        timeout = setTimeout(function () {
+                            menu.classList.remove('show');
+                            btn.classList.remove('show');
+                            btn.setAttribute('aria-expanded', 'false');
+                        }, 120);
+                    });
+                });
+
+                // Flyout submenus inside All Departments
+                const subItems = document.querySelectorAll('.dropdown-submenu-item');
+                subItems.forEach(function (item) {
+                    const subMenu = item.querySelector('.dropdown-menu-sub');
+                    if (!subMenu) return;
+
+                    item.addEventListener('mouseenter', function () {
+                        subItems.forEach(function (sibling) {
+                            if (sibling !== item) {
+                                const sibSub = sibling.querySelector('.dropdown-menu-sub');
+                                if (sibSub) sibSub.style.display = 'none';
+                            }
+                        });
+                        subMenu.style.display = 'block';
+                    });
+
+                    item.addEventListener('mouseleave', function () {
+                        subMenu.style.display = 'none';
+                    });
+                });
+            }
+        });
+    </script>
 
     @yield('scripts')
 </body>
