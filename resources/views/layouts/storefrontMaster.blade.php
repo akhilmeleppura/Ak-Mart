@@ -273,11 +273,21 @@
             border-color: rgba(79, 70, 229, 0.35);
             box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 8px 12px -4px rgba(0, 0, 0, 0.04);
         }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+
         .product-img-canvas, .product-img-wrap {
-            height: 180px;
-            max-height: 180px;
+            height: 185px;
+            max-height: 185px;
             width: 100%;
-            background: radial-gradient(circle at center, #F8FAFC 0%, #F1F5F9 100%);
+            background: #F8FAFC;
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -286,15 +296,17 @@
             overflow: hidden;
             margin-bottom: 14px;
         }
-        .product-img-canvas img, .product-img-wrap img {
-            max-height: 140px;
-            max-width: 85%;
-            height: auto;
-            width: auto;
-            object-fit: contain;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .product-img-canvas a, .product-img-wrap a {
             display: block;
-            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+        }
+        .product-img-canvas img, .product-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
         }
         .product-grid-card:hover .product-img-canvas img,
         .product-card:hover .product-img-wrap img {
@@ -862,103 +874,113 @@
     </header>
 
     <!-- Sub-Navbar: Option Menus with Sub-menus & Management Hub -->
-    <nav class="bg-white border-bottom py-2 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1010;">
-        <div class="container d-flex align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-2 flex-nowrap overflow-visible flex-grow-1">
-                
-                <!-- 1. All Departments / Categories Dropdown Menu with Sub-menus -->
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-xs dropdown-toggle" type="button" id="allDepartmentsDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); border: none;">
-                        <i class="bx bx-grid-alt fs-6"></i>
-                        <span>{{ __('All Departments') }}</span>
-                    </button>
-                    <ul class="dropdown-menu mega-aisle-dropdown shadow-lg border-0 py-2 mt-2" aria-labelledby="allDepartmentsDropdown">
-                        <li class="px-3 py-1 mb-1 text-muted small fw-bolder text-uppercase letter-spacing-1">
-                            {{ __('Explore Aisles & Sub-Categories') }}
-                        </li>
-                        @php
-                            $majorCats = $navCategories ?? collect();
-                            $catIconMap = [
-                                'Groceries & Staples'       => '🍎',
-                                'Beverages & Juices'        => '🥤',
-                                'Dairy & Eggs'              => '🧀',
-                                'Bakery & Bread'            => '🥐',
-                                'Snacks & Confectionery'    => '🍿',
-                                'Personal Care & Beauty'    => '🧴',
-                                'Household & Cleaning'      => '🧹',
-                                'Fresh Fruits & Vegetables' => '🥦',
-                                'Electronics & Accessories' => '🎧',
-                                'Health & Wellness'         => '💊',
-                                'Baby & Child Care'         => '👶',
-                                'Pet Supplies'              => '🐾',
-                            ];
-                        @endphp
-                        @foreach($majorCats as $cat)
-                            @php $catEmoji = $catIconMap[$cat->name] ?? '🛍️'; @endphp
-                            <li class="dropdown-submenu-item position-relative">
-                                <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 rounded-3 fw-semibold {{ request('category') == $cat->id ? 'bg-light text-primary' : '' }}" href="{{ route('storefront.shop', ['category' => $cat->id]) }}">
-                                    <span class="d-flex align-items-center gap-2">
-                                        <span>{{ $catEmoji }}</span>
-                                        <span>{{ $cat->name }}</span>
-                                    </span>
-                                    @if($cat->children && $cat->children->count() > 0)
-                                        <i class="bx bx-chevron-right text-muted small"></i>
-                                    @else
-                                        <span class="badge bg-light text-muted rounded-pill px-2" style="font-size: 11px;">{{ $cat->products_count ?? 0 }}</span>
-                                    @endif
-                                </a>
+    <nav class="bg-white border-bottom py-1.5 shadow-xs d-none d-md-block" style="background: rgba(255,255,255,0.98); position: relative; z-index: 1010;">
+        <div class="container d-flex align-items-center justify-content-between gap-2">
+            
+            <!-- 1. Left: All Departments Dropdown Menu with Sub-menus -->
+            <div class="flex-shrink-0 dropdown">
+                <button class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-xs dropdown-toggle text-nowrap" type="button" id="allDepartmentsDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); border: none;">
+                    <i class="bx bx-grid-alt fs-6"></i>
+                    <span>{{ __('All Departments') }}</span>
+                </button>
+                <ul class="dropdown-menu mega-aisle-dropdown shadow-lg border-0 py-2 mt-2" aria-labelledby="allDepartmentsDropdown">
+                    <li class="px-3 py-1 mb-1 text-muted small fw-bolder text-uppercase letter-spacing-1">
+                        {{ __('Explore Aisles & Sub-Categories') }}
+                    </li>
+                    @php
+                        $majorCats = $navCategories ?? collect();
+                        $catIconMap = [
+                            'Groceries & Staples'       => '🍎',
+                            'Beverages & Juices'        => '🥤',
+                            'Dairy & Eggs'              => '🧀',
+                            'Bakery & Bread'            => '🥐',
+                            'Snacks & Confectionery'    => '🍿',
+                            'Personal Care & Beauty'    => '🧴',
+                            'Household & Cleaning'      => '🧹',
+                            'Fresh Fruits & Vegetables' => '🥦',
+                            'Electronics & Accessories' => '🎧',
+                            'Health & Wellness'         => '💊',
+                            'Baby & Child Care'         => '👶',
+                            'Pet Supplies'              => '🐾',
+                        ];
+                    @endphp
+                    @foreach($majorCats as $cat)
+                        @php $catEmoji = $catIconMap[$cat->name] ?? '🛍️'; @endphp
+                        <li class="dropdown-submenu-item position-relative">
+                            <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 rounded-3 fw-semibold {{ request('category') == $cat->id ? 'bg-light text-primary' : '' }}" href="{{ route('storefront.shop', ['category' => $cat->id]) }}">
+                                <span class="d-flex align-items-center gap-2">
+                                    <span>{{ $catEmoji }}</span>
+                                    <span>{{ $cat->name }}</span>
+                                </span>
                                 @if($cat->children && $cat->children->count() > 0)
-                                    <ul class="dropdown-menu dropdown-menu-sub shadow-lg border-0 py-2">
-                                        <li class="px-3 py-1 mb-1 fw-bold text-primary small border-bottom pb-1.5">
-                                            <a href="{{ route('storefront.shop', ['category' => $cat->id]) }}" class="text-primary text-decoration-none d-flex align-items-center justify-content-between">
-                                                <span>{{ __('All') }} {{ $cat->name }}</span>
-                                                <i class="bx bx-arrow-to-right"></i>
+                                    <i class="bx bx-chevron-right text-muted small"></i>
+                                @else
+                                    <span class="badge bg-light text-muted rounded-pill px-2" style="font-size: 11px;">{{ $cat->products_count ?? 0 }}</span>
+                                @endif
+                            </a>
+                            @if($cat->children && $cat->children->count() > 0)
+                                <ul class="dropdown-menu dropdown-menu-sub shadow-lg border-0 py-2">
+                                    <li class="px-3 py-1 mb-1 fw-bold text-primary small border-bottom pb-1.5">
+                                        <a href="{{ route('storefront.shop', ['category' => $cat->id]) }}" class="text-primary text-decoration-none d-flex align-items-center justify-content-between">
+                                            <span>{{ __('All') }} {{ $cat->name }}</span>
+                                            <i class="bx bx-arrow-to-right"></i>
+                                        </a>
+                                    </li>
+                                    @foreach($cat->children as $sub)
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center justify-content-between py-1.5 px-3 rounded-2 small fw-medium {{ request('category') == $sub->id ? 'active' : '' }}" href="{{ route('storefront.shop', ['category' => $sub->id]) }}">
+                                                <span>{{ $sub->name }}</span>
+                                                <span class="badge bg-light text-muted rounded-pill ms-2" style="font-size: 10px;">{{ $sub->products_count ?? 0 }}</span>
                                             </a>
                                         </li>
-                                        @foreach($cat->children as $sub)
-                                            <li>
-                                                <a class="dropdown-item d-flex align-items-center justify-content-between py-1.5 px-3 rounded-2 small fw-medium {{ request('category') == $sub->id ? 'active' : '' }}" href="{{ route('storefront.shop', ['category' => $sub->id]) }}">
-                                                    <span>{{ $sub->name }}</span>
-                                                    <span class="badge bg-light text-muted rounded-pill ms-2" style="font-size: 10px;">{{ $sub->products_count ?? 0 }}</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </li>
-                        @endforeach
-                        <li class="border-top mt-2 pt-2">
-                            <a class="dropdown-item text-center fw-bold text-primary small py-1.5" href="{{ route('storefront.shop') }}">
-                                {{ __('View Complete Grocery Catalog →') }}
-                            </a>
+                                    @endforeach
+                                </ul>
+                            @endif
                         </li>
-                    </ul>
-                </div>
+                    @endforeach
+                    <li class="border-top mt-2 pt-2">
+                        <a class="dropdown-item text-center fw-bold text-primary small py-1.5" href="{{ route('storefront.shop') }}">
+                            {{ __('View Complete Grocery Catalog →') }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
+            <!-- 2. Middle: Flexible horizontally scrollable chips strip with hidden scrollbar -->
+            <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-x-auto no-scrollbar py-0.5 mx-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <!-- Shortcuts: Home, Buy Again, Refer -->
-                <a href="{{ route('storefront.home') }}" class="category-chip-link flex-shrink-0 {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
+                <a href="{{ route('storefront.home') }}" class="category-chip-link flex-shrink-0 text-nowrap {{ request()->routeIs('storefront.home') ? 'active' : '' }}">
                     <i class="bx bx-home-alt text-primary"></i> {{ __('Home') }}
                 </a>
-                <a href="{{ route('storefront.buy_again') }}" class="category-chip-link flex-shrink-0 text-primary fw-bold" style="background: #EEF2FF; border-color: #C7D2FE;">
+                <a href="{{ route('storefront.buy_again') }}" class="category-chip-link flex-shrink-0 text-primary fw-bold text-nowrap" style="background: #EEF2FF; border-color: #C7D2FE;">
                     <i class="bx bx-repeat"></i> {{ __('Buy Again') }}
                 </a>
-                <a href="{{ route('storefront.referral') }}" class="category-chip-link flex-shrink-0 text-success fw-bold" style="background: #ECFDF5; border-color: #A7F3D0;">
+                <a href="{{ route('storefront.referral') }}" class="category-chip-link flex-shrink-0 text-success fw-bold text-nowrap" style="background: #ECFDF5; border-color: #A7F3D0;">
                     <i class="bx bx-gift"></i> {{ __('Refer & Earn $10') }}
                 </a>
 
-                <!-- 2. Individual Categories with Sub-Menu Dropdown on Click/Hover -->
+                <!-- Curated Category Chips (Clean, concise labels) -->
                 @php
                     $chipCategories = $majorCats->take(5);
+                    $shortCatNames = [
+                        'Groceries & Staples'       => 'Groceries',
+                        'Beverages & Juices'        => 'Beverages',
+                        'Dairy & Eggs'              => 'Dairy & Eggs',
+                        'Bakery & Bread'            => 'Bakery',
+                        'Snacks & Confectionery'    => 'Snacks',
+                        'Fresh Fruits & Vegetables' => 'Produce',
+                    ];
                 @endphp
                 @foreach($chipCategories as $c)
                     @php
                         $emoji = $catIconMap[$c->name] ?? '🛍️';
+                        $displayName = $shortCatNames[$c->name] ?? $c->name;
                         $hasSub = $c->children && $c->children->count() > 0;
                     @endphp
                     @if($hasSub)
                         <div class="dropdown flex-shrink-0">
-                            <button class="category-dropdown-btn dropdown-toggle {{ request('category') == $c->id ? 'active' : '' }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span>{{ $emoji }} {{ $c->name }}</span>
+                            <button class="category-dropdown-btn dropdown-toggle text-nowrap {{ request('category') == $c->id ? 'active' : '' }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>{{ $emoji }} {{ $displayName }}</span>
                             </button>
                             <ul class="dropdown-menu shadow-lg border-0 py-2 mt-1" style="min-width: 230px; border-radius: 14px;">
                                 <li>
@@ -977,16 +999,16 @@
                             </ul>
                         </div>
                     @else
-                        <a href="{{ route('storefront.shop', ['category' => $c->id]) }}" class="category-chip-link flex-shrink-0 {{ request('category') == $c->id ? 'active' : '' }}">
-                            {{ $emoji }} {{ $c->name }}
+                        <a href="{{ route('storefront.shop', ['category' => $c->id]) }}" class="category-chip-link flex-shrink-0 text-nowrap {{ request('category') == $c->id ? 'active' : '' }}">
+                            {{ $emoji }} {{ $displayName }}
                         </a>
                     @endif
                 @endforeach
             </div>
 
-            <!-- 3. Management Option with Full Sub-Menu -->
-            <div class="flex-shrink-0 dropdown">
-                <button class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 transition-all dropdown-toggle" type="button" id="managementMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" style="background: #F8FAFC; color: #1E293B; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
+            <!-- 3. Right: Management Option Menu (Always anchored on the right, separated cleanly) -->
+            <div class="flex-shrink-0 ms-3 ps-2 border-start dropdown" style="border-color: #E2E8F0 !important;">
+                <button class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 transition-all dropdown-toggle text-nowrap" type="button" id="managementMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" style="background: #F8FAFC; color: #1E293B; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
                     <i class="bx bx-slider fs-6 text-primary"></i>
                     <span>{{ __('Management') }}</span>
                 </button>

@@ -74,6 +74,15 @@ class Category extends Model
     }
 
     /**
+     * Get aggregate products count across self and all subcategories
+     */
+    public function getTotalProductsCountAttribute(): int
+    {
+        $ids = $this->getAllCategoryIds();
+        return \App\Models\Product::whereIn('category_id', $ids)->where('is_active', true)->count();
+    }
+
+    /**
      * Hierarchical display name (e.g., "Beverages > Fruit Juices")
      */
     public function getHierarchyNameAttribute(): string

@@ -343,8 +343,8 @@
                                     <i class="bx {{ in_array($prod->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-5 align-middle"></i>
                                 </div>
 
-                                <a href="{{ route('storefront.product', $prod->id) }}" class="d-flex align-items-center justify-content-center w-100 h-100">
-                                    <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" class="object-fit-contain p-2">
+                                <a href="{{ route('storefront.product', $prod->id) }}">
+                                    <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" loading="lazy">
                                 </a>
                             </div>
 

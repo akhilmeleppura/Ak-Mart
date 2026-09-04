@@ -91,8 +91,8 @@
         box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 8px 12px -4px rgba(0, 0, 0, 0.04);
     }
     .product-img-canvas {
-        height: 180px;
-        background: radial-gradient(circle at center, #F8FAFC 0%, #F1F5F9 100%);
+        height: 185px;
+        background: #F8FAFC;
         border-radius: 16px;
         display: flex;
         align-items: center;
@@ -101,11 +101,17 @@
         overflow: hidden;
         margin-bottom: 14px;
     }
+    .product-img-canvas a {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
     .product-img-canvas img {
-        max-height: 80%;
-        max-width: 80%;
-        object-fit: contain;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        display: block;
     }
     .product-grid-card:hover .product-img-canvas img {
         transform: scale(1.08);
@@ -235,39 +241,67 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 10px;
+        padding: 7px 10px;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 12.5px;
-        font-weight: 700;
+        font-size: 13px;
+        font-weight: 600;
         color: #1E293B;
         text-decoration: none;
         transition: all 0.18s ease;
     }
-    .sidebar-cat-header:hover, .sidebar-cat-header.active {
+    .sidebar-cat-header:hover {
+        background: #F1F5F9;
+        color: #0F172A;
+    }
+    .sidebar-cat-header.active {
         background: #EEF2FF;
         color: #4F46E5;
+        font-weight: 700;
+    }
+    .cat-count-pill {
+        font-size: 10.5px;
+        font-weight: 600;
+        padding: 2px 7.5px;
+        border-radius: 9999px;
+        background: #F1F5F9;
+        color: #64748B;
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+    }
+    .sidebar-cat-header.active .cat-count-pill,
+    .cat-count-pill.active {
+        background: #4F46E5;
+        color: #FFFFFF;
     }
     .sidebar-subcat-list {
         list-style: none;
-        padding-left: 14px;
-        margin: 3px 0 6px;
+        padding-left: 10px;
+        margin: 4px 0 6px;
     }
     .sidebar-subcat-item a {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 3.5px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-size: 11.5px;
-        color: #64748B;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
         text-decoration: none;
         transition: all 0.18s ease;
     }
-    .sidebar-subcat-item a:hover, .sidebar-subcat-item a.active {
+    .sidebar-subcat-item a:hover {
         color: #4F46E5;
-        background: #F1F5F9;
-        font-weight: 600;
+        background: #F8FAFC;
+    }
+    .sidebar-subcat-item a.active {
+        color: #4F46E5;
+        background: #EEF2FF;
+        font-weight: 700;
     }
 
     /* Range Slider Styling */
@@ -374,9 +408,9 @@
 
                             <!-- Interactive Sub-Category Option Menu Tree -->
                             <div class="sidebar-category-tree p-2 border rounded-3 bg-light bg-opacity-40 mb-2">
-                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="sidebar-cat-header {{ !request('category') ? 'active fw-bold' : '' }}">
+                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="sidebar-cat-header {{ !request('category') ? 'active' : '' }}">
                                     <span>{{ __('All Aisles & Groceries') }}</span>
-                                    <span class="badge bg-white text-muted rounded-pill border">{{ $products->total() }}</span>
+                                    <span class="cat-count-pill {{ !request('category') ? 'active' : '' }}">{{ $products->total() }}</span>
                                 </a>
 
                                 @foreach($categories as $cat)
@@ -385,14 +419,15 @@
                                         $isParentActive = request('category') == $cat->id;
                                         $isChildActive = $hasSubCats && $cat->children->contains('id', request('category'));
                                         $isExpanded = $isParentActive || $isChildActive;
+                                        $parentCount = $cat->total_products_count ?: $cat->products_count;
                                     @endphp
                                     <div class="sidebar-cat-group">
                                         <div class="sidebar-cat-header {{ $isParentActive ? 'active' : '' }}">
                                             <a href="{{ request()->fullUrlWithQuery(['category' => $cat->id]) }}" class="text-decoration-none text-truncate d-flex align-items-center gap-1.5 flex-grow-1 {{ $isParentActive ? 'text-primary fw-bold' : 'text-dark' }}">
                                                 <span class="text-truncate">{{ $cat->name }}</span>
                                             </a>
-                                            <div class="d-flex align-items-center gap-1">
-                                                <span class="badge bg-white text-muted rounded-pill border" style="font-size: 10px;">{{ $cat->products_count }}</span>
+                                            <div class="d-flex align-items-center gap-1.5">
+                                                <span class="cat-count-pill {{ $isParentActive ? 'active' : '' }}">{{ $parentCount }}</span>
                                                 @if($hasSubCats)
                                                     <span class="cursor-pointer text-muted px-1" data-bs-toggle="collapse" data-bs-target="#subCatCollapse_{{ $cat->id }}" aria-expanded="{{ $isExpanded ? 'true' : 'false' }}">
                                                         <i class="bx bx-chevron-down small"></i>
@@ -409,7 +444,7 @@
                                                         <li class="sidebar-subcat-item">
                                                             <a href="{{ request()->fullUrlWithQuery(['category' => $sub->id]) }}" class="{{ $isSubActive ? 'active' : '' }}">
                                                                 <span class="text-truncate">{{ $sub->name }}</span>
-                                                                <span class="badge {{ $isSubActive ? 'bg-primary text-white' : 'bg-light text-muted' }} rounded-pill" style="font-size: 9.5px;">{{ $sub->products_count }}</span>
+                                                                <span class="cat-count-pill {{ $isSubActive ? 'active' : '' }}">{{ $sub->products_count }}</span>
                                                             </a>
                                                         </li>
                                                     @endforeach
@@ -765,8 +800,8 @@
                                         <i class="bx {{ in_array($prod->id, session('wishlist', [])) ? 'bxs-heart text-danger' : 'bx-heart text-muted' }} fs-5 align-middle"></i>
                                     </div>
 
-                                    <a href="{{ route('storefront.product', $prod->id) }}" class="d-flex align-items-center justify-content-center w-100 h-100">
-                                        <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" class="object-fit-contain p-2">
+                                    <a href="{{ route('storefront.product', $prod->id) }}">
+                                        <img src="{{ $prod->image ? asset($prod->image) : asset('assets/img/ecommerce-images/product-1.png') }}" alt="{{ $prod->name }}" loading="lazy">
                                     </a>
                                 </div>
                                 

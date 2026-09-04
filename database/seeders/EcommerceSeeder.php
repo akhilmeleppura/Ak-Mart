@@ -140,18 +140,50 @@ class EcommerceSeeder extends Seeder
         ];
 
         $createdProducts = [];
-        $createdIdx = 0;
+        $groceryPhotoMap = [
+            'milk' => 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600&auto=format&fit=crop&q=80',
+            'egg' => 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=600&auto=format&fit=crop&q=80',
+            'yogurt' => 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&auto=format&fit=crop&q=80',
+            'butter' => 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&auto=format&fit=crop&q=80',
+            'cheese' => 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600&auto=format&fit=crop&q=80',
+            'rice' => 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&auto=format&fit=crop&q=80',
+            'oil' => 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=80',
+            'oats' => 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=600&auto=format&fit=crop&q=80',
+            'pasta' => 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=600&auto=format&fit=crop&q=80',
+            'salt' => 'https://images.unsplash.com/photo-1626197031507-c17099753214?w=600&auto=format&fit=crop&q=80',
+            'honey' => 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&auto=format&fit=crop&q=80',
+            'atta' => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80',
+            'coffee' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&auto=format&fit=crop&q=80',
+            'tea' => 'https://images.unsplash.com/photo-1597481499750-3e6b22637e12?w=600&auto=format&fit=crop&q=80',
+            'water' => 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=600&auto=format&fit=crop&q=80',
+            'juice' => 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=600&auto=format&fit=crop&q=80',
+            'sourdough' => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80',
+            'bread' => 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?w=600&auto=format&fit=crop&q=80',
+            'croissant' => 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&auto=format&fit=crop&q=80',
+            'chip' => 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=600&auto=format&fit=crop&q=80',
+            'nut' => 'https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=600&auto=format&fit=crop&q=80',
+            'apple' => 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80',
+            'banana' => 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80',
+            'strawberr' => 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=600&auto=format&fit=crop&q=80',
+        ];
+
         foreach ($productsCatalog as $p) {
-            $createdIdx++;
             $cat = $categoryModels[$p['cat']];
-            $imgNum = ($createdIdx % 26) + 1;
+            $pNameLower = strtolower($p['name']);
+            $imgUrl = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
+            foreach ($groceryPhotoMap as $k => $u) {
+                if (str_contains($pNameLower, $k)) {
+                    $imgUrl = $u;
+                    break;
+                }
+            }
             $product = Product::updateOrCreate(
                 ['slug' => Str::slug($p['name'])],
                 [
                     'name' => $p['name'],
                     'category_id' => $cat->id,
                     'branch_id' => $branch->id,
-                    'image' => "assets/img/ecommerce-images/product-{$imgNum}.png",
+                    'image' => $imgUrl,
                     'price' => $p['price'],
                     'compare_at_price' => $p['compare'],
                     'qty' => $p['qty'],
