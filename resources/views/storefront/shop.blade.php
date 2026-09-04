@@ -6,15 +6,58 @@
 <style>
     /* Catalog Page Custom Theme Enhancements */
     .catalog-hero-bar {
-        background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+        background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 20px;
-        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03);
+        padding: 22px 26px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+    }
+    .catalog-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        font-size: 12.5px;
+        list-style: none;
+        padding: 0;
+    }
+    .catalog-breadcrumb a {
+        color: #64748B;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .catalog-breadcrumb a:hover {
+        color: #4F46E5;
+    }
+    .catalog-breadcrumb .separator {
+        color: #CBD5E1;
+        font-size: 11px;
+    }
+    .catalog-breadcrumb .current {
+        color: #4F46E5;
+        font-weight: 700;
+    }
+    .catalog-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+    .catalog-subtitle {
+        color: #64748B;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 0;
     }
     .filter-sidebar-card {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 22px;
+        padding: 20px 16px;
         box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
     }
     .filter-section-title {
@@ -366,16 +409,16 @@
     <div class="row g-4">
         <!-- Sidebar Filters -->
         <div class="col-lg-3">
-            <div class="filter-sidebar-card p-4 sticky-top" style="top: 24px;">
-                <div class="d-flex justify-content-between align-items-center mb-3.5 pb-2 border-bottom">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="p-1.5 rounded-3 bg-primary bg-opacity-10 text-primary">
-                            <i class="bx bx-slider-alt fs-5"></i>
+            <div class="filter-sidebar-card sticky-top" style="top: 24px;">
+                <div class="d-flex justify-content-between align-items-center pb-2.5 mb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-1.5 min-w-0">
+                        <div class="p-1 rounded-2 bg-primary bg-opacity-10 text-primary flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                            <i class="bx bx-slider-alt fs-6"></i>
                         </div>
-                        <h5 class="fw-bold mb-0 text-dark">{{ __('Filter Catalog') }}</h5>
+                        <span class="fw-bold fs-6 text-dark text-truncate">{{ __('Filters') }}</span>
                     </div>
                     @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'color', 'colors', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only', 'sort']))
-                        <a href="{{ route('storefront.shop') }}" class="small text-danger fw-bold text-decoration-none">
+                        <a href="{{ route('storefront.shop') }}" class="small text-danger fw-bold text-decoration-none flex-shrink-0 ms-2">
                             <i class="bx bx-rotate-left me-0.5"></i>{{ __('Reset') }}
                         </a>
                     @endif
@@ -399,10 +442,10 @@
                     <!-- Aisle & Sub-Category Option Menu with Sub-menus -->
                     @if(!empty($filterConfig['show_category']))
                         <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <div class="filter-section-title mb-0">{{ __('Aisle & Sub-Categories') }}</div>
+                            <div class="d-flex justify-content-between align-items-center mb-1.5">
+                                <div class="filter-section-title mb-0 text-truncate">{{ __('Aisles & Categories') }}</div>
                                 @if(request('category'))
-                                    <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="text-danger small text-decoration-none fw-normal">{{ __('Reset') }}</a>
+                                    <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="text-danger small text-decoration-none fw-semibold flex-shrink-0 ms-1">{{ __('Reset') }}</a>
                                 @endif
                             </div>
 
@@ -651,18 +694,18 @@
         <!-- Products Catalog Grid -->
         <div class="col-lg-9">
             <!-- Catalog Hero Header -->
-            <div class="catalog-hero-bar p-3.5 mb-3.5">
+            <div class="catalog-hero-bar">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                        <nav aria-label="breadcrumb" class="mb-1">
-                            <ol class="breadcrumb small mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('storefront.home') }}" class="text-muted text-decoration-none">{{ __('Home') }}</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('storefront.shop') }}" class="text-muted text-decoration-none">{{ __('Shop') }}</a></li>
-                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">{{ __('Catalog') }}</li>
-                            </ol>
-                        </nav>
-                        <h4 class="fw-bolder mb-0 text-dark">{{ __('Supermarket Products') }}</h4>
-                        <span class="text-muted small fw-medium">{{ $products->total() }} {{ __('groceries & essentials found') }}</span>
+                        <ul class="catalog-breadcrumb">
+                            <li><a href="{{ route('storefront.home') }}">{{ __('Home') }}</a></li>
+                            <li class="separator">/</li>
+                            <li><a href="{{ route('storefront.shop') }}">{{ __('Shop') }}</a></li>
+                            <li class="separator">/</li>
+                            <li class="current">{{ __('Catalog') }}</li>
+                        </ul>
+                        <h1 class="catalog-title">{{ __('Supermarket Products') }}</h1>
+                        <p class="catalog-subtitle">{{ $products->total() }} {{ __('groceries & essentials found') }}</p>
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
@@ -692,7 +735,7 @@
 
                 <!-- Active Filter Chips Bar -->
                 @if(request()->hasAny(['q', 'category', 'brands', 'brand', 'size', 'sizes', 'color', 'colors', 'in_stock', 'min_price', 'max_price', 'min_rating', 'dietary', 'deals', 'deals_only']))
-                    <div class="d-flex align-items-center flex-wrap gap-1.5 pt-3 mt-3 border-top">
+                    <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mt-3 border-top" style="border-color: #F1F5F9 !important;">
                         <span class="small text-muted fw-bold me-1"><i class="bx bx-check-circle text-primary"></i> {{ __('Active Filters:') }}</span>
                         
                         @if(request('q'))
@@ -777,7 +820,7 @@
             </div>
 
             <!-- Products Grid Container -->
-            <div class="row g-3.5" id="productsCatalogContainer">
+            <div class="row g-4" id="productsCatalogContainer">
                 @forelse($products as $prod)
                     <div class="col-6 col-md-4 product-item-col">
                         <div class="product-grid-card">
