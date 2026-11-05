@@ -786,18 +786,30 @@
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-sm text-white dropdown-toggle p-0 d-flex align-items-center gap-1 border-0 shadow-none bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 12px; font-weight: 600;">
                         <i class="bx bx-globe text-info"></i>
-                        <span>{{ ['en' => 'English', 'ml' => 'മലയാളം', 'hi' => 'हिन्दी', 'ar' => 'العربية', 'fr' => 'Français', 'de' => 'Deutsch', 'ta' => 'தமிழ்', 'kn' => 'ಕನ್ನಡ', 'it' => 'Italiano'][app()->getLocale()] ?? 'English' }}</span>
+                        <span>{{ ['en' => 'English','ml' => 'മലയാളം','hi' => 'हिन्दी','ar' => 'العربية','fr' => 'Français','de' => 'Deutsch','ta' => 'தமிழ்','kn' => 'ಕನ್ನಡ','it' => 'Italiano'][app()->getLocale()] ?? 'English' }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-1" style="min-width: 175px; z-index: 1050; font-size: 13px;">
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'en' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/en') }}"><span>🇬🇧 English</span><span class="small opacity-75">EN</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ml' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ml') }}"><span>🇮🇳 മലയാളം</span><span class="small opacity-75">ML</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'hi' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/hi') }}"><span>🇮🇳 हिन्दी</span><span class="small opacity-75">HI</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ar' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ar') }}"><span>🇦🇪 العربية</span><span class="small opacity-75">AR</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'fr' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/fr') }}"><span>🇫🇷 Français</span><span class="small opacity-75">FR</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'de' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/de') }}"><span>🇩🇪 Deutsch</span><span class="small opacity-75">DE</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'ta' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/ta') }}"><span>🇮🇳 தமிழ்</span><span class="small opacity-75">TA</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'kn' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/kn') }}"><span>🇮🇳 ಕನ್ನಡ</span><span class="small opacity-75">KN</span></a></li>
-                        <li><a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === 'it' ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/it') }}"><span>🇮🇹 Italiano</span><span class="small opacity-75">IT</span></a></li>
+                        @php
+                          $storeLocales = [
+                            'en' => ['label' => 'English', 'flag' => '🇬🇧', 'short' => 'EN'],
+                            'ml' => ['label' => 'മലയാളം', 'flag' => '🇮🇳', 'short' => 'ML'],
+                            'hi' => ['label' => 'हिन्दी', 'flag' => '🇮🇳', 'short' => 'HI'],
+                            'ar' => ['label' => 'العربية', 'flag' => '🇦🇪', 'short' => 'AR'],
+                            'fr' => ['label' => 'Français', 'flag' => '🇫🇷', 'short' => 'FR'],
+                            'de' => ['label' => 'Deutsch', 'flag' => '🇩🇪', 'short' => 'DE'],
+                            'ta' => ['label' => 'தமிழ்', 'flag' => '🇮🇳', 'short' => 'TA'],
+                            'kn' => ['label' => 'ಕನ್ನಡ', 'flag' => '🇮🇳', 'short' => 'KN'],
+                            'it' => ['label' => 'Italiano', 'flag' => '🇮🇹', 'short' => 'IT'],
+                          ];
+                        @endphp
+                        @foreach($storeLocales as $code => $info)
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === $code ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/' . $code) }}">
+                                <span>{{ $info['flag'] }} {{ $info['label'] }}</span>
+                                <span class="small opacity-75">{{ $info['short'] }}</span>
+                            </a>
+                        </li>
+                        @endforeach
                     </ul>
                 </div>
                 <span class="text-muted">•</span>

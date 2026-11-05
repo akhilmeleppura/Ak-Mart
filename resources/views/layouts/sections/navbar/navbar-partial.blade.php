@@ -61,60 +61,27 @@ use Illuminate\Support\Facades\Route;
         <i class="icon-base bx bx-globe icon-md"></i>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
+        @php
+          $navLocales = [
+            'en' => ['label' => 'English', 'dir' => 'ltr'],
+            'ml' => ['label' => 'മലയാളം (Malayalam)', 'dir' => 'ltr'],
+            'hi' => ['label' => 'हिन्दी (Hindi)', 'dir' => 'ltr'],
+            'ar' => ['label' => 'العربية (Arabic)', 'dir' => 'rtl'],
+            'fr' => ['label' => 'Français (French)', 'dir' => 'ltr'],
+            'de' => ['label' => 'Deutsch (German)', 'dir' => 'ltr'],
+            'ta' => ['label' => 'தமிழ் (Tamil)', 'dir' => 'ltr'],
+            'kn' => ['label' => 'ಕನ್ನಡ (Kannada)', 'dir' => 'ltr'],
+            'it' => ['label' => 'Italiano (Italian)', 'dir' => 'ltr'],
+          ];
+        @endphp
+        @foreach($navLocales as $code => $data)
         <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}" href="{{ url('lang/en') }}"
-            data-language="en" data-text-direction="ltr">
-            <span>English</span>
+          <a class="dropdown-item {{ app()->getLocale() === $code ? 'active' : '' }}" href="{{ url('lang/' . $code) }}"
+            data-language="{{ $code }}" data-text-direction="{{ $data['dir'] }}">
+            <span class="{{ $code === 'ml' ? 'fw-semibold' : '' }}">{{ $data['label'] }}</span>
           </a>
         </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'ml' ? 'active' : '' }}" href="{{ url('lang/ml') }}"
-            data-language="ml" data-text-direction="ltr">
-            <span class="fw-semibold">മലയാളം (Malayalam)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'hi' ? 'active' : '' }}" href="{{ url('lang/hi') }}"
-            data-language="hi" data-text-direction="ltr">
-            <span>हिन्दी (Hindi)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'ar' ? 'active' : '' }}" href="{{ url('lang/ar') }}"
-            data-language="ar" data-text-direction="rtl">
-            <span>العربية (Arabic)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'fr' ? 'active' : '' }}" href="{{ url('lang/fr') }}"
-            data-language="fr" data-text-direction="ltr">
-            <span>Français (French)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'de' ? 'active' : '' }}" href="{{ url('lang/de') }}"
-            data-language="de" data-text-direction="ltr">
-            <span>Deutsch (German)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'ta' ? 'active' : '' }}" href="{{ url('lang/ta') }}"
-            data-language="ta" data-text-direction="ltr">
-            <span>தமிழ் (Tamil)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'kn' ? 'active' : '' }}" href="{{ url('lang/kn') }}"
-            data-language="kn" data-text-direction="ltr">
-            <span>ಕನ್ನಡ (Kannada)</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item {{ app()->getLocale() === 'it' ? 'active' : '' }}" href="{{ url('lang/it') }}"
-            data-language="it" data-text-direction="ltr">
-            <span>Italiano (Italian)</span>
-          </a>
-        </li>
+        @endforeach
       </ul>
     </li>
     <!--/ Language -->

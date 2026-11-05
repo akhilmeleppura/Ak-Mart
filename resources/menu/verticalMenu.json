@@ -109,6 +109,11 @@
           "url": "store-management/filters",
           "name": "Advanced Filters & Facets",
           "slug": "app-store-filters"
+        },
+        {
+          "url": "store-management/cart-recommendations",
+          "name": "Cart Recommendations",
+          "slug": "app-cart-recommendations"
         }
       ]
     },

@@ -245,7 +245,7 @@
                                     <p class="mb-1 text-secondary">{{ $qa->answer ?: __('Our support team has received your question and will verify with the store manager shortly.') }}</p>
                                     <small class="text-muted">
                                         {{ __('Answered by') }} <strong>{{ $qa->answeredBy?->name ?? __('AK-Mart Supermarket Staff') }}</strong>
-                                        • {{ $qa->answered_at ? $qa->answered_at->diffForHumans() : $qa->created_at->diffForHumans() }}
+                                        • {{ $qa->answered_at ? $qa->answered_at->diffForHumans() : ($qa->created_at?->diffForHumans() ?? '') }}
                                     </small>
                                 </div>
                             </div>

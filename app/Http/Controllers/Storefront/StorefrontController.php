@@ -331,7 +331,7 @@ class StorefrontController extends Controller
         // Frequently Bought Together / Suggested items powered by AI Recommendation Engine
         $frequentlyBought = $product->suggestedProducts->isNotEmpty()
             ? $product->suggestedProducts
-            : app(\App\Services\Ai\RecommendationEngineService::class)->getFrequentlyBoughtTogether($product->id, 2);
+            : app(\App\Services\Ai\RecommendationEngineService::class)->getFrequentlyBoughtTogether($product, 2);
 
         if ($frequentlyBought->isEmpty()) {
             $frequentlyBought = Product::where('id', '!=', $product->id)
@@ -424,6 +424,91 @@ class StorefrontController extends Controller
         // If tax is exclusive, add to total
         $finalTotal = max(0, $subtotal - $couponDiscount + ($isTaxInclusive ? 0 : $taxAmount));
 
+        // ── Cart Recommendations ──────────────────────────────────────────
+        $recConfig = json_decode(\App\Models\StoreSetting::get('cart_recommendations_config', '{}'), true) ?: [];
+        $recEnabled   = $recConfig['enabled']    ?? true;
+        $recTitle     = $recConfig['title']       ?? 'You Might Also Like';
+        $recStrategy  = $recConfig['strategy']    ?? 'auto';
+        $recLimit     = (int)($recConfig['limit'] ?? 6);
+        $recPinnedIds = array_filter((array)($recConfig['pinned_ids'] ?? []));
+
+        $recommendedProducts = collect();
+
+        if ($recEnabled) {
+            $cartProductIds = array_keys($cart);
+            $collected = collect();
+
+            // 1. Manual cross-sells / suggested / related from cart items
+            if (in_array($recStrategy, ['auto', 'manual']) && count($cartProductIds)) {
+                $cartProducts = \App\Models\Product::whereIn('id', $cartProductIds)
+                    ->with(['crossSells', 'suggestedProducts', 'relatedProducts'])
+                    ->get();
+                foreach ($cartProducts as $cp) {
+                    foreach (['crossSells', 'suggestedProducts', 'relatedProducts'] as $rel) {
+                        foreach ($cp->$rel as $rp) {
+                            if (!in_array($rp->id, $cartProductIds) && $rp->is_active) {
+                                $collected->push($rp);
+                            }
+                        }
+                    }
+                }
+                $collected = $collected->unique('id');
+            }
+
+            // 2. Pinned products from admin config
+            if (count($recPinnedIds)) {
+                $pinned = \App\Models\Product::whereIn('id', $recPinnedIds)
+                    ->whereNotIn('id', $cartProductIds)
+                    ->where('is_active', true)
+                    ->get();
+                $collected = $collected->merge($pinned)->unique('id');
+            }
+
+            // 3. Same-category products fallback
+            if ($collected->count() < $recLimit && in_array($recStrategy, ['auto', 'category']) && count($cartProductIds)) {
+                $categoryIds = \App\Models\Product::whereIn('id', $cartProductIds)
+                    ->pluck('category_id')->filter()->unique()->toArray();
+                if (count($categoryIds)) {
+                    $sameCat = \App\Models\Product::whereIn('category_id', $categoryIds)
+                        ->whereNotIn('id', $cartProductIds)
+                        ->whereNotIn('id', $collected->pluck('id')->toArray())
+                        ->where('is_active', true)
+                        ->inRandomOrder()
+                        ->limit($recLimit - $collected->count())
+                        ->get();
+                    $collected = $collected->merge($sameCat)->unique('id');
+                }
+            }
+
+            // 4. Best sellers / trending global fallback
+            if ($collected->count() < $recLimit && in_array($recStrategy, ['auto', 'trending', 'bestsellers'])) {
+                $fallback = \App\Models\Product::where('is_active', true)
+                    ->where(function($q) {
+                        $q->where('is_trending', true)
+                          ->orWhere('is_best_seller', true)
+                          ->orWhere('is_featured', true);
+                    })
+                    ->whereNotIn('id', array_merge($cartProductIds, $collected->pluck('id')->toArray()))
+                    ->inRandomOrder()
+                    ->limit($recLimit - $collected->count())
+                    ->get();
+                $collected = $collected->merge($fallback)->unique('id');
+            }
+
+            // 5. Pure random fallback if still empty
+            if ($collected->count() < $recLimit) {
+                $random = \App\Models\Product::where('is_active', true)
+                    ->whereNotIn('id', array_merge($cartProductIds, $collected->pluck('id')->toArray()))
+                    ->inRandomOrder()
+                    ->limit($recLimit - $collected->count())
+                    ->get();
+                $collected = $collected->merge($random)->unique('id');
+            }
+
+            $recommendedProducts = $collected->take($recLimit)->values();
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         return view('storefront.cart', compact(
             'cart',
             'savedForLater',
@@ -433,7 +518,10 @@ class StorefrontController extends Controller
             'taxAmount',
             'taxBreakdown',
             'isTaxInclusive',
-            'finalTotal'
+            'finalTotal',
+            'recommendedProducts',
+            'recTitle',
+            'recEnabled'
         ));
     }
 

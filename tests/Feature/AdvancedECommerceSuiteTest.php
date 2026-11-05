@@ -262,4 +262,46 @@ class AdvancedECommerceSuiteTest extends TestCase
         $authResponse->assertRedirect();
         $authResponse->assertSessionHas('locale', 'hi');
     }
+
+    /**
+     * Test 8: Product Detail Page loads successfully without 500 error by ID and Slug
+     */
+    public function test_product_detail_page_loads_successfully_by_id_and_slug(): void
+    {
+        $responseById = $this->get("/store/product/{$this->product->id}");
+        $responseById->assertStatus(200);
+        $responseById->assertSee($this->product->name);
+
+        $responseBySlug = $this->get("/store/product/{$this->product->slug}");
+        $responseBySlug->assertStatus(200);
+        $responseBySlug->assertSee($this->product->name);
+    }
+
+    /**
+     * Test 9: Cart Recommendations admin settings and storefront cart display
+     */
+    public function test_cart_recommendations_admin_and_storefront_render(): void
+    {
+        // 1. Admin can access cart recommendations management page
+        $adminResponse = $this->actingAs($this->admin)->get('/store-management/cart-recommendations');
+        $adminResponse->assertStatus(200);
+        $adminResponse->assertSee('Cart Recommendations');
+
+        // 2. Admin can save cart recommendations configuration
+        $saveResponse = $this->actingAs($this->admin)->post('/store-management/cart-recommendations', [
+            'enabled'    => '1',
+            'title'      => 'Frequently Paired Goods',
+            'strategy'   => 'auto',
+            'limit'      => 6,
+            'pinned_ids' => [$this->product->id],
+        ]);
+        $saveResponse->assertRedirect();
+        $saveResponse->assertSessionHas('success');
+
+        // 3. Storefront cart page renders recommendations section
+        $cartResponse = $this->get('/store/cart');
+        $cartResponse->assertStatus(200);
+        $cartResponse->assertSee('Frequently Paired Goods');
+    }
 }
+

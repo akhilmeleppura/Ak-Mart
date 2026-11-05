@@ -113,8 +113,129 @@
         font-weight: 800;
         color: #4F46E5;
     }
+    /* ── Cart Recommendations ───────── */
+    .rec-section-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: -0.02em;
+    }
+    .rec-card {
+        background: #fff;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.22s cubic-bezier(.16,1,.3,1), box-shadow 0.22s ease, border-color 0.2s ease;
+        position: relative;
+        cursor: pointer;
+    }
+    .rec-card:hover {
+        transform: translateY(-5px) scale(1.015);
+        box-shadow: 0 16px 48px rgba(79,70,229,0.14);
+        border-color: #A5B4FC;
+    }
+    .rec-card-img-wrap {
+        width: 100%;
+        aspect-ratio: 1/1;
+        background: #F8FAFC;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .rec-card-img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+    .rec-card:hover .rec-card-img {
+        transform: scale(1.08);
+    }
+    .rec-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        padding: 3px 8px;
+        border-radius: 99px;
+    }
+    .rec-card-body {
+        padding: 14px 14px 16px;
+    }
+    .rec-cat-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: #6366F1;
+        margin-bottom: 4px;
+    }
+    .rec-name {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #0F172A;
+        line-height: 1.3;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 36px;
+    }
+    .rec-price {
+        font-size: 16px;
+        font-weight: 900;
+        color: #4F46E5;
+    }
+    .rec-price-old {
+        font-size: 12px;
+        color: #94A3B8;
+        text-decoration: line-through;
+        margin-left: 4px;
+    }
+    .rec-add-btn {
+        width: 100%;
+        margin-top: 10px;
+        background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+        color: #fff;
+        border: none;
+        border-radius: 99px;
+        font-size: 12.5px;
+        font-weight: 700;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(.16,1,.3,1);
+        white-space: nowrap;
+    }
+    .rec-add-btn:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+    }
+    .rec-add-btn:active {
+        transform: scale(0.97);
+    }
+    .rec-add-btn.adding {
+        background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    }
+    .rec-scroll {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+    }
+    @media (min-width: 576px) {
+        .rec-scroll { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    }
 </style>
 @endsection
+
 
 @section('content')
 <div class="container">
@@ -311,6 +432,75 @@
             </div>
         </div>
     @endif
+
+    {{-- ════════════════════════════════════════════════════════════
+         CART RECOMMENDATIONS SECTION
+         ═══════════════════════════════════════════════════════════ --}}
+    @if(!empty($recEnabled) && $recommendedProducts->count() > 0)
+    <div class="mt-5 pt-2" id="cartRecommendationsSection">
+        {{-- Section Header --}}
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:42px;height:42px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                    <i class="bx bx-sparkles text-white fs-5"></i>
+                </div>
+                <div>
+                    <h4 class="rec-section-title mb-0">{{ $recTitle ?? __('You Might Also Like') }}</h4>
+                    <small class="text-muted">{{ __('Handpicked to pair with your order') }}</small>
+                </div>
+            </div>
+            <a href="{{ route('storefront.shop') }}" class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-semibold">
+                <i class="bx bx-grid me-1"></i>{{ __('Browse All') }}
+            </a>
+        </div>
+
+        {{-- Product Grid --}}
+        <div class="rec-scroll">
+            @foreach($recommendedProducts as $rp)
+            @php
+                $rpImg    = $rp->image ? asset($rp->image) : asset('assets/img/illustrations/boy-with-rocket-light.png');
+                $rpCat    = $rp->category->name ?? '';
+                $rpIsDeal = $rp->deal_of_the_day ?? false;
+                $rpIsTrend= $rp->is_trending ?? false;
+                $rpIsBest = $rp->is_best_seller ?? false;
+                $rpIsNew  = $rp->is_new_arrival ?? false;
+            @endphp
+            <div class="rec-card" onclick="window.location='{{ route('storefront.product', $rp->id) }}'">
+                <div class="rec-card-img-wrap">
+                    <img src="{{ $rpImg }}" alt="{{ $rp->name }}" class="rec-card-img">
+                    @if($rpIsDeal)
+                        <span class="rec-badge bg-danger text-white">🔥 {{ __('Deal') }}</span>
+                    @elseif($rpIsBest)
+                        <span class="rec-badge bg-warning text-dark">⭐ {{ __('Bestseller') }}</span>
+                    @elseif($rpIsTrend)
+                        <span class="rec-badge bg-info text-white">📈 {{ __('Trending') }}</span>
+                    @elseif($rpIsNew)
+                        <span class="rec-badge bg-success text-white">✨ {{ __('New') }}</span>
+                    @endif
+                </div>
+                <div class="rec-card-body">
+                    @if($rpCat)
+                        <div class="rec-cat-tag">{{ $rpCat }}</div>
+                    @endif
+                    <div class="rec-name" title="{{ $rp->name }}">{{ $rp->name }}</div>
+                    <div class="d-flex align-items-baseline">
+                        <span class="rec-price">${{ number_format($rp->price, 2) }}</span>
+                        @if(isset($rp->compare_price) && $rp->compare_price > $rp->price)
+                            <span class="rec-price-old">${{ number_format($rp->compare_price, 2) }}</span>
+                        @endif
+                    </div>
+                    <button type="button" class="rec-add-btn" id="recBtn-{{ $rp->id }}"
+                        onclick="event.stopPropagation(); addRecToCart({{ $rp->id }}, this)">
+                        <i class="bx bx-cart-add" style="font-size:16px;"></i>
+                        <span>{{ __('Add to Cart') }}</span>
+                    </button>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 
 @include('storefront.partials.coupon-drawer')
@@ -423,5 +613,69 @@ function removeSavedAjax(productId) {
         }
     });
 }
+
+function addRecToCart(productId, btn) {
+    // Visual: loading state
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin" style="font-size:16px;"></i><span>{{ __("Adding...") }}</span>';
+    btn.disabled = true;
+
+    fetch('{{ route("storefront.cart.add") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ product_id: productId, qty: 1 })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            // Success state
+            btn.classList.add('adding');
+            btn.innerHTML = '<i class="bx bx-check-circle" style="font-size:16px;"></i><span>{{ __("Added!") }}</span>';
+
+            // Update cart count badge in header if present
+            const badge = document.querySelector('.cart-count-badge, [data-cart-count], .header-cart-count');
+            if (badge && data.cartCount !== undefined) {
+                badge.textContent = data.cartCount;
+            }
+
+            // Bump cart subtotal display if present on page
+            if (data.cartSubtotal !== undefined) {
+                const sub = document.getElementById('cartSubtotal');
+                if (sub) sub.textContent = '$' + parseFloat(data.cartSubtotal).toFixed(2);
+            }
+
+            showToast(data.message || '{{ __("Added to cart!") }}', 'success');
+
+            // Slide out the card after a short delay
+            setTimeout(() => {
+                const card = btn.closest('.rec-card');
+                if (card) {
+                    card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        card.remove();
+                        // If grid is empty, hide the whole section
+                        const grid = document.querySelector('.rec-scroll');
+                        if (grid && grid.children.length === 0) {
+                            const section = document.getElementById('cartRecommendationsSection');
+                            if (section) section.style.display = 'none';
+                        }
+                    }, 350);
+                }
+            }, 900);
+        } else {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            showToast(data.message || '{{ __("Could not add to cart.") }}', 'danger');
+        }
+    })
+    .catch(() => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        showToast('{{ __("Error adding to cart.") }}', 'danger');
+    });
+}
 </script>
 @endsection
+

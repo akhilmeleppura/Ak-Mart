@@ -307,5 +307,49 @@ class StoreBuilderController extends Controller
 
         return back()->with('success', 'Storefront Advanced Filter Configuration saved successfully!');
     }
+
+    /**
+     * Cart Recommendations Management View
+     */
+    public function cartRecommendations()
+    {
+        $defaults = [
+            'enabled'    => true,
+            'title'      => 'You Might Also Like',
+            'strategy'   => 'auto',
+            'limit'      => 6,
+            'pinned_ids' => [],
+        ];
+        $saved = json_decode(StoreSetting::get('cart_recommendations_config', '{}'), true) ?: [];
+        $config = array_merge($defaults, $saved);
+        if (!is_array($config['pinned_ids'])) {
+            $config['pinned_ids'] = [];
+        }
+
+        $allProducts = Product::where('is_active', true)->orderBy('name')->get(['id', 'name', 'sku', 'price', 'image']);
+        $pinnedProducts = count($config['pinned_ids']) > 0
+            ? Product::whereIn('id', $config['pinned_ids'])->get(['id', 'name', 'sku', 'price', 'image'])
+            : collect();
+
+        return view('content.apps.store-management.cart-recommendations', compact('config', 'allProducts', 'pinnedProducts'));
+    }
+
+    /**
+     * Save Cart Recommendations Configuration
+     */
+    public function saveCartRecommendations(Request $request)
+    {
+        $config = [
+            'enabled'    => $request->boolean('enabled'),
+            'title'      => $request->input('title', 'You Might Also Like'),
+            'strategy'   => $request->input('strategy', 'auto'),
+            'limit'      => (int) $request->input('limit', 6),
+            'pinned_ids' => array_filter(array_map('intval', $request->input('pinned_ids', []))),
+        ];
+
+        StoreSetting::set('cart_recommendations_config', json_encode($config));
+
+        return back()->with('success', 'Cart Recommendations settings saved successfully!');
+    }
 }
 

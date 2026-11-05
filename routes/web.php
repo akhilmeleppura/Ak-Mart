@@ -207,6 +207,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/store-management/merchandising/{id}/toggle', [\App\Http\Controllers\apps\StoreBuilderController::class, 'toggleMerchandising'])->name('app-merchandising-toggle');
     Route::get('/store-management/filters', [\App\Http\Controllers\apps\StoreBuilderController::class, 'filters'])->name('app-store-filters');
     Route::post('/store-management/filters', [\App\Http\Controllers\apps\StoreBuilderController::class, 'updateFilters'])->name('app-store-filters-save');
+    Route::get('/store-management/cart-recommendations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'cartRecommendations'])->name('app-cart-recommendations');
+    Route::post('/store-management/cart-recommendations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'saveCartRecommendations'])->name('app-cart-recommendations-save');
 
     // Product Relations & Suggestions
     Route::get('/products/{id}/relations', [\App\Http\Controllers\apps\StoreBuilderController::class, 'productRelations'])->name('app-product-relations');
@@ -235,6 +237,7 @@ Route::get('/front-pages/help-center', [HelpCenter::class, 'index'])->name('fron
 Route::get('/front-pages/help-center-article', [HelpCenterArticle::class, 'index'])->name('front-pages-help-center-article');
 Route::get('/sitemap.xml', [\App\Http\Controllers\apps\SaaS\SeoController::class, 'sitemap'])->name('app-saas-sitemap');
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang-swap');
+Route::match(['get', 'post'], '/locale/{locale}', [LanguageController::class, 'swap'])->name('locale.set');
 
 
 // -----------------------------------------------------------------------

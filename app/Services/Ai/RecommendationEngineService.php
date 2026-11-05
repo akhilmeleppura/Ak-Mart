@@ -24,11 +24,24 @@ class RecommendationEngineService
         'cameras'     => ['accessories', 'tripods', 'memory-cards', 'lenses'],
     ];
 
+    protected function resolveProduct(Product|int $product): ?Product
+    {
+        if ($product instanceof Product) {
+            return $product;
+        }
+        return Product::find($product);
+    }
+
     /**
      * 1. Similar Products
      */
-    public function getSimilarProducts(Product $product, int $limit = 4): Collection
+    public function getSimilarProducts(Product|int $product, int $limit = 4): Collection
     {
+        $product = $this->resolveProduct($product);
+        if (!$product) {
+            return collect();
+        }
+
         $minPrice = $product->price * 0.70;
         $maxPrice = $product->price * 1.30;
 
@@ -52,8 +65,13 @@ class RecommendationEngineService
     /**
      * 2. Frequently Bought Together (Order Co-Occurrence)
      */
-    public function getFrequentlyBoughtTogether(Product $product, int $limit = 3): Collection
+    public function getFrequentlyBoughtTogether(Product|int $product, int $limit = 3): Collection
     {
+        $product = $this->resolveProduct($product);
+        if (!$product) {
+            return collect();
+        }
+
         // Find orders containing this product
         $orderIds = OrderItem::where('product_id', $product->id)
             ->pluck('order_id')
@@ -87,8 +105,13 @@ class RecommendationEngineService
     /**
      * 3. Complementary Products
      */
-    public function getComplementaryProducts(Product $product, int $limit = 3): Collection
+    public function getComplementaryProducts(Product|int $product, int $limit = 3): Collection
     {
+        $product = $this->resolveProduct($product);
+        if (!$product) {
+            return collect();
+        }
+
         $catSlug = strtolower($product->category?->slug ?? '');
         $affinitySlugs = self::$categoryAffinity[$catSlug] ?? [];
 
@@ -112,8 +135,13 @@ class RecommendationEngineService
     /**
      * 4. Budget Alternatives (Cheaper options in same category)
      */
-    public function getBudgetAlternatives(Product $product, int $limit = 3): Collection
+    public function getBudgetAlternatives(Product|int $product, int $limit = 3): Collection
     {
+        $product = $this->resolveProduct($product);
+        if (!$product) {
+            return collect();
+        }
+
         return Product::where('is_active', true)
             ->where('id', '!=', $product->id)
             ->where('price', '<', $product->price)
@@ -131,8 +159,13 @@ class RecommendationEngineService
     /**
      * 5. Upgrade Recommendations (Higher-spec options in same category)
      */
-    public function getUpgradeRecommendations(Product $product, int $limit = 3): Collection
+    public function getUpgradeRecommendations(Product|int $product, int $limit = 3): Collection
     {
+        $product = $this->resolveProduct($product);
+        if (!$product) {
+            return collect();
+        }
+
         return Product::where('is_active', true)
             ->where('id', '!=', $product->id)
             ->where('price', '>', $product->price)
