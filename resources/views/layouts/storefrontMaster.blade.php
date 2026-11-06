@@ -57,6 +57,8 @@
             font-weight: 600;
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            z-index: 1070;
         }
         .top-announcement-bar a {
             color: #CBD5E1;
@@ -65,6 +67,27 @@
         }
         .top-announcement-bar a:hover {
             color: #38BDF8;
+        }
+        .top-announcement-bar .dropdown-menu {
+            z-index: 1080 !important;
+            background-color: #FFFFFF !important;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+            border: 1px solid #E2E8F0 !important;
+        }
+        .top-announcement-bar .dropdown-menu a.dropdown-item {
+            color: #1E293B !important;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+        .top-announcement-bar .dropdown-menu a.dropdown-item:hover,
+        .top-announcement-bar .dropdown-menu a.dropdown-item:focus {
+            background-color: #EEF2FF !important;
+            color: #4F46E5 !important;
+        }
+        .top-announcement-bar .dropdown-menu a.dropdown-item.active {
+            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%) !important;
+            color: #FFFFFF !important;
+            font-weight: 700;
         }
 
         /* Frosted Glass Header */
@@ -788,25 +811,30 @@
                         <i class="bx bx-globe text-info"></i>
                         <span>{{ ['en' => 'English','ml' => 'മലയാളം','hi' => 'हिन्दी','ar' => 'العربية','fr' => 'Français','de' => 'Deutsch','ta' => 'தமிழ்','kn' => 'ಕನ್ನಡ','it' => 'Italiano'][app()->getLocale()] ?? 'English' }}</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-1" style="min-width: 175px; z-index: 1050; font-size: 13px;">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-1" style="min-width: 195px; z-index: 1080; font-size: 13px;">
                         @php
                           $storeLocales = [
-                            'en' => ['label' => 'English', 'flag' => '🇬🇧', 'short' => 'EN'],
-                            'ml' => ['label' => 'മലയാളം', 'flag' => '🇮🇳', 'short' => 'ML'],
-                            'hi' => ['label' => 'हिन्दी', 'flag' => '🇮🇳', 'short' => 'HI'],
-                            'ar' => ['label' => 'العربية', 'flag' => '🇦🇪', 'short' => 'AR'],
-                            'fr' => ['label' => 'Français', 'flag' => '🇫🇷', 'short' => 'FR'],
-                            'de' => ['label' => 'Deutsch', 'flag' => '🇩🇪', 'short' => 'DE'],
-                            'ta' => ['label' => 'தமிழ்', 'flag' => '🇮🇳', 'short' => 'TA'],
-                            'kn' => ['label' => 'ಕನ್ನಡ', 'flag' => '🇮🇳', 'short' => 'KN'],
-                            'it' => ['label' => 'Italiano', 'flag' => '🇮🇹', 'short' => 'IT'],
+                            'en' => ['label' => 'English', 'short' => 'EN', 'dir' => 'ltr'],
+                            'ml' => ['label' => 'മലയാളം', 'short' => 'ML', 'dir' => 'ltr'],
+                            'hi' => ['label' => 'हिन्दी', 'short' => 'HI', 'dir' => 'ltr'],
+                            'ar' => ['label' => 'العربية', 'short' => 'AR', 'dir' => 'rtl'],
+                            'fr' => ['label' => 'Français', 'short' => 'FR', 'dir' => 'ltr'],
+                            'de' => ['label' => 'Deutsch', 'short' => 'DE', 'dir' => 'ltr'],
+                            'ta' => ['label' => 'தமிழ்', 'short' => 'TA', 'dir' => 'ltr'],
+                            'kn' => ['label' => 'ಕನ್ನಡ', 'short' => 'KN', 'dir' => 'ltr'],
+                            'it' => ['label' => 'Italiano', 'short' => 'IT', 'dir' => 'ltr'],
                           ];
                         @endphp
                         @foreach($storeLocales as $code => $info)
                         <li>
-                            <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === $code ? 'active bg-primary text-white' : '' }}" href="{{ url('lang/' . $code) }}">
-                                <span>{{ $info['flag'] }} {{ $info['label'] }}</span>
-                                <span class="small opacity-75">{{ $info['short'] }}</span>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 {{ app()->getLocale() === $code ? 'active' : '' }}" href="{{ url('lang/' . $code) }}" data-language="{{ $code }}" data-text-direction="{{ $info['dir'] }}">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill {{ app()->getLocale() === $code ? 'bg-white text-primary' : 'bg-primary-subtle text-primary border border-primary-subtle' }}" style="font-size: 10px; font-weight: 800; min-width: 26px; padding: 2px 6px;">{{ $info['short'] }}</span>
+                                    <span>{{ $info['label'] }}</span>
+                                </div>
+                                @if(app()->getLocale() === $code)
+                                    <i class="bx bx-check text-white fs-6"></i>
+                                @endif
                             </a>
                         </li>
                         @endforeach
